@@ -5,7 +5,7 @@
 Ez a projekt egy saját tervezésű, vállalati szintű homelab környezetet mutat be, ahol Linux és Windows rendszereken gyakorlok virtualizációt, hálózatbiztonságot és üzemeltetést.
 
 ## Bemutatkozás
-Ez a projekt egy önállóan kialakított homelabot mutat be, amely egy vállalati környezet modellez, a hálózati biztonság alapjait is szem előtt tartva. Windows és Linux megoldásokat egyaránt tartalmaz. A konkrét megvalósításhoz és a mögöttes elmélet elsajátításához Udemy-n vásárolt videók, Youtube videók, angol nyelvű cikkek és fórumok sokat segítettek. Elkezdtem használni a ChatGPT is, amit hasznosnak találtam, de tudni kell jól kérdezni, és fenntartásokkal kezelni a válaszokat,  de az információgyűjtést egyértelműen felgyorsítja.
+Ez a projekt egy önállóan kialakított homelab-ot mutat be, amely egy vállalati környezet modellez, a hálózati biztonság alapjait is szem előtt tartva. Windows és Linux megoldásokat egyaránt tartalmaz. A konkrét megvalósításhoz és a mögöttes elmélet elsajátításához Udemy-n vásárolt videók, Youtube videók, angol nyelvű cikkek és fórumok sokat segítettek. Elkezdtem használni a ChatGPT is, amit hasznosnak találtam, de tudni kell jól kérdezni, és fenntartásokkal kezelni a válaszokat,  de az információgyűjtést egyértelműen felgyorsítja.
 
 ❗❗❗Részletes dokumentációt készítettem az installálási folyamatokról, konfigurációs fálokról, mit és hogyan állítottam be, felmerülő problémákról és megoldásaikról, de ezeket nem kerültek publikálásra. 
 
@@ -19,7 +19,7 @@ Emellett fontos szempont volt, hogy az álláspályázatok során a munkáltató
 
 | Terület              | Használt eszközök                       |
 |----------------------|---------------------------------------------------|
-| **OS** | CentOS 9 Stream, Ubuntu 22.04 desktop, Ubuntu 22.04 server, Windows 11, Windows Server 2019      |   
+| **Operációs rendszer** | CentOS 9 Stream, Ubuntu 22.04 desktop, Ubuntu 22.04 server, Windows 11, Windows Server 2019      |   
 | **Virtualizáció**     | Proxmox VE (2 gépen), LXC, VM, Template + Cloud init  |
 | **Tűzfal-router** | pfSense   |
 | **DHCP** | ISC-KEA, Windows Server 2019 DHCP szerver   |   
@@ -44,7 +44,7 @@ Emellett fontos szempont volt, hogy az álláspályázatok során a munkáltató
 
 - **Windows Server 2019**: DNS Szerver, DHCP szerver beállítások, Active Directory kezelés (gépek domainbe vonása, user létrehozás, groupok kezelése).
 - **Pfsense:** Beállítottam  pár **tűzfalszabályt** rajta, és szükséges volt **NAT**-olás. Futtatok rajta **DHCP szervert**, **NTP szervert**, **Wireguardot**, **OpenVPN-t**, beállítottam rajta **DDNS-t**.
-- **Publikus és privát domain névoldásának mechanizmusa:** Én a **Namecheap-en** regisztráltam saját domain-t, amit a **Cloudflare** nameserverre költöztettem. Publikusan nem tettem elérhetővé szolgáltatásokat. Az **Nginx Proxy Manager** segítségével a szolgáltatásaimat nevükön érem el, és nem kell IP címeket portszámokkal megjegyeznem. **SSL tanúsítványt** is szereztem az Nginix Proxy Manager-en futó Let's Encrypt szolgáltatással, ehhez jól jött a korábban regisztrált publikus domain, a **DNS 01 challanger + wildcard** megvalósításához. A privát domainem (otthoni.local) a **Bind9** DNS szerverem oldja fel, amit nem tud feloldani, a 8.8.8.8-ra forwardolja. **DNS override-ot** is alkalmazok annak érdekében, hogy ha a homelabommal egy hálózaton vagyok, akkor például a nextcloud.trkrolf.com kérést ne a publikus DNS szerverek oldják fel, hanem az én privát DNS szerverem. Ennek érdekében a *.trkrolf.com-ot a lokális DNS szerverem ip címére irányítom.
+- **Publikus és privát domain névoldásának mechanizmusa:** Én a **Namecheap-en** regisztráltam saját domain-t, amit a **Cloudflare** nameserverre költöztettem. Publikusan nem tettem elérhetővé szolgáltatásokat. Az **Nginx Proxy Manager** segítségével a szolgáltatásaimat nevükön érem el, és nem kell IP címeket portszámokkal megjegyeznem. **SSL tanúsítványt** is szereztem az Nginix Proxy Manager-en futó Let's Encrypt szolgáltatással, ehhez jól jött a korábban regisztrált publikus domain, a **DNS 01 challenge + wildcard** megvalósításához. A privát domainem (otthoni.local) a **Bind9** DNS szerverem oldja fel, amit nem tud feloldani, a 8.8.8.8-ra forwardolja. **DNS override-ot** is alkalmazok annak érdekében, hogy ha a homelabommal egy hálózaton vagyok, akkor például a nextcloud.trkrolf.com kérést ne a publikus DNS szerverek oldják fel, hanem az én privát DNS szerverem. Ennek érdekében a *.trkrolf.com-ot a lokális DNS szerverem ip címére irányítom.
 - **VPN:** A távoli elérésre egy ideig Tailscale-t használtam, kipróbáltam az OpenVPN-t is, de végül aktívan a Wiregard használata mellett döntöttem. Így például telefon kényelmesen elérem az otthoni hálózatomat, vagy a full tunnel segítségével az otthoni Pi-hole DNS szűrőmet használhatom a reklámok ellen.
 - **Távoli elérés:** Guacamole-t használok, segítségével kényelmesen egy böngészőablakban elérhetek több gépet.
 - **Monitorozás:** Zabbix Agent beállítása Linux és Windows gépre. Csináltam pár alap **problem triggerelést**, például 1 percig nem pingelhető egy gép, szabad tárhely egy szint alá csökken, CPU használtal egy érték fölő megy. Ugyanezeket riasztásban is megvalósítottam, **email értesítést** küldve. Saját **dashboard** létrehozása.
