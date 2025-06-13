@@ -7,7 +7,7 @@ Ez a projekt egy saját tervezésű, vállalati szintű homelab környezetet mut
 ## Bemutatkozás
 Ez a projekt egy önállóan kialakított homelab-ot mutat be, amely egy vállalati környezet modellez, a hálózati biztonság alapjait is szem előtt tartva. Windows és Linux megoldásokat egyaránt tartalmaz. A konkrét megvalósításhoz és a mögöttes elmélet elsajátításához Udemy-n vásárolt videók, Youtube videók, angol nyelvű cikkek és fórumok sokat segítettek. Elkezdtem használni a ChatGPT is, amit hasznosnak találtam, de tudni kell jól kérdezni, és fenntartásokkal kezelni a válaszokat,  de az információgyűjtést egyértelműen felgyorsítja.
 
-❗❗❗Részletes dokumentációt készítettem az installálási folyamatokról, konfigurációs fálokról, mit és hogyan állítottam be, felmerülő problémákról és megoldásaikról, de ezeket nem kerültek publikálásra. 
+❗❗❗Részletes dokumentációt készítettem az installálási folyamatokról, konfigurációs fálokról, mit és hogyan állítottam be, felmerülő problémákról és megoldásaikról, de ezek nem kerültek publikálásra. 
 
 > 🎯 **Célom**:
 Az elméleti tudásom mellett gyakorlati tapasztalat szerzése, új technológiák kipróbálása és megismerése. A technológiák kiválasztásakor figyelembe vettem a jelenlegi munkaerőpiaci trendeket, de az erre rendelkezésemre álló büdzsét is.
