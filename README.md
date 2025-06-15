@@ -81,10 +81,10 @@ Emellett fontos szempont volt, hogy az álláspályázatok során a munkáltató
 <img src="https://github.com/user-attachments/assets/2c9e553e-bc88-44d1-8b1a-7349573afb81" alt="Kép leírása" width="700"/>
 
 - Proxmox interfész VM/LXC listával
-<img src="https://github.com/user-attachments/assets/7429e3db-88db-4365-9a8b-26ff0d13bc5e" alt="Kép leírása" width="600"/>
+<img src="https://github.com/user-attachments/assets/7429e3db-88db-4365-9a8b-26ff0d13bc5e" alt="Kép leírása" width="500"/>
 
 - Proxmox Backup Server mentések
-<img src="https://github.com/user-attachments/assets/8da41e1f-81c7-4997-9749-a45668bd0832" alt="Kép leírása" width="700"/>
+<img src="https://github.com/user-attachments/assets/8da41e1f-81c7-4997-9749-a45668bd0832" alt="Kép leírása" width="800"/>
 
 - Homarr dashboard
 <img src="https://github.com/user-attachments/assets/befc202e-0867-4c7d-80f1-fca57f7bf42a" alt="Kép leírása" width="700"/>
