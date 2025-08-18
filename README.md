@@ -2,7 +2,7 @@
 
 ## 🏠 Homelab projekt ismertetése
 
-Ez a projekt egy saját tervezésű, vállalati szintű homelab környezetet mutat be, ahol Linux és Windows rendszereken gyakorlok virtualizációt, hálózatbiztonságot és üzemeltetést. Windows és Linux megoldásokat egyaránt tartalmaz. A konkrét megvalósításhoz és a mögöttes elmélet elsajátításához Udemy-n vásárolt videók, YouTube videók, cikkek és fórumok sokat segítettek, mindez angol nyelven. Elkezdtem használni a ChatGPT is, amit hasznosnak találtam, az információgyűjtést és keresést drasztikusan felgyorsítja.
+Ez a projekt egy saját tervezésű, vállalati szintű homelab környezetet mutat be, ahol Linux és Windows rendszereken gyakorlok virtualizációt, hálózatbiztonságot és üzemeltetést. Windows és Linux megoldásokat egyaránt tartalmaz. A konkrét megvalósításhoz és a mögöttes elmélet elsajátításához Udemy-n vásárolt videók, YouTube videók, cikkek és fórumok sokat segítettek, mindez angol nyelven. Elkezdtem használni a ChatGPT-t is, amit hasznosnak találtam, az információgyűjtést és keresést drasztikusan felgyorsítja.
 
 ❗❗❗Részletes dokumentációt készítettem az installálási folyamatokról, konfigurációs fájlokról, mit és hogyan állítottam be, felmerülő problémákról és megoldásaikról, de ezek itt nem kerültek publikálásra. 
 
@@ -21,7 +21,7 @@ Emellett fontos szempont volt, hogy az álláspályázatok során a munkáltató
 | **Tűzfal-router** | pfSense   |
 | **DHCP** | ISC-KEA, Windows Server 2019 DHCP szerver   |   
 | **DNS** | DNS (BIND9) + Namecheap + Cloudflare, Windows Server 2019 DNS szerver |
-| **VPN** | Tailscale, Wireguard, Openvpn|
+| **VPN** | Tailscale, WireGuard, Openvpn|
 | **Távoli elérés**     | SSH (Termius), RDP (Guacamole) |
 | **Reverse proxy** | Nginx Proxy Manager               |
 | **Monitorozás**       | Zabbix|
@@ -36,35 +36,35 @@ Emellett fontos szempont volt, hogy az álláspályázatok során a munkáltató
 
 ---
 
-## 🔍 Felhasznált technológiák részletesebb ismertetése
+## 🔍 Felhasznált technológiák részletes ismertetése
 
 - **Windows Server 2019**: DNS Szerver, DHCP szerver beállítások, Active Directory kezelés (gépek domainbe vonása, user létrehozás, groupok kezelése).
-- **Pfsense:** Beállítottam  pár **tűzfalszabályt** rajta, és szükséges volt **NAT**-olás. Futtatok rajta **DHCP szervert**, **NTP szervert**, **Wireguardot**, **OpenVPN-t**, **DDNS-t**, beállítottam rajta **DDNS-t**.
-- **Publikus és privát domain névoldásának mechanizmusa:** Én a **Namecheap-en** regisztráltam saját domain-t, amit a **Cloudflare** nameserverre költöztettem. Publikusan nem tettem elérhetővé szolgáltatásokat. Az **Nginx Proxy Manager** segítségével a szolgáltatásaimat portszám nélküli nevükön érem el. **SSL tanúsítványt** is szereztem az Nginx Proxy Manager-en futó Let's Encrypt szolgáltatással (**DNS 01 challenge + wildcard**), ehhez jól jött a korábban regisztrált publikus domain. A privát domainem (otthoni.local) a **BIND9** DNS szerverem oldja fel, amit nem tud feloldani, a 8.8.8.8-ra forwardolja. **DNS override-ot** is alkalmazok annak érdekében, hogy ha a homelabommal egy hálózaton vagyok, akkor például a nextcloud.trkrolf.com kérést ne a publikus DNS szerverek oldják fel, hanem az én privát DNS szerverem. Ennek érdekében a *.trkrolf.com-ot a lokális DNS szerverem ip címére irányítom.
-- **VPN:** A távoli elérésre egy ideig Tailscale-t használtam, kipróbáltam az OpenVPN-t is, de végül a Wiregard aktív használata mellett döntöttem. Így például telefonról kényelmesen elérem az otthoni hálózatomat, vagy a full tunnel segítségével az otthoni Pi-hole DNS szűrőmet használhatom a reklámok ellen a telefonomon.
+- **Pfsense:** Beállítottam  néhány **tűzfalszabályt** rajta, és szükséges volt **NAT**-olás. Futtatok rajta **DHCP szervert**, **NTP szervert**, **WireGuardot**, **OpenVPN-t**, **DDNS-t**, beállítottam rajta **DDNS-t**.
+- **Publikus és privát domain névfeloldás mechanizmusa:** Én a **Namecheap-en** regisztráltam saját domain-t, amit a **Cloudflare** nameserverre költöztettem. Publikusan nem tettem elérhetővé szolgáltatásokat. Az **Nginx Proxy Manager** segítségével a szolgáltatásaimat portszám nélküli nevükön érem el. **SSL tanúsítványt** is szereztem az Nginx Proxy Manager-en futó Let's Encrypt szolgáltatással (**DNS 01 challenge + wildcard**), ehhez jól jött a korábban regisztrált publikus domain. A privát domainem (otthoni.local) a **BIND9** DNS szerverem oldja fel, amit nem tud feloldani, a 8.8.8.8-ra forwardolja. **DNS override-ot** is alkalmazok annak érdekében, hogy ha a homelabom hálózaton belül vagyok, akkor például a nextcloud.trkrolf.com kérést ne a publikus DNS szerverek oldják fel, hanem az én privát DNS szerverem. Ennek érdekében a *.trkrolf.com-ot a lokális DNS szerverem ip címére irányítom.
+- **VPN:** A távoli elérésre egy ideig Tailscale-t használtam, kipróbáltam az OpenVPN-t is, de végül a WireGaurd aktív használata mellett döntöttem. Így például telefonról kényelmesen elérem az otthoni hálózatomat, vagy a full tunnel segítségével az otthoni Pi-hole DNS szűrőmet használhatom a reklámok ellen a telefonomon.
 - **Távoli elérés:** Guacamole-t használok, aminek segítségével kényelmesen egy böngészőablakban elérhetek több gépet.
-- **Monitorozás:** Zabbix Agent beállítása Linux és Windows gépre. Csináltam pár alap **problem triggerelést**, például 1 percig nem pingelhető egy gép, szabad tárhely egy szint alá csökken, CPU használtal egy érték fölő megy. Ugyanezeket riasztásban is megvalósítottam, **email értesítést** küldve.
-- **Ansible automation:** Használom CLI-ből és Semaphroe Web UI-ból egyaránt. Playbook segítségével VM és LXC frissítéseket automatizálom, közös usereket hoztam létre és SSH kucsokat  osztottam meg, közös konfig fájlokat szerkesztek (pl.: NTP szerver megadása), időzóna beállítása.
+- **Monitorozás:** Zabbix Agent beállítása Linux és Windows gépre. Csináltam pár alap **problem triggerelést**, például 1 percig nem pingelhető egy gép, szabad tárhely egy bizonyos szint alá csökken, CPU használtal egy érték fölé megy. Ugyanezeket riasztásban is megvalósítottam, **email értesítést** küldve.
+- **Ansible automation:** Használom CLI-ből és Semaphore Web UI-ból egyaránt. Playbook segítségével VM és LXC frissítéseket automatizálom, közös usereket hoztam létre és SSH kulcsokat  osztottam meg, közös konfig fájlokat szerkesztek (pl.: NTP szerver megadása), időzóna beállítása.
 - **Rendszer backup:** A **Clonezillával** mentem el image-be a Proxmox partíciót blokkszinten. Egy Proxmoxon virtualizált **Proxmox Backup Serverre** pedig a VM és LXC példányokat mentését végzem. Laptopomat **Veeam Backup & Replication Community Edition**-el mentem egy smb megosztásba. 
 - **Személyes fájlok backupja/szinkronizációja:**  **Nextcloud-ot** használok self hosted fájlmegosztásra a laptopommal, telefonommal. A fényképeimet a telefonomról egyirányú szinkronizációval mentem a homelabomra **FolderSync-el**, ugyanígy laptopomon erre a **FreeFileSync-et** használom. 
-- **Reklámszűrés:** Böngészéshez **Pi-hole**-t használok, hogy a reklálmokat DNS kérés szintjén szűrje, upstream szervere a BIND9 szerverem.
+- **Reklámszűrés:** Böngészéshez **Pi-hole**-t használok, hogy a reklámokat DNS kérés szintjén szűrje, upstream szervere a BIND9 szerverem.
 - **APT cache proxy:** Hajnali 3-ra időzítettem az Ansible által vezényelt VM és LXC updatelést, naponta. Felesleges minden vm/lxc-re külön leszedni. A cache proxy segítségével elérem, hogy cacheli a letöltött csomagokat, és amelyik gépnek szüksége van a frissítésekre, az a cache proxy-ról tölti le, és nem az internetről.
 - **Dashboard:** A sok szolgáltatás közötti válogatás kényelmetlenné vált, így dashboard-ra rendezve könnyebb az indításuk. Erre én a Homarr dashboard szolgáltatást használom.
-- **Radius, LDAP:** FreeRadius-al beállítottam, hogy rajta keresztül a Pfsense GUI-ra be tudjak jelentkezni. Természetesen van lokális userem, ha a radius szerver nem üzemelne, akkor is be tudjak jelentkezni. A lokális user és a radius user felhasználóneve és jelszava azonos, hogy a usernek ne kelljen tudnia, hogy  éppen a radius szerveren keresztül vagy a lokális useren keresztül tud-e belépni. Phpmyadmidn-t telepítettem, hogy kényelmesebben lássam az adatbázisokat.
+- **Radius, LDAP:** FreeRADIUS-al beállítottam, hogy rajta keresztül a Pfsense GUI-ra be tudjak jelentkezni. Természetesen van lokális userem, ha a radius szerver nem üzemelne, akkor is be tudjak jelentkezni. A lokális user és a radius user felhasználóneve és jelszava azonos, hogy a usernek ne kelljen tudnia, hogy  éppen a radius szerveren keresztül vagy a lokális useren keresztül tud-e belépni. PhpMyAdmin-t telepítettem, hogy kényelmesebben lássam az adatbázisokat.
 - **SSH biztonságossá tétele**: **Timeout** beállítása, jelszó helyett **SSH key** használata, lehetőség szerint **root user tiltása** SSH-n.
 
 ---
 
-## 🔮 További tanulási és megvalósígási célkitűzéseim
+## 🔮 További tanulási és megvalósítási célkitűzéseim
 
 - **Python** programozási nyelv mélyebb megismerése.
-- - **Cloud computing:** Érdekel ez a terület, szeretném jobban megismerni (AWS, Azure).
+- - **Cloud computing** Érdekel ez a terület, szeretném jobban megismerni (AWS, Azure).
 - **Monitorozás továbbfejlesztése** Grafana + Prometheus megtanulása. Zabbix ismeretet elmélyíteni.
-- **Cloud storage** (Hetzned vagy Pcloud).
-- **Magas rendelkezésre állás:** Három darab 2,5"-os SSD és egy Lenovo M920q Tiny PC beszerzése van tervben, amelyre Proxmoxot telepítek, hogy a meglévő gépeimmel együtt háromtagú **klasztert** alakíthassak ki. A célom, hogy a három SSD-t **Ceph**-be integráljam.
-- **DIY PiKVM:**  KVM over IP hasznos lenne. Venni szeretnék RPI 4-et, amin a PiKVM-et megvalósítanám.
-- **IDS/IPS továbbfejlesztése:** CrowdSec elmélyítése, Nginx Proxy Managerre történő beállítása és Suricata implementálása.
-- **Komolyabb switch vásárlása:** Ki szeretném próbálni a 802.1x port based autentikációt és beállítani a Radius felügyeletet a portokon. DHCP snooping és port security által még tovább növelhetném a biztonságot.
+- **Cloud storage** (Hetzner vagy pCloud).
+- **Magas rendelkezésre állás** Három darab 2,5"-os SSD és egy Lenovo M920q Tiny PC beszerzése van tervben, amelyre Proxmoxot telepítek, hogy a meglévő gépeimmel együtt háromtagú **klasztert** alakíthassak ki. A célom, hogy a három SSD-t **Ceph**-be integráljam.
+- **DIY PiKVM**  KVM over IP hasznos lenne. Venni szeretnék RPI 4-et, amin a PiKVM-et megvalósítanám.
+- **IDS/IPS továbbfejlesztése** CrowdSec elmélyítése, Nginx Proxy Managerre történő beállítása és Suricata implementálása.
+- **Komolyabb switch vásárlása** Ki szeretném próbálni a 802.1x port based autentikációt és beállítani a Radius felügyeletet a portokon. DHCP snooping és port security által még tovább növelhetném a biztonságot.
 
 ---
 
