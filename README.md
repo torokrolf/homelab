@@ -1,6 +1,6 @@
 # 🏡 Homelabom rövid összefoglalója (folyamatosan bővül)
 
-## 🏠 Homelab projekt
+## 🏠 Homelab projekt ismertetése
 
 Ez a projekt egy saját tervezésű, vállalati szintű homelab környezetet mutat be, ahol Linux és Windows rendszereken gyakorlok virtualizációt, hálózatbiztonságot és üzemeltetést.
 
