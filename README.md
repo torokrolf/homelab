@@ -60,18 +60,16 @@ Emellett fontos szempont volt, hogy az álláspályázatok során a munkáltató
 
 ---
 
-## 🔮 Jövőbeli tervek (folyamatosan bővöl)
+## 🔮 További tanulási és megvalósígási célkitűzéseim
 
-- **Monitorozás továbbfejlesztése** Grafana + Prometheus megismerése. Zabbix-al elkezdtem ismerkedni, de az Udemy videót félbehagytam, ezt befejezni.
-- **Cloud computing elmélyítése:** Érdekel ez a terület, szeretném jobban megismerni (AWS, Azure).
+- **Python** programozási nyelv mélyebb megismerése.
+- - **Cloud computing:** Érdekel ez a terület, szeretném jobban megismerni (AWS, Azure).
+- **Monitorozás továbbfejlesztése** Grafana + Prometheus megtanulása. Zabbix ismeretet elmélyíteni.
 - **Cloud storage** (Hetzned vagy Pcloud).
 - **Magas rendelkezésre állás:** Három darab 2,5"-os SSD és egy Lenovo M920q Tiny PC beszerzése van tervben, amelyre Proxmoxot telepítek, hogy a meglévő gépeimmel együtt háromtagú **klasztert** alakíthassak ki. A célom, hogy a három SSD-t **Ceph**-be integráljam.
-- **DIY PiKVM:**  KVM over IP hasznos lenne, ám az olcsóbb alternatívája, a PiKVM is igen költséges, ha készen veszi az ember, így én megamtól építeném meg. Venni szeretnék használtan RPI 4-et, amit megosztana a három gép között egy USB switch és HDMI switch. Az olcsóbb switch-ek csatornaváltása gombbal történik, én a gombot lecserélném egy ESP32-vel vezérelt tranzisztorra. Ehhez persze fontos, hogy a switch-ek könnyen szétszedhetőek legyenek, nagyobb roncsolás nélkül. Kicsit költségesebb, ha három RPI4-et veszek, minden géphez egyet, így nem kell USB switch és HDMI switch, és egyszerre mindhárom gép vezérelhető böngészőből, nem kell váltani köztük.
-- **IDS/IPS továbbfejlesztése:** CrowdSec beállítása Nginx Proxy Managerre, és Suricata implementálása.
-- **Biztonság és mentés bővítése:** Rsync, Rclone megismerése. Bareos és Kopia alkalmazása ezidáig sikertelen volt, a klienseket nem tudom bevonni, ezt megoldani.
+- **DIY PiKVM:**  KVM over IP hasznos lenne. Venni szeretnék RPI 4-et, amin a PiKVM-et megvalósítanám.
+- **IDS/IPS továbbfejlesztése:** CrowdSec elmélyítése, Nginx Proxy Managerre történő beállítása és Suricata implementálása.
 - **Komolyabb switch vásárlása:** Ki szeretném próbálni a 802.1x port based autentikációt és beállítani a Radius felügyeletet a portokon. DHCP snooping és port security által még tovább növelhetném a biztonságot.
-- **DNSSEC** 
-- **Python** programozási nyelv mélyebb megismerése.
 
 ---
 
