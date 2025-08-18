@@ -33,6 +33,7 @@ Emellett fontos szempont volt, hogy az álláspályázatok során a munkáltató
 | **Radius, LDAP** | FreeRADIUS, FreeIPA |
 | **Password management** | Vaultwarden        |
 | **PXE boot** | iVentoy        |
+| **Hibakeresés** | Wireshark        |
 
 ---
 
