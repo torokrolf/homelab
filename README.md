@@ -75,7 +75,7 @@ Emellett fontos szempont volt, hogy az álláspályázatok során a munkáltató
 <img src="https://github.com/user-attachments/assets/2c9e553e-bc88-44d1-8b1a-7349573afb81" alt="Kép leírása" width="700"/>
 
 - Proxmox interfész VM/LXC listával
-<img src="https://github.com/user-attachments/assets/7429e3db-88db-4365-9a8b-26ff0d13bc5e" alt="Kép leírása" width="500"/>
+<img src="https://github.com/user-attachments/assets/e218f011-7896-4dbe-b5e2-0e13861d0909" alt="Kép leírása" width="500"/>
 
 - Proxmox Backup Server mentések
 <img src="https://github.com/user-attachments/assets/8da41e1f-81c7-4997-9749-a45668bd0832" alt="Kép leírása" width="800"/>
