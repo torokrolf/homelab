@@ -21,7 +21,7 @@ Emellett fontos szempont volt, hogy az álláspályázatok során a munkáltató
 | **Tűzfal-router** | pfSense   |
 | **DHCP** | ISC-KEA, Windows Server 2019 DHCP szerver   |   
 | **DNS** | DNS (BIND9) + Namecheap + Cloudflare, Windows Server 2019 DNS szerver |
-| **VPN** | Tailscale, WireGuard, Openvpn|
+| **VPN** | Tailscale, WireGuard, Openvpn, Nordvpn|
 | **Távoli elérés**     | SSH (Termius), RDP (Guacamole) |
 | **Reverse proxy** | Nginx Proxy Manager               |
 | **Monitorozás**       | Zabbix|
