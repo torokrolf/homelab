@@ -81,7 +81,7 @@ Emellett fontos szempont volt, hogy az álláspályázatok során a munkáltató
 <img src="https://github.com/user-attachments/assets/8da41e1f-81c7-4997-9749-a45668bd0832" alt="Kép leírása" width="800"/>
 
 - Homarr dashboard
-<img src="https://github.com/user-attachments/assets/befc202e-0867-4c7d-80f1-fca57f7bf42a" alt="Kép leírása" width="700"/>
+<img src="https://github.com/user-attachments/assets/7508a075-fa1c-4dcb-82d5-00855fa0ec99" alt="Kép leírása" width="700"/>
 
 - Nginx Proxy Manager-ből egy részlet a proxy hosts-ról
 <img src="https://github.com/user-attachments/assets/3a8d190b-52aa-4a94-be9f-9aec13829945" alt="Kép leírása" width="700"/>
