@@ -34,7 +34,7 @@ Emellett fontos szempont volt, hogy az álláspályázatok során a munkáltató
 | **Password management** | Vaultwarden        |
 | **PXE boot** | iVentoy        |
 | **Hibakeresés** | Wireshark        |
-
+| **Tárolás**       | TrueNAS|
 ---
 
 ## 🔍 Felhasznált technológiák részletes ismertetése
