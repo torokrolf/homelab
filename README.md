@@ -59,13 +59,13 @@ Emellett fontos szempont volt, hogy az álláspályázatok során a munkáltató
 ## 🔮 További tanulási és megvalósítási célkitűzéseim
 
 - **Python** programozási nyelv mélyebb megismerése.
-- **Cloud computing** Érdekel ez a terület, szeretném jobban megismerni (AWS, Azure).
-- **Monitorozás továbbfejlesztése** Grafana + Prometheus megtanulása. Zabbix ismeretet elmélyíteni.
+- **Cloud computing.** Érdekel ez a terület, szeretném jobban megismerni (AWS, Azure).
+- **Monitorozás továbbfejlesztése.** Grafana + Prometheus megtanulása. Zabbix ismeretet elmélyíteni.
 - **Cloud storage** (Hetzner vagy pCloud).
-- **Magas rendelkezésre állás** Három darab 2,5"-os SSD és egy Lenovo M920q Tiny PC beszerzése van tervben, amelyre Proxmoxot telepítek, hogy a meglévő gépeimmel együtt háromtagú **klasztert** alakíthassak ki. A célom, hogy a három SSD-t **Ceph**-be integráljam.
-- **DIY PiKVM**  KVM over IP hasznos lenne. Venni szeretnék RPI 4-et, amin a PiKVM-et megvalósítanám.
-- **IDS/IPS továbbfejlesztése** CrowdSec elmélyítése, Nginx Proxy Managerre történő beállítása és Suricata implementálása.
-- **Komolyabb switch vásárlása** Ki szeretném próbálni a 802.1x port based autentikációt és beállítani a Radius felügyeletet a portokon. DHCP snooping és port security által még tovább növelhetném a biztonságot.
+- **Magas rendelkezésre állás.** Három darab 2,5"-os SSD és egy Lenovo M920q Tiny PC beszerzése van tervben, amelyre Proxmoxot telepítek, hogy a meglévő gépeimmel együtt háromtagú **klasztert** alakíthassak ki. A célom, hogy a három SSD-t **Ceph**-be integráljam.
+- **DIY PiKVM.**  KVM over IP hasznos lenne. Venni szeretnék RPI 4-et, amin a PiKVM-et megvalósítanám.
+- **IDS/IPS továbbfejlesztése.** CrowdSec elmélyítése, Nginx Proxy Managerre történő beállítása és Suricata implementálása.
+- **Komolyabb switch vásárlása.** Ki szeretném próbálni a 802.1x port based autentikációt és beállítani a Radius felügyeletet a portokon. DHCP snooping és port security által még tovább növelhetném a biztonságot.
 
 ---
 
