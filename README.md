@@ -17,7 +17,8 @@ Emellett fontos szempont volt, hogy az álláspályázatok során a munkáltató
 | Terület              | Használt eszközök                       |
 |----------------------|---------------------------------------------------|
 | **Operációs rendszer** | CentOS 9 Stream, Ubuntu 22.04 desktop, Ubuntu 22.04 server, Windows 10, Windows 11, Windows Server 2019      |   
-| **Virtualizáció**     | Proxmox VE (2 gépen), LXC, VM, Template + Cloud init  |
+| **Virtualizáció (Type 1 hypervisor)**     | Proxmox VE (LXC, VM, Template + Cloud init)  |
+| **Virtualizáció (Type 2 hypervisor)**     | VirtualBox, VMware Workstation, Hyper-V  |
 | **Tűzfal-router** | pfSense   |
 | **DHCP** | ISC-KEA, Windows Server 2019 DHCP szerver   |   
 | **DNS** | DNS (BIND9) + Namecheap + Cloudflare, Windows Server 2019 DNS szerver |
