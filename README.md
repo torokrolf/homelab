@@ -20,6 +20,7 @@ Emellett fontos szempont volt, hogy az álláspályázatok során a munkáltató
 | **Virtualizáció (Type 1 hypervisor)**     | Proxmox VE (LXC, VM, Template + Cloud init)  |
 | **Virtualizáció (Type 2 hypervisor)**     | VirtualBox, VMware Workstation, Hyper-V  |
 | **Tűzfal-router** | pfSense   |
+| **VLAN** | TP-LINK SG108E switch  |
 | **DHCP** | ISC-KEA, Windows Server 2019 DHCP szerver   |   
 | **DNS** | DNS (BIND9) + Namecheap + Cloudflare, Windows Server 2019 DNS szerver |
 | **VPN** | Tailscale, WireGuard, Openvpn, Nordvpn|
@@ -44,6 +45,7 @@ Emellett fontos szempont volt, hogy az álláspályázatok során a munkáltató
 - **Pfsense:** Beállítottam  néhány **tűzfalszabályt** rajta, és szükséges volt **NAT**-olás. Futtatok rajta **DHCP szervert**, **NTP szervert**, **WireGuardot**, **OpenVPN-t**, **DDNS-t**, beállítottam rajta **DDNS-t**.
 - **Publikus és privát domain névfeloldás mechanizmusa:** Én a **Namecheap-en** regisztráltam saját domain-t, amit a **Cloudflare** nameserverre költöztettem. Publikusan nem tettem elérhetővé szolgáltatásokat. Az **Nginx Proxy Manager** segítségével a szolgáltatásaimat portszám nélküli nevükön érem el. **SSL tanúsítványt** is szereztem az Nginx Proxy Manager-en futó Let's Encrypt szolgáltatással (**DNS 01 challenge + wildcard**), ehhez jól jött a korábban regisztrált publikus domain. A privát domainem (otthoni.local) a **BIND9** DNS szerverem oldja fel, amit nem tud feloldani, a 8.8.8.8-ra forwardolja. **DNS override-ot** is alkalmazok annak érdekében, hogy ha a homelabom hálózaton belül vagyok, akkor például a nextcloud.trkrolf.com kérést ne a publikus DNS szerverek oldják fel, hanem az én privát DNS szerverem. Ennek érdekében a *.trkrolf.com-ot a lokális DNS szerverem ip címére irányítom.
 - **VPN:** A távoli elérésre egy ideig Tailscale-t használtam, kipróbáltam az OpenVPN-t is, de végül a WireGuard aktív használata mellett döntöttem. Így például telefonról kényelmesen elérem az otthoni hálózatomat, vagy a **full tunnel** segítségével az otthoni Pi-hole DNS szűrőmet használhatom a reklámok ellen a telefonomon.
+- **VLAN:**  TP-LINK SG108E switch + Proxmox + pfSense segítségével megvalósítva, hogy a Windows és linux infrastruktúra elkülönüljön.
 - **Távoli elérés:** Guacamole-t használok, aminek segítségével kényelmesen egy böngészőablakban elérhetek több gépet.
 - **Monitorozás:** Zabbix Agent beállítása Linux és Windows gépre. Csináltam pár alap **problem triggerelést**, például 1 percig nem pingelhető egy gép, szabad tárhely egy bizonyos szint alá csökken, CPU használtal egy érték fölé emelkedik. Ugyanezeket riasztásban is megvalósítottam, **email értesítést** küldve.
 - **Ansible automation:** Használom CLI-ből és Semaphore Web UI-ból egyaránt. Playbook segítségével VM és LXC frissítéseket automatizálom, közös usereket hoztam létre és SSH kulcsokat  osztottam meg, közös konfig fájlokat szerkesztek (pl.: NTP szerver megadása), időzóna beállítása.
