@@ -12,24 +12,6 @@ Emellett fontos szempont volt, hogy az álláspályázatok során a munkáltató
 
 ---
 
-## 🛠️ Felhasznált technológiák általános áttekintése
-
-| Terület              | Használt eszközök                       |
-|----------------------|---------------------------------------------------|
-| **Távoli elérés**     | SSH (Termius), RDP (Guacamole) |
-
-| **Monitorozás**       | Zabbix|
-| **Automatizálás**     | Ansible+Semaphore, Cron+Cronicle       |
-| **Biztonság és mentés**| Proxmox Backup Server, Clonezilla, Rclone, Nextcloud, FreeFileSync, Restic, Veeam Backup & Replication Community Edition, Macrium Reflect|
-
-| **APT cache proxy** | APT-Cache-NG        |
-| **Dashboard** | Homarr        |
-
-| **Password management** | Vaultwarden        |
-
-| **Tárolás**       | TrueNAS|
----
-
 ## 🔍 Felhasznált technológiák részletes ismertetése
 
 - **Windows Server 2019**: DNS Szerver, DHCP szerver beállítások, Active Directory kezelés (gépek domainbe vonása, user létrehozás, groupok kezelése).
