@@ -50,8 +50,7 @@ Emellett fontos szempont volt, hogy az álláspályázatok során a munkáltató
 
 
 
-- Proxmox Backup Server mentések
-<img src="https://github.com/user-attachments/assets/8da41e1f-81c7-4997-9749-a45668bd0832" alt="Kép leírása" width="800"/>
+
 
 - Homarr dashboard
 <img src="https://github.com/user-attachments/assets/7508a075-fa1c-4dcb-82d5-00855fa0ec99" alt="Kép leírása" width="700"/>
