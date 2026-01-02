@@ -7,7 +7,7 @@
 | Windows  | Szerver | Windows Server 2019 |
 | Windows  | Kliensek | Windows 10, Windows 11 |
 
-# Linux szervereken használt szolgáltatások
+# Linux szervereken használt szolgáltatások LXC-ként
 
 - **Bind9**
 - **Nginx**
@@ -17,7 +17,6 @@
 - **FreeIPA**
 - **FreeRADIUS**
 - **APT-Cacher NG**
-- **iVentoy**
 - **Vaultwarden**
 - **Restic**
 - **Open WebUI + OpenAI API**
@@ -25,6 +24,10 @@
 - **Wireguard**
 - **OpenVPN**
 - **chronyd (NTP)**
+
+# Linux szervereken használt szolgáltatások VM-ként
+
+- **iVentoy**
 
 # Windows szervereken használt szolgáltatások
 
