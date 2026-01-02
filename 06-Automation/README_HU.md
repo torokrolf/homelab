@@ -1,5 +1,5 @@
-# Monitorozás
+# Automation
 
-| Szolgáltatás / Eszköz | Leírás |
-|----------------------|--------|
-| **Monitorozás**      | Zabbix |
+| Service / Tool      | Description |
+|--------------------|-------------|
+| **Automation**     | Ansible + Semaphore, Cron + Cronicle |
