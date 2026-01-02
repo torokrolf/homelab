@@ -1,5 +1,5 @@
-# Jelszókezelés
+# Tárolás
 
-| Szolgáltatás      | Eszköz       |
-|------------------|------------|
-| Jelszókezelés     | Vaultwarden |
+| Szolgáltatás | Eszköz   |
+|--------------|---------|
+| Tárolás      | TrueNAS |
