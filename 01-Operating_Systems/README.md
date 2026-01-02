@@ -7,7 +7,7 @@
 | Windows  | Server  | Windows Server 2019 |
 | Windows  | Clients | Windows 10, Windows 11 |
 
-# Services used on Linux servers
+# Services used on Linux servers in LXC
 
 - **Bind9**
 - **Nginx**
@@ -17,7 +17,6 @@
 - **FreeIPA**
 - **FreeRADIUS**
 - **APT-Cacher NG**
-- **iVentoy**
 - **Vaultwarden**
 - **Restic**
 - **Open WebUI + OpenAI API**
@@ -26,9 +25,13 @@
 - **OpenVPN**
 - **chronyd (NTP)**
 
+# Services used on Linux servers in VM
+
+- **iVentoy**
+
 # Services used on Windows servers
 
-- **Veeam Backup & Replication – Only for backing up my Windows-only laptop**
-- **Macrium Reflect – For my dual-boot laptop with Windows + Linux**
+- **Veeam Backup & Replication – For backing up my Windows-only laptop**
+- **Macrium Reflect – For my dual-boot Windows + Linux laptop**
 - **OpenVPN client**
 - **Wireguard client**
