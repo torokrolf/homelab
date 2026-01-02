@@ -1,4 +1,4 @@
-# 🏡 Homelabom rövid összefoglalója (folyamatosan bővül)
+# 🏡 Homelabom rövid összefoglalója 
 
 ## 🏠 Homelab projekt ismertetése
 
