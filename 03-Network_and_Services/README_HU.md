@@ -12,3 +12,5 @@
 | **PXE Boot**           | iVentoy |
 | **Radius / LDAP**      | FreeRADIUS, FreeIPA |
 | **Hálózati hibakeresés** | Wireshark |
+| **APT cache proxy** | APT-Cache-NG        |
+
