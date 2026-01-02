@@ -52,8 +52,7 @@ Emellett fontos szempont volt, hogy az álláspályázatok során a munkáltató
 
 
 
-- Homarr dashboard
-<img src="https://github.com/user-attachments/assets/7508a075-fa1c-4dcb-82d5-00855fa0ec99" alt="Kép leírása" width="700"/>
+
 
 - Nginx Proxy Manager-ből egy részlet a proxy hosts-ról
 <img src="https://github.com/user-attachments/assets/3a8d190b-52aa-4a94-be9f-9aec13829945" alt="Kép leírása" width="700"/>
