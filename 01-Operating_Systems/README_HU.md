@@ -31,6 +31,11 @@
 
 # Windows szervereken használt szolgáltatások
 
+- **Active Directory**
+- **Felhasználók létrehozása**
+- **Group Policy-k létrehozása**
+- **DHCP szerver**
+- **DNS szerver**
 - **Veeam Backup & Replication – Csak Windows-t használó laptopom mentésére**
 - **Macrium Reflect – Windows+Linux-ot használó dual boot-os laptopom**
 - **OpenVPN client**
