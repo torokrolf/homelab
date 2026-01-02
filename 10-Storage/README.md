@@ -1,0 +1,2 @@
+
+| **Tárolás**       | TrueNAS|
