@@ -28,8 +28,8 @@
 
 # Windows szervereken használt szolgáltatások
 
-- **Veeam Backup & Replication – Windows laptopom mentésére**
-- **Macrium Reflect – Windows laptopok image mentésére**
+- **Veeam Backup & Replication – Csak Windows-t használó laptopom mentésére**
+- **Macrium Reflect – Windows+Linux-ot használó dual boot-os laptopom**
 - **OpenVPN client**
 - **Wireguard client**
 
