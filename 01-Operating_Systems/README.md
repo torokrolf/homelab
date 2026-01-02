@@ -1,11 +1,19 @@
 # Operating Systems
 
-## Server OS
+## Linux
+
+### Server
 - CentOS 9 Stream
 - Ubuntu 22.04 Server
+
+### Client
+- Ubuntu 22.04 Desktop
+
+## Windows
+
+### Server
 - Windows Server 2019
 
-## Client OS
-- Ubuntu 22.04 Desktop
+### Client
 - Windows 10
 - Windows 11
