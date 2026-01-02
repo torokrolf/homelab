@@ -21,7 +21,7 @@
 - **Vaultwarden**
 - **Restic**
 - **Open WebUI + OpenAI API**
-- **Truenas** (Linux interfészen keresztül)
+- **Truenas**
 - **Wireguard**
 - **OpenVPN**
 - **chronyd (NTP)**
