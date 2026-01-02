@@ -25,3 +25,15 @@
 - **Wireguard**
 - **OpenVPN**
 - **chronyd (NTP)**
+
+# Windows szervereken használt szolgáltatások
+
+- **Veeam Backup & Replication – Windows laptopom mentésére**
+- **Macrium Reflect – Windows laptopok image mentésére**
+- **OpenVPN client**
+- **Wireguard client**
+
+
+
+
+
