@@ -36,7 +36,8 @@
 - **Group Policy creation**
 - **DHCP server**
 - **DNS server**
-- **Veeam Backup & Replication – For backing up Windows-only laptops**
-- **Macrium Reflect – For dual-boot Windows + Linux laptops**
+- **Veeam Backup & Replication (For backing up Windows-only laptops)**
+- **Macrium Reflect (For dual-boot Windows + Linux laptops)**
 - **OpenVPN client**
 - **Wireguard client**
+
