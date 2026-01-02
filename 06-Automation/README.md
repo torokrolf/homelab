@@ -1,2 +1,5 @@
+# Automation
 
-| **Automatizálás**     | Ansible+Semaphore, Cron+Cronicle       |
+| Service / Tool      | Description |
+|--------------------|-------------|
+| **Automation**     | Ansible + Semaphore, Cron + Cronicle |
