@@ -1,13 +1,13 @@
 # Operating Systems
 
 | Platform | Type    | Versions |
-|----------|---------|---------|
+|----------|--------|---------|
 | Linux    | Server  | CentOS 9 Stream, Ubuntu 22.04 Server |
 | Linux    | Clients | Ubuntu 22.04 Desktop |
 | Windows  | Server  | Windows Server 2019 |
 | Windows  | Clients | Windows 10, Windows 11 |
 
-# Services used on Linux servers in LXC
+# Services on Linux Servers (LXC)
 
 - **Bind9**
 - **Nginx**
@@ -25,13 +25,18 @@
 - **OpenVPN**
 - **chronyd (NTP)**
 
-# Services used on Linux servers in VM
+# Services on Linux Servers (VM)
 
 - **iVentoy**
 
-# Services used on Windows servers
+# Services on Windows Servers
 
-- **Veeam Backup & Replication – For backing up my Windows-only laptop**
-- **Macrium Reflect – For my dual-boot Windows + Linux laptop**
+- **Active Directory**
+- **User management**
+- **Group Policy creation**
+- **DHCP server**
+- **DNS server**
+- **Veeam Backup & Replication – For backing up Windows-only laptops**
+- **Macrium Reflect – For dual-boot Windows + Linux laptops**
 - **OpenVPN client**
 - **Wireguard client**
