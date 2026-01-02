@@ -16,26 +16,17 @@ Emellett fontos szempont volt, hogy az álláspályázatok során a munkáltató
 
 | Terület              | Használt eszközök                       |
 |----------------------|---------------------------------------------------|
-| **Operációs rendszer** | CentOS 9 Stream, Ubuntu 22.04 desktop, Ubuntu 22.04 server, Windows 10, Windows 11, Windows Server 2019      |   
-| **Virtualizáció (Type 1 hypervisor)**     | Proxmox VE (LXC, VM, Template + Cloud init)  |
-| **Virtualizáció (Type 2 hypervisor)**     | VirtualBox, VMware Workstation, Hyper-V  |
-| **Tűzfal-router** | pfSense   |
-| **VLAN** | TP-LINK SG108E switch  |
-| **DHCP** | ISC-KEA, Windows Server 2019 DHCP szerver   |   
-| **DNS** | DNS (BIND9) + Namecheap + Cloudflare, Windows Server 2019 DNS szerver |
-| **VPN** | Tailscale, WireGuard, Openvpn, Nordvpn|
 | **Távoli elérés**     | SSH (Termius), RDP (Guacamole) |
-| **Reverse proxy** | Nginx Proxy Manager               |
+
 | **Monitorozás**       | Zabbix|
 | **Automatizálás**     | Ansible+Semaphore, Cron+Cronicle       |
 | **Biztonság és mentés**| Proxmox Backup Server, Clonezilla, Rclone, Nextcloud, FreeFileSync, Restic, Veeam Backup & Replication Community Edition, Macrium Reflect|
-| **Reklámszűrés** | Pi-hole        |
+
 | **APT cache proxy** | APT-Cache-NG        |
 | **Dashboard** | Homarr        |
-| **Radius, LDAP** | FreeRADIUS, FreeIPA |
+
 | **Password management** | Vaultwarden        |
-| **PXE boot** | iVentoy        |
-| **Hibakeresés** | Wireshark        |
+
 | **Tárolás**       | TrueNAS|
 ---
 
