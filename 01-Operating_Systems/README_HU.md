@@ -7,7 +7,7 @@
 | Windows  | Szerver | Windows Server 2019 |
 | Windows  | Kliensek | Windows 10, Windows 11 |
 
-# Linux szervereken használt szolgáltatások LXC-ben
+# Linux szervereken használt szolgáltatások (LXC)
 
 - **Bind9**
 - **Nginx**
@@ -25,7 +25,7 @@
 - **OpenVPN**
 - **chronyd (NTP)**
 
-# Linux szervereken használt szolgáltatások VM-bent
+# Linux szervereken használt szolgáltatások (VM)
 
 - **iVentoy**
 
