@@ -2,7 +2,7 @@
 
 - Proxmox alatt VLAN interface létrehozása (`vmbr0.30`), amely a `vmbr0` bridge-hez tartozik VLAN tag **30**-cal.
 - A `vmbr0` bridge-en **VLAN-aware** mód engedélyezése, hogy a VLAN tagek kezelése ne dobódjon el.
-- A VLAN-ba tartozó VM-ek (proba1, proba2) VLAN taggel lettek ellátva, így elkülönültek a tag nélküli 2.0 hálózattól.
+- A VLAN-ba tartozó VM-ek VLAN taggel lettek ellátva, így elkülönültek a tag nélküli 2.0 hálózattól.
 - Új alhálózat létrehozása a VLAN számára (**192.168.3.0/24**), default gateway a pfSense VLAN interfésze.
 - pfSense-en VLAN interfész létrehozása és IP-cím kiosztása a VLAN hálózathoz.
 - pfSense firewall szabályok és NAT konfiguráció a VLAN és más hálózatok közötti kommunikációhoz.
@@ -10,5 +10,3 @@
 - Statikus route hozzáadása az ASUS routeren, hogy az 1.0 hálózat elérje a VLAN hálózatot.
 - DHCP szolgáltatás engedélyezése a pfSense VLAN interfészén.
 
-**Eredmény:**  
-A VLAN-ba szervezett VM-ek elkülönült hálózatban futnak, de kontrollált módon elérik a 2.0 és 1.0 hálózatokat pfSense-en keresztül.
