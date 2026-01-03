@@ -22,7 +22,8 @@
   - **Személyes fájlok mentése és szinkronizációja**
   - **Nextcloud**: self-hosted fájlmegosztás laptop és telefon között.
   - **Telefon**: fényképek egyirányú szinkronizálása homelabra **FolderSync** segítségével.
-  - **Laptop**: fájlok szinkronizálása homelabra **FreeFileSync** használatával.
+  - **Laptop**: fájlok szinkronizálása homelabra **FreeFileSync** használatával, amit később **Restic**-re cseréltem.
+
 
 
 
