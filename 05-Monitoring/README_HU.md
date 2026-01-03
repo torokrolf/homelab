@@ -10,3 +10,5 @@
   - szabad tárhely egy meghatározott szint alá csökken,
   - CPU terhelés egy beállított érték fölé emelkedik.
 - **Riasztások** konfigurálása a triggerekhez, **email értesítések** küldésével.
+
+> Jelenleg az alap monitorozási és riasztási funkciók vannak implementálva, a rendszer későbbi bővítése tervben van.
