@@ -16,10 +16,7 @@
 - **Adattárolás:**  
   - Külső 1 TB Samsung 870 EVO SSD  
 - **Hálózat:**  
-  - Intel i350-T v1 dual-port (2×1GbE NIC)
-
-#### PCIe bővítés
-- **New PCIe x16 Expansion Graphic Card Adapter**  
+  - Intel i350-T v1 dual-port (2×1GbE NIC), **New PCIe x16 Expansion Graphic Card Adapter**  
   *(Lenovo ThinkCentre 910Q / 910X / M720 / ThinkStation P330 Tiny kompatibilis – 01AJ940)*
 
 **Cél:**  
