@@ -18,6 +18,7 @@
 - **Virtuális környezet mentése**
   - VM-ek és LXC-k mentése egy virtualizált **Proxmox Backup Serverre**.
 - **Kliens oldali mentések**
-  - Laptop mentése **Veeam Backup & Replication Community Edition** használatával SMB megosztásra.
+  - Windows laptopom mentése **Veeam Backup & Replication Community Edition** használatával SMB megosztásba.
+
 
 
