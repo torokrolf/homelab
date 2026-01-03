@@ -10,20 +10,7 @@ Ez a projekt egy saját tervezésű, vállalati környezet szerű homelabot muta
 Az elméleti tudásom mellett gyakorlati tapasztalat szerzése, új technológiák kipróbálása és megismerése. A technológiák kiválasztásakor figyelembe vettem a jelenlegi munkaerőpiaci trendeket, amit olykor a célra rendelkezésemre álló büdzsé befolyásolt.
 Emellett fontos szempont volt, hogy az álláspályázatok során a munkáltatók könnyebben megismerhessék a tudásomat,  és könnyebben eldönthessék, hogy én vagyok-e a keresett személy.
 
----
 
-## 🔍 Felhasznált technológiák részletes ismertetése
-
-
-
-
-
-
-
-- **APT cache proxy:** Hajnali 3-ra időzítettem az Ansible által vezényelt VM és LXC updatelést, naponta. Felesleges minden VM/LXC-re külön letölteni. A cache proxy segítségével elérem, hogy cacheli a letöltött csomagokat, és amelyik gépnek szüksége van a frissítésekre, az a cache proxy-ról tölti le, és nem az internetről.
-- **Dashboard:** A sok szolgáltatás közötti válogatás kényelmetlenné vált, így dashboard-ra rendezve könnyebb az indításuk. Erre én a Homarr dashboard szolgáltatást használom.
-- **Radius, LDAP:** FreeRADIUS-al beállítottam, hogy rajta keresztül a Pfsense GUI-ra be tudjak jelentkezni. Természetesen van lokális userem, ha a radius szerver nem üzemelne, akkor is be tudjak jelentkezni. A lokális user és a radius user felhasználóneve és jelszava azonos, hogy a usernek ne kelljen tudnia, hogy  éppen a radius szerveren keresztül vagy a lokális useren keresztül tud-e belépni. PhpMyAdmin-t telepítettem, hogy kényelmesebben lássam az adatbázisokat.
-- **SSH biztonságossá tétele**: **Timeout** beállítása, jelszó helyett **SSH key** használata, lehetőség szerint **root user tiltása** SSH-n.
 
 ---
 
