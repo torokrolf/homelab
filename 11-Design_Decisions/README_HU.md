@@ -1,5 +1,5 @@
-# Proxmox kis méretű (250GB) SSD-n a Proxmox, míg a VM-ek a gyors 1TB-os M2 SSD-n
+# Proxmox kisebb (250 GB) SSD-n, VM-ek gyors 1 TB-os M.2 SSD-n
 
-**Miért így:**
-- Így a Clonezilla mentés csak a 250 GB-os Proxmox-ot tartalmazó SSD-ről szükséges, hiszen felesleges a VM rendszerekről mentést készíteni, ugyanis a Proxmox Backup Server (PBS) menti őket. Ezáltal nem 1TB-os csak 250GB-os mentések készülnek, amivel idős és helyet spórolok.
-- I/O terhelés szétválasztása: Proxmoxnak és a VM-nek is van I/O művelete, ha egy SSD-n vannak, akkor nem oszlik meg a terhelés, ha külön SSD-n vannak, akkor megoszlik és gyorsabb lesz
+**Miért választom szét külön SSD-re a Proxmox rendszert és a VM-eket?:**
+- A Clonezilla mentés csak a 250 GB-os Proxmox SSD-ről szükséges, mivel a VM-eket a Proxmox Backup Server (PBS) menti. Így nem kell az 1 TB-os Proxmox + VM-et tartalmazó meghajtót feleslegesen menteni, ami gyorsabb és kevesebb tárhelyet igényel.
+- I/O terhelés szétválasztása: a Proxmox host és a VM-ek is végeznek I/O műveleteket. Ha egy lemezen lennének, a terhelés összeadódna, külön SSD-kkel pedig a műveletek eloszlanak, ami stabilabb és gyorsabb rendszert biztosít.
