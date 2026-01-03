@@ -1,7 +1,4 @@
-# Tervezési döntések – Proxmox és VM-ek SSD elrendezése
-
-A Proxmox VE rendszere most egy kisebb, 250 GB-os SATA SSD-n fut,  
-míg a virtuális gépek dedikált, gyors 1 TB-os M.2 SSD-n helyezkednek el.
+# Proxmox kis méretű (250GB) SSD-n a Proxmox, míg a gyors 1TB-os M2 SSD-n a VM/LXC
 
 **Miért így:**
 - Clonezilla mentés csak a 250 GB-os host SSD-ről szükséges → gyorsabb, egyszerűbb
