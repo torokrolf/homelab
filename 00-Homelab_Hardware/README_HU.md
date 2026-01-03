@@ -62,7 +62,6 @@
 - Az SSD **nem kapcsol ki inaktivitás esetén**
 - Meghajtók **folyamatosan elérhetők**
 - Stabil működés **Proxmox alatt**
-- Megbízható USB–SATA bridge hosszú távú üzemeltetéshez
 
 **Miért fontos:**  
 Virtualizációs környezetben (backup, ISO, VM storage) kritikus, hogy a külső meghajtó  
