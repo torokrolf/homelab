@@ -3,7 +3,7 @@
 ---
 <img src="https://github.com/user-attachments/assets/e29a96a7-a474-4bb9-acd2-cbe7c00b9538" alt="Kép leírása" width="700"/>
 
-## 🖥️ Compute Nodes
+## 🖥️ Computer Nodes
 
 ### Lenovo ThinkCentre M920q Tiny
 **Szerep:** Virtualizációs node (Proxmox VE)
