@@ -51,14 +51,7 @@ Emellett fontos szempont volt, hogy az álláspályázatok során a munkáltató
 
 
 
-- Nginx Proxy Manager-ből egy részlet a proxy hosts-ról
-<img src="https://github.com/user-attachments/assets/3a8d190b-52aa-4a94-be9f-9aec13829945" alt="Kép leírása" width="700"/>
-
-- Pi-hole
-<img src="https://github.com/user-attachments/assets/2d1971e8-aa55-4ebf-9fb2-3b0e95681515" alt="Kép leírása" width="700"/>
-
-- Részlet a BIND9 db.otthoni.local zónafájljáról
-<img src="https://github.com/user-attachments/assets/12686bdf-316a-4b5a-9f78-95d481fe005f" alt="Kép leírása" width="500"/>
+-
 
 ---
 **Köszönöm, hogy megnézted!**
