@@ -2,7 +2,7 @@
 
 ## FreeIPA szerver mint LDAP (CentOS 9)
 
-### Megvalósított funkciók
+-### Megvalósított funkciók
 - Felhasználók létrehozása és kezelése.
 - Sudo jogokkal rendelkező felhasználók konfigurálása.
 - Egységes felhasználó- és jogosultságkezelés az infrastruktúrán belül.
@@ -23,6 +23,7 @@
   - SSH kulcsok egységes kezelése és kiosztása.
   - Közös konfigurációs fájlok kezelése (pl. NTP szerver beállítása).
   - Időzóna egységes beállítása az infrastruktúrán belül.
+
 
 
 
