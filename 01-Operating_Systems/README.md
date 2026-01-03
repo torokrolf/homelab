@@ -7,7 +7,7 @@
 | Windows  | Server  | Windows Server 2019 |
 | Windows  | Clients | Windows 10, Windows 11 |
 
-# Services on Linux Servers (LXC)
+## Services on Linux Servers (LXC)
 
 - **Bind9**
 - **Nginx**
@@ -25,11 +25,11 @@
 - **OpenVPN**
 - **chronyd (NTP)**
 
-# Services on Linux Servers (VM)
+## Services on Linux Servers (VM)
 
 - **iVentoy**
 
-# Services on Windows Servers
+## Services on Windows Servers
 
 - **Active Directory**
 - **User management**
@@ -40,4 +40,5 @@
 - **Macrium Reflect (For dual-boot Windows + Linux laptops)**
 - **OpenVPN client**
 - **Wireguard client**
+
 
