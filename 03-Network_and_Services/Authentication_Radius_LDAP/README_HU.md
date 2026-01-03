@@ -2,10 +2,12 @@
 
 ## FreeIPA szerver mint LDAP (CentOS 9)
 
--### Megvalósított funkciók
+- Egységes felhasználó- és jogosultságkezelés az infrastruktúrán belül.
+
+### Megvalósított funkciók
 - Felhasználók létrehozása és kezelése.
 - Sudo jogokkal rendelkező felhasználók konfigurálása.
-- Egységes felhasználó- és jogosultságkezelés az infrastruktúrán belül.
+
 
 ## FreeRADIUS szerver mint RADIUS – Pfsense GUI hitelesítés
 - RADIUS beléptetés: a Pfsense GUI-ra történő bejelentkezés Radius hitelesítéssel.
