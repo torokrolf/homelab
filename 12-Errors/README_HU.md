@@ -1,7 +1,7 @@
 ## DNS névfeloldási probléma – internet nélkül
 
 Probléma:
-- A `*.trkrolf.com` (pl. `torrent.trkrolf.com`) publikus domain, a Cloudflare nameserverre irányult.
+- A `*.trkrolf.com` (pl. `zabbix.trkrolf.com`) publikus domain, a Cloudflare nameserverre irányult, ami a 192.168.2.202 Nginx IP-t adta vissza.
 - Ha a homelabnak **nem volt internetkapcsolata**, a név nem oldódott fel, mert a publikus DNS nem volt elérhető.
 
 Megoldás:
