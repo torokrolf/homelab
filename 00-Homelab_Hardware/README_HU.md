@@ -1,9 +1,9 @@
 
-## Hardware Overview – Homelab Infrastructure
+## Hardver áttekintés – Homelab infrastruktúra
 ---
 <img src="https://github.com/user-attachments/assets/e29a96a7-a474-4bb9-acd2-cbe7c00b9538" alt="Kép leírása" width="700"/>
 
-## 🖥️ Computer Nodes
+## 🖥️ Számítási csomópontok
 
 ### Lenovo ThinkCentre M920q Tiny
 **Szerep:** Virtualizációs node (Proxmox VE)
@@ -30,7 +30,7 @@
 
 ---
 
-## 🌐 Network Equipment
+## 🌐 Hálózati eszközök
 
 ### TP-Link TL-SG108E
 - 8 portos **managed Gigabit switch**
@@ -48,7 +48,7 @@
   - Külső SSD csatlakoztatása
 
 ---
-## 💾 External Storage Enclosures
+## 💾 Külső adattároló házak
 
 ### AXAGON EE25-GTR (USB 3.x)
 **Felhasználás:**  
