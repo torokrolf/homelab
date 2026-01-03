@@ -4,4 +4,5 @@
 |----------------------|--------|
 | **Távoli elérés**    | SSH (Termius), RDP (Guacamole) |
 
-- **Guacamole előnye:** Ssegítségével egy böngészőből kényelmesen elérhető több gép (RDP/SSH).
+- **Guacamole előnye:** Segítségével egy böngészőből kényelmesen elérhető több gép (RDP/SSH).
+
