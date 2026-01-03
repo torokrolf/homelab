@@ -6,7 +6,6 @@
 # FreeFileSync lecserélése Restic-re
   - Az új laptopomról **Restic** segítségével készítek biztonsági mentést a TrueNAS szerverre.
   - Miért Restic:
-    - Biztonságos: a véletlen forrásfájl törlés nem veszélyezteti a mentést.
+    - Biztonságos: Restic-nél a véletlen forrásfájl törlés esetén visszaállítható a törölt fájl, míg FreeFileSync-nél, ha a forrásfájl törlése után véletlen szinkronizálok, akkor nem tudom visszaállítani a fájlt.
     - Verziózás: akár korábbi állapotok is visszaállíthatók.
-    - Hatékony: tömörít, gyors és megbízható mentést biztosít.
-  - Lecseréltem a FreeFileSync-et, mivel ott a kétirányú szinkronizáció miatt elveszhettek fájlok, ha hibázok.
+    - Hatékony: tömörít, gyors, FreeFileSync sokkal lassabban ellenőrizte le a változásokat és lassabban másolta  a megváltozott fájlokat.
