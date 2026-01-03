@@ -15,7 +15,7 @@ Emellett fontos szempont volt, hogy az álláspályázatok során a munkáltató
 ## 🔍 Felhasznált technológiák részletes ismertetése
 
 
-- **VLAN:**  TP-LINK SG108E switch + Proxmox + pfSense segítségével megvalósítva, hogy a Windows és linux infrastruktúra elkülönüljön.
+
 - **Távoli elérés:** Guacamole-t használok, aminek segítségével kényelmesen egy böngészőablakban elérhetek több gépet.
 - **Monitorozás:** Zabbix Agent beállítása Linux és Windows gépre. Csináltam pár alap **problem triggerelést**, például 1 percig nem pingelhető egy gép, szabad tárhely egy bizonyos szint alá csökken, CPU használtal egy érték fölé emelkedik. Ugyanezeket riasztásban is megvalósítottam, **email értesítést** küldve.
 - **Ansible automation:** Használom CLI-ből és Semaphore Web UI-ból egyaránt. Playbook segítségével VM és LXC frissítéseket automatizálom, közös usereket hoztam létre és SSH kulcsokat  osztottam meg, közös konfig fájlokat szerkesztek (pl.: NTP szerver megadása), időzóna beállítása.
@@ -39,19 +39,6 @@ Emellett fontos szempont volt, hogy az álláspályázatok során a munkáltató
 - **DIY PiKVM.**  KVM over IP hasznos lenne. Venni szeretnék RPI 4-et, amin a PiKVM-et megvalósítanám.
 - **IDS/IPS továbbfejlesztése.** CrowdSec elmélyítése, Nginx Proxy Managerre történő beállítása és Suricata implementálása.
 - **Komolyabb switch vásárlása.** Ki szeretném próbálni a 802.1x port based autentikációt és beállítani a Radius felügyeletet a portokon. DHCP snooping és port security által még tovább növelhetném a biztonságot.
-
----
-
-## 🖼️ Projekt képernyőképek
-
-
-
-
-
-
-
-
--
 
 ---
 **Köszönöm, hogy megnézted!**
