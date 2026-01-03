@@ -101,3 +101,6 @@ Virtualizációs környezetben (backup, ISO, VM storage) kritikus, hogy a küls�
 - Tiny PC-k bővítése vállalati szintű NIC-kel
 - Stabil külső storage megoldások
 - Homelab környezetben szerzett **valós üzemeltetési tapasztalat**
+<img src="https://github.com/user-attachments/assets/e29a96a7-a474-4bb9-acd2-cbe7c00b9538" alt="Kép leírása" width="700"/>
+
+
