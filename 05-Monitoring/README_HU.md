@@ -4,11 +4,14 @@
 |----------------------|--------|
 | **Monitorozás**      | Zabbix |
 
-- **Zabbix Agent** telepítése Linux és Windows gépekre.
-- Alap **problem triggerek** létrehozása, például:
+## Megvalósított funkciók
+> A monitorozás jelenleg az alap funkcionalitásra fókuszál; a rendszer további bővítése tervben van.
+> 
+- Zabbix Agent telepítése Linux és Windows gépekre.
+- Alap problem triggerek létrehozása:
   - gép nem elérhető (ping) 1 percen keresztül,
   - szabad tárhely egy meghatározott szint alá csökken,
   - CPU terhelés egy beállított érték fölé emelkedik.
-- **Riasztások** konfigurálása a triggerekhez, **email értesítések** küldésével.
+- Riasztások konfigurálása a triggerekhez, email értesítésekkel.
 
-> Jelenleg az alap monitorozási és riasztási funkciók vannak implementálva, a rendszer későbbi bővítése tervben van.
+
