@@ -14,7 +14,5 @@
   - SSH kulcsok egységes kezelése és kiosztása.
   - Közös konfigurációs fájlok kezelése (pl. NTP szerver beállítása).
   - Időzóna egységes beállítása az infrastruktúrán belül.
-- **Időzítés**
-  - Cron és Cronicle használata automatizált feladatok ütemezésére.
 
 
