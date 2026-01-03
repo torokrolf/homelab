@@ -1,5 +1,5 @@
 # Monitorozás
-
+---
 | Szolgáltatás / Eszköz | Leírás |
 |----------------------|--------|
 | **Monitorozás**      | Zabbix |
@@ -13,5 +13,6 @@
   - szabad tárhely egy meghatározott szint alá csökken,
   - CPU terhelés egy beállított érték fölé emelkedik.
 - Riasztások konfigurálása a triggerekhez, email értesítésekkel.
+
 
 
