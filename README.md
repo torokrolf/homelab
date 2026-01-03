@@ -16,12 +16,10 @@ Emellett fontos szempont volt, hogy az álláspályázatok során a munkáltató
 
 
 
-- **Távoli elérés:** Guacamole-t használok, aminek segítségével kényelmesen egy böngészőablakban elérhetek több gépet.
-- **Monitorozás:** Zabbix Agent beállítása Linux és Windows gépre. Csináltam pár alap **problem triggerelést**, például 1 percig nem pingelhető egy gép, szabad tárhely egy bizonyos szint alá csökken, CPU használtal egy érték fölé emelkedik. Ugyanezeket riasztásban is megvalósítottam, **email értesítést** küldve.
-- **Ansible automation:** Használom CLI-ből és Semaphore Web UI-ból egyaránt. Playbook segítségével VM és LXC frissítéseket automatizálom, közös usereket hoztam létre és SSH kulcsokat  osztottam meg, közös konfig fájlokat szerkesztek (pl.: NTP szerver megadása), időzóna beállítása.
-- **Rendszer backup:** A **Clonezillával** mentem el image-be a Proxmox partíciót blokkszinten, **preseed** segítségével automatizálva. Egy Proxmoxon virtualizált **Proxmox Backup Serverre** pedig a VM és LXC példányokat mentését végzem. Laptopomat **Veeam Backup & Replication Community Edition**-el mentem egy smb megosztásba. 
-- **Személyes fájlok backupja/szinkronizációja:**  **Nextcloud-ot** használok self hosted fájlmegosztásra a laptopommal, telefonommal. A fényképeimet a telefonomról egyirányú szinkronizációval mentem a homelabomra **FolderSync-el**, ugyanígy laptopomon erre a **FreeFileSync-et** használom. 
-- **Reklámszűrés:** Böngészéshez **Pi-hole**-t használok, hogy a reklámokat DNS kérés szintjén szűrje, upstream szervere a BIND9 szerverem.
+
+
+
+
 - **APT cache proxy:** Hajnali 3-ra időzítettem az Ansible által vezényelt VM és LXC updatelést, naponta. Felesleges minden VM/LXC-re külön letölteni. A cache proxy segítségével elérem, hogy cacheli a letöltött csomagokat, és amelyik gépnek szüksége van a frissítésekre, az a cache proxy-ról tölti le, és nem az internetről.
 - **Dashboard:** A sok szolgáltatás közötti válogatás kényelmetlenné vált, így dashboard-ra rendezve könnyebb az indításuk. Erre én a Homarr dashboard szolgáltatást használom.
 - **Radius, LDAP:** FreeRADIUS-al beállítottam, hogy rajta keresztül a Pfsense GUI-ra be tudjak jelentkezni. Természetesen van lokális userem, ha a radius szerver nem üzemelne, akkor is be tudjak jelentkezni. A lokális user és a radius user felhasználóneve és jelszava azonos, hogy a usernek ne kelljen tudnia, hogy  éppen a radius szerveren keresztül vagy a lokális useren keresztül tud-e belépni. PhpMyAdmin-t telepítettem, hogy kényelmesebben lássam az adatbázisokat.
