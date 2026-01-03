@@ -14,6 +14,7 @@
 | **Network Troubleshooting** | Wireshark |
 | **APT cache proxy** | APT-Cache-NG        |
 
-# Network topology
+## Network topology
 <img src="https://github.com/user-attachments/assets/2c9e553e-bc88-44d1-8b1a-7349573afb81" alt="Kép leírása" width="700"/>
+
 
