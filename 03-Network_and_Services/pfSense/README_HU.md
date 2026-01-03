@@ -1,6 +1,6 @@
 ## pfSense – Network & Security Setup
 
-Ebben a projektben egy **pfSense alapú peremhálózati (edge) tűzfalat és routert** terveztem, konfiguráltam és üzemeltetek egy **valós homelab / otthoni környezetben**.  
+Homelabomban egy **pfSense alapú tűzfalat és routert** használok.  
 A célom vállalati környezetben is releváns **hálózati és biztonsági megoldások** megvalósítása volt.
 
 ---
@@ -69,3 +69,4 @@ A célom vállalati környezetben is releváns **hálózati és biztonsági mego
 > Ez a projekt bemutatja, hogyan tervezek és üzemeltetek  
 > **biztonságos, skálázható hálózati infrastruktúrát**,  
 > amely megfelel junior / medior rendszer- vagy hálózati üzemeltetői elvárásoknak.
+
