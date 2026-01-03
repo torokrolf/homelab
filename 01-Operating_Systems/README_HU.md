@@ -35,7 +35,8 @@
 
 ## Windows szervereken használt szolgáltatások és implementációk
 
-- Active Directory – mindkét Windows Server 2019 Desktop Experience-en, közös domainben  
+- 2 gépen Windows Server 2019
+- Active Directory  
 - Felhasználók létrehozása  
 - Group Policy-k létrehozása  
 - DHCP szerver – mindkét szerveren, load balancing beállítással  
