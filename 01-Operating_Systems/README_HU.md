@@ -51,8 +51,4 @@
 
 ---
 
-### Megjegyzés a Windows szerver felépítésről
 
-A két Windows Server 2019 egy magas rendelkezésre állású domain és DHCP setup része,  
-minden szolgáltatás (AD, DNS, DHCP) tükrözve van mindkét szerveren, kivéve a conditional forwarder, ami lokális specializációt biztosít.  
-Ez a felállás professzionális, redundáns és skálázható otthoni/teszt környezethez.
