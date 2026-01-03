@@ -68,8 +68,5 @@
 Virtualizációs környezetben (backup, ISO, VM storage) kritikus, hogy a külső meghajtó  
 **ne aludjon el és ne dobja el a kapcsolatot**.
 
----
-
-## 🧠 Tervezési elvek
 
 
