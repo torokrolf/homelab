@@ -14,7 +14,7 @@ Emellett fontos szempont volt, hogy az álláspályázatok során a munkáltató
 
 ## 🔍 Felhasznált technológiák részletes ismertetése
 
-- **VPN:** A távoli elérésre egy ideig Tailscale-t használtam, kipróbáltam az OpenVPN-t is, de végül a WireGuard aktív használata mellett döntöttem. Így például telefonról kényelmesen elérem az otthoni hálózatomat, vagy a **full tunnel** segítségével az otthoni Pi-hole DNS szűrőmet használhatom a reklámok ellen a telefonomon.
+
 - **VLAN:**  TP-LINK SG108E switch + Proxmox + pfSense segítségével megvalósítva, hogy a Windows és linux infrastruktúra elkülönüljön.
 - **Távoli elérés:** Guacamole-t használok, aminek segítségével kényelmesen egy böngészőablakban elérhetek több gépet.
 - **Monitorozás:** Zabbix Agent beállítása Linux és Windows gépre. Csináltam pár alap **problem triggerelést**, például 1 percig nem pingelhető egy gép, szabad tárhely egy bizonyos szint alá csökken, CPU használtal egy érték fölé emelkedik. Ugyanezeket riasztásban is megvalósítottam, **email értesítést** küldve.
