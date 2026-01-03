@@ -1,6 +1,7 @@
-## Reklámszűrés
+# Reklámszűrés
 
 - Böngészéshez **Pi-hole**-t használok, amely a reklámokat DNS-kérés szinten szűri.
-- Upstream DNS szerver: saját **BIND9** szerver.
+- Upstream DNS szerver: lokális **BIND9** szerver.
 
 - Pi-hole <img src="https://github.com/user-attachments/assets/2d1971e8-aa55-4ebf-9fb2-3b0e95681515" alt="Kép leírása" width="700"/> ez legyen már szintén readme-be szerkesztve
+
