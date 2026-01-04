@@ -25,7 +25,7 @@
   - jelszavas autentikációval, vagy
   - SSH kulcsalapú autentikációval
 
-**Nem ajánlott:**
+**Nem ajánlott megoldás:**
 - Root SSH login engedélyezése (`PermitRootLogin yes`)
 
 **Biztonsági megfontolás:**
