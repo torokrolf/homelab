@@ -40,16 +40,22 @@
 
 ## Dinamikus NFS mount qbittorrentet futtató VM-hez race condition kezeléssel
 
-**Probléma:**  
-- A NAS/VM NFS megosztása nem mindig elérhető a VM/host indításakor → race condition
-- qBittorrent csak akkor tud írni a megosztásra, ha a mount sikeres
+**Probléma:** 
+- Amikor a kliens gép (Ubuntu/Proxmox) elindul, a systemd megpróbálja elindítani a szolgáltatásokat.  
+- Ha a qBittorrent hamarabb indul el, mint ahogy a TrueNAS NFS megosztása felcsatolódna, a torrent kliens hibát dob, vagy rosszabb esetben a helyi meghajtóra kezd el tölteni a hálózati megosztás helyett.  
+- Hasonló hiba lép fel, ha a TrueNAS váratlanul leáll vagy újraindul.
 
 **Megoldás:**  
-- Script (`/usr/local/bin/nfs_qbittorrent.sh`) folyamatosan ellenőrzi a NAS elérhetőségét
+- Egy háttérben futó (daemon) szkript folyamatosan (30 másodpercenként) ellenőrzi a tároló elérhetőségét:
+- Ha a NAS elérhető: Automatikusan felcsatolja a meghajtót, és csak a sikeres csatolás után indítja el a qBittorrentet.  
+- Ha a NAS leáll: Azonnal leállítja a qBittorrentet (hogy elkerülje az adatvesztést/hibákat) és tisztán lecsatolja (umount) a könyvtárat.
+
+**Implementáció:**
+- Végtelen ciklusos script (`/usr/local/bin/nfs_qbittorrent.sh`) ellenőrzi, hogy a NAS elérhető-e
 - Ha elérhető:
-  - Mountolja az NFS megosztást
-  - Elindítja a qBittorrent szolgáltatást
-- Ha nem elérhető:
+  - Mountolja az NFS megosztást (`mount -t nfs ...`)
+  - Elindítja a qBittorrent szolgáltatást, ha még nem fut
+- Ha a NAS nem elérhető:
   - Leállítja a qBittorrentet
   - Unmountolja a megosztást
-- Systemd szolgáltatás (`nfs_qbittorrent.service`) automatikusan futtatja és újraindítja a scriptet
+- Systemd szolgáltatás (`nfs_qbittorrent.service`) biztosítja a script automatikus indítását és újraindítását
