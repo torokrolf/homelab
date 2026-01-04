@@ -17,9 +17,10 @@
  
 **Megoldás:**
 
-**Biztonságos verzió:**
+**Ajánlott verzió:**
 - Regular user létrehozása
 - SSH belépés engedélyezése jelszóval vagy kulccsal
-**Nem javasolt verzió:**
+
+**Nem ajánlott verzió:**
 - Root SSH login engedélyezése (`PermitRootLogin yes`)
 
