@@ -4,7 +4,9 @@
 ## VMs and LXCs Running on Proxmox
 <img src="https://github.com/user-attachments/assets/e218f011-7896-4dbe-b5e2-0e13861d0909" alt="Kép leírása" width="500"/>
 
-## 🖥️ Proxmox Ubuntu VM Template + Cloud-init---LXC-re template használható de Cloud-init nem
+## 🖥️ Proxmox Ubuntu VM Template + Cloud-init
+
+**LXC-re használható template, de Cloud-init nem!**
 
 Mivel a legtöbb VM-et Ubuntu-val használom Proxmoxon, készítettem egy **Ubuntu VM template-et**, hogy ne kelljen mindig új OS-t telepíteni, frissíteni, vagy SSH kulcsokat beállítani.  
 
@@ -23,6 +25,7 @@ Mivel a legtöbb VM-et Ubuntu-val használom Proxmoxon, készítettem egy **Ubun
   - SSH kulcsok  
   - Hálózat  
   - Domain és DNS szerver
+
 
 
 
