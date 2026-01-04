@@ -4,5 +4,17 @@
 |----------------------|--------|
 | **Távoli elérés**    | SSH (Termius), RDP (Guacamole) |
 
-- **Guacamole előnye:** Segítségével egy böngészőből kényelmesen elérhető több gép (RDP/SSH).
+## 🖥️ RDP beállítások
 
+- **Guacamole alapú RDP hozzáférés**  
+  - Böngészőből elérhető, kliensoldali telepítés nélkül  
+  - Több gép kezelése egy felületen
+
+## 🔐 SSH beállítások
+
+- **Idle timeout beállítva** – inaktív kapcsolatok automatikus bontása  
+- **Root SSH hozzáférés tiltva**  
+- **Jelszavas bejelentkezés letiltva**  
+- **Kulcsalapú hitelesítés használata**  
+  - SSH key beállítva  
+  - Passphrase (passkey) nélkül
