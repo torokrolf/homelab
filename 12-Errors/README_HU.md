@@ -35,5 +35,5 @@
 - Host mount script + systemd szolgáltatás, ami várja, hogy a megosztás elérhető legyen, majd mountol  
 
 **Biztonsági megjegyzés:**  
-- Privileged LXC esetén a konténer root-ja és a Proxmox host root-ja ugyanaz → **biztonsági kockázat**  
-- Unprivileged LXC + host mount → biztonságos és működőképes megoldás
+- Privileged LXC esetén tudok mountolni SMB megosztást, de ekkor a konténer root-ja és a Proxmox host root-ja ugyanaz → **biztonsági kockázat**  
+- Unprivileged LXC + host mount → biztonságos és működőképes megoldás, hiszen a Proxmox root-ja és a konténer root-ja két külön root, és az konténer root-ja alacsonyabb jogokkal rendelkezik, így a Proxmox hoston nem csinálhat veszélyesműveleteket.
