@@ -17,9 +17,9 @@
  
 **Ajánlott megoldás:**
 - Regular user létrehozása
-- SSH belépés engedélyezése jelszóval vagy kulccsal
+- SSH belépés engedélyezése jelszóval vagy SSH kulccsal
 
 **Nem ajánlott megoldás:**
 - Root SSH login engedélyezése (`PermitRootLogin yes`)
-- SSH belépés engedélyezése jelszóval vagy kulccsal
+- SSH belépés engedélyezése jelszóval vagy SSH kulccsal
 
