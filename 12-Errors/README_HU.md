@@ -67,5 +67,4 @@
 
 **Megoldás:**  
 - Az SSD **TP-Link USB hub-on keresztül** csatlakoztatva **stabilan működik** már több mint 6 hónapja.  
-- Tehát a hub használata megelőzi a váratlan leválást, és stabil adatátvitelt biztosít.
-
+- Ennek oka valószínűleg a TP-Link UE330 stabilabb áramellátása.
