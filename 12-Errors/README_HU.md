@@ -23,3 +23,21 @@
 - Root SSH login engedélyezése (`PermitRootLogin yes`)
 - SSH belépés engedélyezése jelszóval vagy SSH kulccsal
 
+## LXC Samba / NFS megosztás Proxmoxon
+
+**Probléma:**  
+- Unprivileged LXC nem tud közvetlenül SMB/CIFS megosztást mountolni  
+- Race condition: host próbál mountolni, mielőtt a VM/NAS elérhető lenne  
+- QBittorrent nem tud a megosztásra írni, ha nincs mountolva  
+
+**Megoldás:**  
+- SMB/NFS mountolása először a Proxmox hoston  
+- Host továbbadja a mountot LXC-nek (`mp0:` konfiguráció)  
+- Systemd script:
+  - Várja, hogy a VM/NAS elérhető legyen (ping / port check)  
+  - Csak ha elérhető, mountol  
+  - QBittorrent csak a mount után indul, leáll, ha a megosztás eltűnik  
+
+**Biztonsági megjegyzés:**  
+- Privileged LXC esetén a **konténer root user és a Proxmox host root user ugyanaz**, így közvetlen mount lehetséges, de **nagyon kockázatos**  
+- Hoston mountolva uid/gid és jogosultságok megfelelő beállítása az írás/olvasás miatt
