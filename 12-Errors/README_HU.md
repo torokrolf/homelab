@@ -76,7 +76,7 @@
 
 **Egy lehetséges megoldás**:
 - Írhatok egy scriptet, ami egy másik eszközt, például routert pingel, és ha nem sikerül, akkor újraindítja a hálózati adaptert.
-- 
+
 **Általam választott megoldás**:
 - TP-Link UE330 USB hálózati adapter használata: stabilan működik, a kapcsolat fél éve problémamentes.
 
