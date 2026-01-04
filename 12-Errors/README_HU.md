@@ -59,3 +59,13 @@
   - Leállítja a qBittorrentet
   - Unmountolja a megosztást
 - Systemd szolgáltatás (`nfs_qbittorrent.service`) biztosítja a script automatikus indítását és újraindítását
+- 
+## Külső SSD stabilitása USB-n — TP-Link UE330-on keresztül vs. direkt USB-n csatlakozás
+
+**Probléma:** 
+- Egy **Samsung 870 EVO** külső SSD néha **lekapcsolódott**, amikor közvetlenül USB-re volt kötve.  
+
+**Megoldás:**  
+- Az SSD **TP-Link USB hub-on keresztül** csatlakoztatva **stabilan működik** már több mint 6 hónapja.  
+- Tehát a hub használata megelőzi a váratlan leválást, és stabil adatátvitelt biztosít.
+
