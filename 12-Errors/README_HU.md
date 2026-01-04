@@ -15,12 +15,10 @@
 **Probléma:**
 - LXC-ben csak root van, SSH login tiltva root-al
  
-**Megoldás:**
-
-**Ajánlott verzió:**
+**Ajánlott megoldás:**
 - Regular user létrehozása
 - SSH belépés engedélyezése jelszóval vagy kulccsal
 
-**Nem ajánlott verzió:**
+**Nem ajánlott megoldás:**
 - Root SSH login engedélyezése (`PermitRootLogin yes`)
 
