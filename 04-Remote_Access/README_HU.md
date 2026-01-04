@@ -1,16 +1,15 @@
+[🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
 # Távoli Elérés
 
 | Szolgáltatás / Eszköz | Leírás |
 |----------------------|--------|
 | **Távoli elérés**    | SSH (Termius), RDP (Guacamole) |
 
-## 🖥️ RDP beállítások
+## 🖥️ RDP (Guacamole)
 
-- **Guacamole alapú RDP hozzáférés**  
-  - Böngészőből elérhető, kliensoldali telepítés nélkül  
-  - Több gép kezelése egy felületen
+- **Előny:** Böngészőből kényelmesen elérhető több gép
 
-## 🔐 SSH beállítások
+## 🔐 SSH beállítások Linuxon
 
 - **Idle timeout beállítva** – inaktív kapcsolatok automatikus bontása  
 - **Root SSH hozzáférés tiltva**  
@@ -18,3 +17,4 @@
 - **Kulcsalapú hitelesítés használata**  
   - SSH key beállítva  
   - Passphrase (passkey) nélkül
+
