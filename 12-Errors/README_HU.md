@@ -80,3 +80,12 @@
 **Általam választott megoldás**:
 - TP-Link UE330 USB hálózati adapter használata: stabilan működik, a kapcsolat fél éve problémamentes.
 
+## Lokális és publikus DNS problémák laptopom Wi-Fi adaptere miatt
+
+### Probléma
+- A lokális DNS néha nem oldotta fel a helyi gépek neveit, sőt néha a publikus neveket (pl. google.com) sem.  
+- A hálózati adapter a MediaTek 7921 volt, ami instabil DNS kezeléshez vezetett Linux alatt.
+
+### Megoldás
+- A MediaTek 7921 helyett Intel AX210 adaptert használtam.  
+- Az Intel adapterrel a DNS feloldás stabilan működik, lokális és publikus neveknél is.
