@@ -38,11 +38,16 @@
 - Privileged LXC esetén tudok mountolni SMB megosztást, de ekkor a konténer root-ja és a Proxmox host root-ja ugyanaz → **biztonsági kockázat**  
 - Unprivileged LXC + host mount → biztonságos és működőképes megoldás, hiszen a Proxmox root-ja és a konténer root-ja két külön root, és az konténer root-ja alacsonyabb jogokkal rendelkezik, így a Proxmox hoston nem csinálhat veszélyesműveleteket.
 
-## Dinamikus NFS mount qbittorrentet futtató VM-hez race condition kezeléssel
+## Dinamikus NFS mount qBittorrentet futtató VM-hez race condition kezeléssel és qBittorrent leállítása ha a megosztás eltűnik
+
+**Fontos:**  
+Eredetileg SMB megosztást használtam. A TrueNAS megléte esetén a qBittorrent elindult, de ha később leállítottam a TrueNAS-t, a qBittorrent nem állt le, mert az SMB nem kezeli jól a váratlan leválasztást, és a df parancs is fagyott.  
+
+Linuxos környezetben ezért érdemes inkább a natív **NFS**-t használni. NFS-re váltás után a probléma teljesen megszűnt.
 
 **Probléma:** 
 - Amikor a kliens gép (Ubuntu/Proxmox) elindul, a systemd megpróbálja elindítani a szolgáltatásokat.  
-- Ha a qBittorrent hamarabb indul el, mint ahogy a TrueNAS NFS megosztása felcsatolódna, a torrent kliens hibát dob, vagy rosszabb esetben a helyi meghajtóra kezd el tölteni a hálózati megosztás helyett.  
+- Ha a qBittorrent hamarabb indul el, mint ahogy a TrueNAS SMB megosztása felcsatolódna, a torrent kliens hibát dob, vagy rosszabb esetben a helyi meghajtóra kezd el tölteni a hálózati megosztás helyett.  
 - Hasonló hiba lép fel, ha a TrueNAS váratlanul leáll vagy újraindul.
 
 **Megoldás:**  
@@ -58,7 +63,7 @@
 - Ha a NAS nem elérhető:
   - Leállítja a qBittorrentet
   - Unmountolja a megosztást
-- Systemd szolgáltatás (`nfs_qbittorrent.service`) biztosítja a script automatikus indítását és újraindítását
+- Systemd szolgáltatás biztosítja a script automatikus indítását és újraindítását
 - 
 ## Külső SSD stabilitása USB-n — TP-Link UE330-on keresztül vs. direkt USB-n csatlakozás
 
