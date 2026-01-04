@@ -93,11 +93,11 @@
 ## DDNS probléma Cloudflare-rel és PFSense-szel
 
 ### Probléma
-- Ha az ISP publikus IP-je változik, a `homelab.trkrolf.com` Cloudflare rekord nem frissült automatikusan.  
+- Ha a hálózatom publikus IP-je változik, a publikus IP-t tartalmazó Cloudflare rekord nem frissült automatikusan.  
 - A PFSense DDNS státusza piros lett, nem a zöld pipás.  
-- Ennek oka, hogy a PFSense WAN interfésze **statikus privát IP**-t használ, így a változás nem triggereli a DDNS frissítést.
+- Ennek oka, hogy a PFSense WAN interfésze az én topológiámban statikus privát IP-t használ, így a változás nem triggereli a DDNS frissítést.
 
 ### Megoldás
 - Saját script írása, ami ellenőrzi, hogy az IP változott-e, és ha igen, frissíti a Cloudflare rekordot.  
-- Így nem csak a WAN IP változása, hanem a script által észlelt IP-változás is triggerelheti a frissítést.
+- Így nem csak a WAN IP változása (ami nálam nem publikus IP hanem privát IP), hanem a script által észlelt IP-változás is triggerelheti a frissítést.
 
