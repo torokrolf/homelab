@@ -21,4 +21,5 @@
 
 **Nem ajánlott megoldás:**
 - Root SSH login engedélyezése (`PermitRootLogin yes`)
+- SSH belépés engedélyezése jelszóval vagy kulccsal
 
