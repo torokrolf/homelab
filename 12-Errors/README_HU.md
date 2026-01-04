@@ -1,6 +1,6 @@
 # Errors
 
-## DNS névfeloldási probléma internet nélkül---megoldás DNS override
+## Publikus domain névfeloldás internet nélkül---megoldás DNS override
 
 **Probléma**:
 - A `*.trkrolf.com` (pl. `zabbix.trkrolf.com`) publikus domain, a Cloudflare nameserverre irányult, ami a 192.168.2.202 Nginx IP-t adta vissza.
