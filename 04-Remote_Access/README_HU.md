@@ -11,10 +11,12 @@
 
 ## 🔐 SSH beállítások Linuxon
 
-- **Idle timeout beállítva** – inaktív kapcsolatok automatikus bontása  
-- **Root SSH hozzáférés tiltva**  
+- **Timeout beállítása**: inaktív SSH session-ök automatikus bontása.
+- **Root felhasználó tiltása SSH-n**: közvetlen root belépés megakadályozása.  
 - **Jelszavas bejelentkezés letiltva**  
-- **Kulcsalapú hitelesítés használata**  
+- **Kulcsalapú hitelesítés használata**  : jelszó alapú belépés minimalizálva, erősebb hitelesítés.
   - SSH key beállítva  
   - Passphrase (passkey) nélkül
+
+
 
