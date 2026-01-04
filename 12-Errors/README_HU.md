@@ -48,12 +48,12 @@
 **Megoldás:**  
 - Egy háttérben futó (daemon) szkript folyamatosan (30 másodpercenként) ellenőrzi a tároló elérhetőségét:
 - Ha a NAS elérhető: Automatikusan felcsatolja a meghajtót, és csak a sikeres csatolás után indítja el a qBittorrentet.  
-- Ha a NAS leáll: Azonnal leállítja a qBittorrentet (hogy elkerülje az adatvesztést/hibákat) és tisztán lecsatolja (umount) a könyvtárat.
+- Ha a NAS leáll: Azonnal leállítja a qBittorrentet (hogy elkerülje a hibát vagy hogy a helyi meghajtóra kezdjen el letölteni) és tisztán lecsatolja (umount) a könyvtárat.
 
 **Implementáció:**
-- Végtelen ciklusos script (`/usr/local/bin/nfs_qbittorrent.sh`) ellenőrzi, hogy a NAS elérhető-e
+- Végtelen ciklusos script ellenőrzi, hogy a NAS elérhető-e
 - Ha elérhető:
-  - Mountolja az NFS megosztást (`mount -t nfs ...`)
+  - Mountolja az NFS megosztást 
   - Elindítja a qBittorrent szolgáltatást, ha még nem fut
 - Ha a NAS nem elérhető:
   - Leállítja a qBittorrentet
