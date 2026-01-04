@@ -10,16 +10,17 @@
 - **DNS override / lokális BIND9 DNS**: a `*.trkrolf.com` lekérdezéseket a helyi DNS szerver kezeli.
 - Így internet nélkül is mindig a **192.168.2.202 Nginx IP-jére** oldódik fel a név.
 
-## SSH belépési probléma LXC / Ubuntu esetén
+## SSH belépés LXC / Ubuntu esetén
 
 **Probléma:**
-- LXC-ben a `root` az alapértelmezett felhasználó, nincs regular user
-- SSH-n keresztül a root belépés nem működik (Ubuntu Desktopon is)
-- Alapértelmezetten a root SSH login tiltva van
-
+- LXC-ben csak root van, SSH login tiltva root-al
+- 
 **Megoldás:**
-- Regular user létrehozása
-- SSH belépés engedélyezése:
-  - jelszavas autentikációval, vagy
-  - SSH kulcsalapú autentikációval
-- Root SSH login engedélyezése lehetséges, de **nem javasolt** biztonsági okokból
+
+- **Biztonságos:**
+    - Regular user létrehozása
+    - SSH belépés engedélyezése jelszóval vagy kulccsal
+
+- **Nem javasolt:**
+    - Root SSH login engedélyezése (`PermitRootLogin yes`)
+
