@@ -89,3 +89,15 @@
 ### Megoldás
 - A MediaTek 7921 helyett Intel AX210 adaptert használtam.  
 - Az Intel adapterrel a DNS feloldás stabilan működik, lokális és publikus neveknél is.
+
+## DDNS probléma Cloudflare-rel és PFSense-szel
+
+### Probléma
+- Ha az ISP publikus IP-je változik, a `homelab.trkrolf.com` Cloudflare rekord nem frissült automatikusan.  
+- A PFSense DDNS státusza piros lett, nem a zöld pipás.  
+- Ennek oka, hogy a PFSense WAN interfésze **statikus privát IP**-t használ, így a változás nem triggereli a DDNS frissítést.
+
+### Megoldás
+- Saját script írása, ami ellenőrzi, hogy az IP változott-e, és ha igen, frissíti a Cloudflare rekordot.  
+- Így nem csak a WAN IP változása, hanem a script által észlelt IP-változás is triggerelheti a frissítést.
+
