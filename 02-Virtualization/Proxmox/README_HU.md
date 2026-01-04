@@ -25,3 +25,11 @@ Mivel a legtöbb VM-et Ubuntu-val használom Proxmoxon, készítettem egy **Ubun
   - SSH kulcsok  
   - Hálózat  
   - Domain és DNS szerver
+
+## 🔄 Proxmox 8 → 9 és PBS 3 → 4 Frissítés
+
+- Proxmox **8 → 9** frissítés megtörtént.  
+  - Egyik Proxmox hoston **upgrade** segítségével frissítettem.
+  - Másik Proxmox hoston **újratelepítés** segítségével telepítettem a Proxmox VE 9-et, majd a VM-eket visszaállítottam **PBS mentésekből**.
+
+- Proxmox Backup Server (**PBS**) is frissítve: **3 → 4**.
