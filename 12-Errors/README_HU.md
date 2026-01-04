@@ -23,12 +23,11 @@
 - Root SSH login engedélyezése (`PermitRootLogin yes`)
 - SSH belépés engedélyezése jelszóval vagy SSH kulccsal
 
-## SMB megosztás elérése LXC-ből
+## SMB megosztás elérése LXC-ből + race condition
 
 **Probléma:**  
 - Unprivileged LXC konténer nem tud közvetlenül SMB/CIFS megosztást mountolni  
-- Privileged LXC esetén a konténer root-ja és a Proxmox host root-ja ugyanaz → **biztonsági kockázat**  
-- Race condition: ha a host mountolná a megosztást, de a megosztást nyújtó VM vagy NAS még nem elérhető, a mount meghiúsul  
+- Race condition: ha a Proxmox host mountolná a megosztást, de a megosztást nyújtó VM vagy NAS még nem elérhető, a mount meghiúsul  
 
 **Megoldás:**  
 - SMB/CIFS mountolása **először a Proxmox hoston**, majd továbbadása LXC-nek (`mp0:` konfigurációval)  
@@ -36,5 +35,5 @@
 - Host mount script + systemd szolgáltatás, ami várja, hogy a megosztás elérhető legyen, majd mountol  
 
 **Biztonsági megjegyzés:**  
-- Privileged LXC közvetlen mountja csak tesztelésre, éles környezetben **nem javasolt**  
+- Privileged LXC esetén a konténer root-ja és a Proxmox host root-ja ugyanaz → **biztonsági kockázat**  
 - Unprivileged LXC + host mount → biztonságos és működőképes megoldás
