@@ -30,7 +30,7 @@
 - Race condition: ha a Proxmox host mountolná a megosztást, de a megosztást nyújtó VM vagy NAS még nem elérhető, a mount meghiúsul  
 
 **Megoldás:**  
-- SMB/CIFS mountolása **először a Proxmox hoston**, majd továbbadása LXC-nek (`mp0:` konfigurációval)  
+- SMB/CIFS mountolása először a Proxmox hoston, majd továbbadása LXC-nek (`mp0:` konfigurációval)  
 - Ügyelni a jogosultságokra (uid/gid, file_mode/dir_mode), hogy a konténerben is írható legyen  
 - Host mount script + systemd szolgáltatás, ami várja, hogy a megosztás elérhető legyen, majd mountol  
 
