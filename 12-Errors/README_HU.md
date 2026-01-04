@@ -74,7 +74,8 @@
 **Probléma**:
 - M70q gépen a belső hálózati adapter néha elveszíti a kapcsolatot, ami kellemetlen, hiszen többet nem érem el hálózaton (Pl.:SSH), és le kell ülnöm a gép elé, hogy újraindítsam a hálózati adaptert, ami után ismét működik.
 
-**Megoldás**:
-- **Alternatív megoldásként** írhatok egy scriptet, ami egy másik eszközt, például routert pingel, és ha nem sikerül, akkor újraindítja a hálózati adaptert.
-- **Felhasznált megoldás** a TP-Link UE330 USB hálózati adapter használata: stabilan működik, a kapcsolat fél éve problémamentes.
+**Egy lehetséges megoldás**:
+- Írhatok egy scriptet, ami egy másik eszközt, például routert pingel, és ha nem sikerül, akkor újraindítja a hálózati adaptert.
+**Általam választott megoldás**:
+- TP-Link UE330 USB hálózati adapter használata: stabilan működik, a kapcsolat fél éve problémamentes.
 
