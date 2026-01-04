@@ -16,7 +16,8 @@
 - **RAM:** 64 GB  
 - **Rendszer meghajtó:** 256 GB SSD (Proxmox)  
 - **Adattárolás:**  
-  - Külső 1 TB Samsung 870 EVO SSD  
+  - Külső 1 TB Samsung 870 EVO SSD (Proxmox Backup Servernek)
+  - Külső 1 TB Samsung 870 EVO SSD  (TrueNAS-nak)
 - **Hálózat:**  
   - Intel i350-T2 V1 dual-port (2×1GbE NIC), aminek a beszereléséhez szükséges egy New PCIe x16 Expansion Graphic Card Adapter (Lenovo ThinkCentre 910Q / 910X / M720 / ThinkStation P330 Tiny kompatibilis – 01AJ940)*
 
@@ -30,7 +31,6 @@
 - **Rendszer meghajtó:** 256 GB SSD (Proxmox)  
 - **Adattárolás:**  
   - Crucial T500 PRO 1 TB M.2 NVME PCI-E 4.0 x4 
-  - Külső 1 TB Samsung 870 EVO SSD  
 
 ---
 
