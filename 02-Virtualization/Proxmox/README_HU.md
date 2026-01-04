@@ -11,23 +11,17 @@
 Mivel a legtöbb VM-et Ubuntu-val használom Proxmoxon, készítettem egy **Ubuntu VM template-et**, hogy ne kelljen mindig új OS-t telepíteni, frissíteni, vagy SSH kulcsokat beállítani.  
 
 **Elkészítés menete:**  
-- Feltelepítettem a **cloud-init**-et az adott VM-re, hogy az OS személyre szabása gyors legyen  
-- Felkészítem a VM-et a template-té alakításra:  
+- Az alap VM-et konfiguráltam (frissítések, cloud-init telepítése)  
+- Felkészítettem a VM-et a template-té alakításra:  
   - SSH kulcsokat törlöm  
   - Hostname-et törlöm  
-  - DHCP-t engedélyezem
-- Template-té alakítom.
+  - DHCP-t engedélyezem  
+- Template-té alakítom
 
 **Használat:**  
-- Új VM-et egyszerűen klónozom a template-ből  
+- Új VM-et egyszerűen klónozok a template-ből  
 - Cloud-init segítségével beállítom a fontosabb konfigurációkat:  
   - Hostname  
   - SSH kulcsok  
   - Hálózat  
   - Domain és DNS szerver
-
-
-
-
-
-
