@@ -6,7 +6,7 @@
 - Saját domain vásárlva a **Namecheap**-en, majd **Cloudflare** nameserverre átköltöztetve.  
 - Publikus szolgáltatások: **nem elérhetők közvetlenül**; lokálisan érem el, távolról **VPN-en keresztül**.  
 
-## 🖥️ Nginx Proxy Manager
+## 🏠 Nginx Proxy Manager
 
 - Használat célja: kényelmes, **portszám nélküli, domain néven történő hozzáférés** a szolgáltatásokhoz.
 - **SSL tanúsítvány**: Let's Encrypt, DNS-01 challenge + wildcard → böngésző nem jelez HTTP figyelmeztetést.  
@@ -22,6 +22,7 @@
 - Előny:  
   - Nem a publikus DNS szerver oldja fel a nevet  
   - Internetkapcsolat nélkül is működik az otthoni szolgáltatások elérése
+
 
 
 
