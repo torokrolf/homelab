@@ -23,7 +23,7 @@
 - Root SSH login engedélyezése (`PermitRootLogin yes`)
 - SSH belépés engedélyezése jelszóval vagy SSH kulccsal
 
-## LXC SMB/CIFS megosztás Proxmoxon
+## SMB megosztás elérése LXC-ből
 
 **Probléma:**  
 - Unprivileged LXC konténer nem tud közvetlenül SMB/CIFS megosztást mountolni  
