@@ -14,7 +14,7 @@ Mivel a legtöbb VM-et Ubuntu-val használom Proxmoxon, készítettem egy **Ubun
 - Feltelepítettem a **cloud-init**-et az adott VM-re, hogy az OS személyre szabása gyors legyen  
 - Felkészítem a VM-et a template-té alakításra:  
   - SSH kulcsokat törlöm  
-  - Hostnamet törlöm  
+  - Hostname-et törlöm  
   - DHCP-t engedélyezem
 - Template-té alakítom.
 
@@ -25,6 +25,7 @@ Mivel a legtöbb VM-et Ubuntu-val használom Proxmoxon, készítettem egy **Ubun
   - SSH kulcsok  
   - Hálózat  
   - Domain és DNS szerver
+
 
 
 
