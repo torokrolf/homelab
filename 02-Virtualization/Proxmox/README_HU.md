@@ -1,3 +1,4 @@
+[🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
 # Virtualization
 
 ## VMs and LXCs Running on Proxmox
@@ -9,16 +10,17 @@ Mivel a legtöbb VM-et Ubuntu-val használom Proxmoxon, készítettem egy **Ubun
 
 **Elkészítés menete:**  
 - Az alap VM-et konfiguráltam (frissítések, SSH kulcsok, hostname)  
-- Ezután templatté alakítottam:  
-  - SSH kulcsok törlése  
-  - Hostname törlése  
-  - DHCP engedélyezése  
+- Ezután templatté alakítottam, miután:  
+  - SSH kulcsokat törlöm  
+  - Hostnamet törlöm  
+  - DHCP-t engedélyezem  
 - Feltelepítettem a **cloud-init**-et, hogy az OS személyre szabása gyors legyen  
 
 **Használat:**  
-- Új VM-et egyszerűen klónozok a templatról  
+- Új VM-et egyszerűen klónozom a template-ből  
 - Cloud-init segítségével beállítom a fontosabb konfigurációkat:  
   - Hostname  
   - SSH kulcsok  
   - Hálózat  
   - Domain és DNS szerver
+
