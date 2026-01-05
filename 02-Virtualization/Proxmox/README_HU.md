@@ -1,4 +1,9 @@
+← [Vissza a Homelab főoldalra](../README_HU.md)
+
 [🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
+
+---
+
 # Virtualization
 
 ## VMs and LXCs Running on Proxmox
@@ -35,4 +40,5 @@ Már néhány hónapja használom a rendszert, és amikor megjelent a Proxmox 9 
   - Másik Proxmox hoston **újratelepítés** segítségével telepítettem a Proxmox VE 9-et, majd a VM-eket visszaállítottam **PBS mentésekből**.
 
 - Proxmox Backup Server (**PBS**) is frissítve: **3 → 4**.
+
 
