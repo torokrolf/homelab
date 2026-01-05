@@ -10,7 +10,13 @@
 |----------------------|--------|
 | **Monitorozás**      | Zabbix |
 
-## Megvalósított funkciók
+## Zabbix Monitoring Server
+
+A Zabbix szerver célja: **központi infrastruktúra-monitoring** a homelab gépeken.
+
+---
+
+### Megvalósított funkciók
 > A monitorozás jelenleg az alap funkcionalitásra fókuszál; a rendszer további bővítése tervben van.
 > 
 - Zabbix Agent telepítése Linux és Windows gépekre.
@@ -23,6 +29,7 @@
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
