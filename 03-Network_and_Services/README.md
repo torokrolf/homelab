@@ -1,3 +1,9 @@
+← [Back to Homelab Overview](../README.md)
+
+[🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
+
+---
+
 # Network and Services
 
 | Service / Area        | Tools / Software |
@@ -16,5 +22,6 @@
 
 ## Network topology
 <img src="https://github.com/user-attachments/assets/2c9e553e-bc88-44d1-8b1a-7349573afb81" alt="Kép leírása" width="700"/>
+
 
 
