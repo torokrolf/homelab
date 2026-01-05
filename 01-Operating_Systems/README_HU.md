@@ -1,3 +1,9 @@
+← [Vissza a Homelab főoldalra](../README_HU.md)
+
+[🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
+
+---
+
 # Operációs Rendszerek
 
 | Platform | Típus    | Verziók |
