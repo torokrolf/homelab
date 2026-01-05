@@ -6,7 +6,7 @@
 
 # Automation
 
-| Service / Tool | Description |
+| Szolgáltatás / Eszköz | Leírás |
 |---------------|-------------|
 | Automation    | Ansible, Semaphore, Cron, Cronicle |
 
@@ -30,6 +30,7 @@ Semaphore szerver célja: egyszerű grafikus felületen vezényelni az Ansible p
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
