@@ -13,39 +13,22 @@
 
 # Ansible + Semaphore Server
 
-A szerver célja: **központi automatizáció és konfiguráció‑menedzsment** a homelab kliensgépein.
+Ansible szerver célja: központi automatizáció és konfiguráció‑menedzsment a homelab kliensgépein.
+Semaphore szerver célja: egyszerű grafikus felületen vezényelni az Ansible playbookokat.
 
 ---
 
-## 👤 Felhasználók kezelése
+## ⚙️ Megvalósított automatizálási feladatok
 
-- **User létrehozása és jelszó beállítása**:  
-  Azonos nevű felhasználót hoztam létre minden célgépen a **sima, egyszerű vezénylés** érdekében.  
-- **SSH kulcsok kezelése**:  
-  A felhasználóknak kiosztott SSH kulcsok segítségével **passwordless hozzáférést** biztosítok az Ansible szerverről.
-
----
-
-## ⚙️ Automatizált feladatok
-
-- **Update task**:  
-  - Operációs rendszerek és alkalmazások frissítése a klienseken.  
-- **Időzónák beállítása**:  
-  - Minden kliensgépen a helyes időzóna konfigurálva van.  
-- **APT Cache NG kezelése**:  
-  - Lokális apt cache a gyorsabb frissítésekért és sávszélesség megtakarításért.
-
----
-
-## 🛠️ Előnyök
-
-- Központi vezénylés **egyszerű felhasználói modellel**  
-- Biztonságos, kulcs alapú SSH hozzáférés  
-- Időzónák és frissítések **automatizált menedzsmentje**  
-- Sávszélesség-takarékos **APT cache használat**  
+- **Update task**: Operációs rendszerek és alkalmazások frissítése a klienseken.  
+- **Időzónák beállítása**:  Minden kliensgépen a helyes időzóna konfigurálva van.  
+- **APT Cache NG kezelése**:  Lokális APT Cache NG-t nem egyesével állítottam be a kliensekhez, hanem Ansible-el.
+- **User létrehozása és jelszó beállítása**: Azonos nevű felhasználót hoztam létre minden célgépen a **sima, egyszerű vezénylés** érdekében.  
+- **SSH kulcsok megosztása**
 
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
