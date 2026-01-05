@@ -72,3 +72,7 @@
 **Why important:**  
 In a virtualization environment (backup, ISO, VM storage), it is critical that the external drive  
 **does not go to sleep and does not drop the connection**.
+
+---
+
+← [Back to Homelab Overview](../README.md)
