@@ -12,6 +12,3 @@
   - VM (Virtuális gépek)
   - Template + Cloud-Init
 
----
-
-← [Vissza a Homelab főoldalra](../README_HU.md)
