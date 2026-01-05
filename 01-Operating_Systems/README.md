@@ -1,3 +1,9 @@
+← [Back to Homelab Overview](../README.md)
+
+[🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
+
+---
+
 # Operating Systems
 
 | Platform | Type    | Versions |
@@ -40,5 +46,6 @@
 - **Macrium Reflect (For dual-boot Windows + Linux laptops)**
 - **OpenVPN client**
 - **Wireguard client**
+
 
 
