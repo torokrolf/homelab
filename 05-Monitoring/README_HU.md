@@ -1,4 +1,10 @@
-# Monitorozás
+← [Vissza a Homelab főoldalra](../README_HU.md)
+
+[🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
+
+---
+
+# Monitorozás összefoglaló
 
 | Szolgáltatás / Eszköz | Leírás |
 |----------------------|--------|
@@ -14,6 +20,9 @@
   - CPU terhelés egy beállított érték fölé emelkedik.
 - Riasztások konfigurálása a triggerekhez, email értesítésekkel.
 
+---
+
+← [Vissza a Homelab főoldalra](../README_HU.md)
 
 
 
