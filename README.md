@@ -1,3 +1,4 @@
+[🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
 ## 📚 Tartalomjegyzék
 
 - [Áttekintés](#áttekintés)
