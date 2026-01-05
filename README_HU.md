@@ -4,7 +4,7 @@
 
 ## 📚 Tartalomjegyzék
 
-- [00. Homelab hardver](/homelab/00_Homelab_Hardware/README_HU.md)
+- [00. Homelab hardver](./00-Homelab_Hardware/README_HU.md)
 - [01. Operációs rendszerek](./01_Operating_Systems/README_HU.md)
 - [02. Virtualizáció](./02_Virtualization/README_HU.md)
 - [03. Hálózat és szolgáltatások](./03_Network_and_Services/README_HU.md)
