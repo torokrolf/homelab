@@ -1,3 +1,5 @@
+← [Vissza a Homelab főoldalra](../README_HU.md)
+
 [🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
 
 ---
@@ -18,3 +20,7 @@
 - [11. Scriptek](./11-Scripts/README.md)
 - [12. Tervezési döntések](./12-Design_Decisions/README_HU.md)
 - [13. Hibák és hibaelhárítás](./13-Errors/README_HU.md)
+
+---
+
+← [Vissza a Homelab főoldalra](../README_HU.md)
