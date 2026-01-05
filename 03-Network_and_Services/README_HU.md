@@ -1,3 +1,9 @@
+← [Vissza a Homelab főoldalra](../README_HU.md)
+
+[🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
+
+---
+
 # Hálózat és Szolgáltatások
 
 | Szolgáltatás / Terület | Eszközök / Szoftverek |
@@ -14,3 +20,6 @@
 | **Hálózati hibakeresés** | Wireshark |
 | **APT cache proxy** | APT-Cache-NG        |
 
+---
+
+← [Vissza a Homelab főoldalra](../README_HU.md)
