@@ -17,10 +17,11 @@ A cél: Nem kell minden gépen külön telepítőt futtatni USB-ről vagy CD-rő
   - disaster recovery tesztelés Clonezillával
 
 - **Automatikus indítás**:  
-  - iVentoy service létrehozva, így a rendszer indításakor **önmagától elindul**, jobb megoldás, mint cron-al indítani.
+  - iVentoy service létrehozva, így a rendszer **indításakor elindul**, jobb megoldás, mint cron-al indítani.
 
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
