@@ -1,16 +1,20 @@
 [🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
-## 📚 Tartalomjegyzék
+## 📚 Table of Contents
 
-- [Áttekintés](#áttekintés)
-- [Architektúra](#architektúra)
-- [Szolgáltatások](#szolgáltatások)
-  - [Docker & Containers](./docker/README.md)
-  - [Reverse Proxy (Nginx)](./nginx/README.md)
-  - [DNS & Networking](./network/README.md)
-- [Biztonság](#biztonság)
-- [Monitoring](#monitoring)
-- [Mentések](#mentések)
-- [Használt technológiák](#használt-technológiák)
+- [00. Homelab Hardware](./00_Homelab_Hardware/README.md)
+- [01. Operating Systems](./01_Operating_Systems/README.md)
+- [02. Virtualization](./02_Virtualization/README.md)
+- [03. Network and Services](./03_Network_and_Services/README.md)
+- [04. Remote Access](./04_Remote_Access/README.md)
+- [05. Monitoring](./05_Monitoring/README.md)
+- [06. Automation](./06_Automation/README.md)
+- [07. Backup and Recovery](./07_Backup_and_Recovery/README.md)
+- [08. Dashboard](./08_Dashboard/README.md)
+- [09. Password Management](./09_Password_Management/README.md)
+- [10. Storage](./10_Storage/README.md)
+- [11. Scripts](./11_Scripts/README.md)
+- [12. Design Decisions](./12_Design_Decisions/README.md)
+- [13. Errors & Troubleshooting](./13_Errors/README.md)
 
 # 🏡 Homelabom rövid összefoglalója 
 
