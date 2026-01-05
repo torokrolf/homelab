@@ -41,4 +41,5 @@ Már néhány hónapja használom a rendszert, és amikor megjelent a Proxmox 9 
 
 - Proxmox Backup Server (**PBS**) is frissítve: **3 → 4**.
 
+← [Vissza a Homelab főoldalra](../README_HU.md)
 
