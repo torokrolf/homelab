@@ -46,10 +46,6 @@ A szerver célja: **központi automatizáció és konfiguráció‑menedzsment**
 
 ---
 
-## 🔗 Hivatkozások
-
-- [Semaphore projekt](https://github.com/ansible-semaphore/semaphore)  
-- [Ansible dokumentáció](https://docs.ansible.com/)
-
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
