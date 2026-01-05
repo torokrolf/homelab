@@ -10,6 +10,11 @@
 |---------------|-------------|
 | Automation    | Ansible, Semaphore, Cron, Cronicle |
 
+<p align="center">
+  <img src="[https://github.com/user-attachments/assets/e29a96a7-a474-4bb9-acd2-cbe7c00b9538](https://github.com/user-attachments/assets/d2541a25-8dd5-45f3-b828-d7ed8bf819ad)"
+       alt="Image description"
+       width="700">
+</p>
 
 # Ansible + Semaphore Server
 
@@ -29,6 +34,7 @@ Semaphore szerver célja: egyszerű grafikus felületen vezényelni az Ansible p
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
