@@ -58,4 +58,6 @@
 - **VPN Clients:** OpenVPN and Wireguard  
 
 ---
+
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
