@@ -1,8 +1,9 @@
-← [Back to Homelab Overview](../README.md)
+← [Vissza a Homelab főoldalra](../README_HU.md)
 
 [🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
 
 ---
+
 # Homelab Hardware
 
 <p align="center">
