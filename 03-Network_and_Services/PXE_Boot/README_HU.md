@@ -19,9 +19,13 @@ A cél: Nem kell minden gépen külön telepítőt futtatni USB-ről vagy CD-rő
 - **Automatikus indítás**:  
   - iVentoy service létrehozva, így a rendszer **indításakor elindul**, jobb megoldás, mint cron-al indítani.
 
+**Látható a legalsó sorban, hogy csatlakozott a PXE szerverhez egy gép.**
+<img width="945" height="335" alt="kép" src="https://github.com/user-attachments/assets/6e2a5f5f-fd26-44dc-8ac0-f643c302e62f" />
+
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
