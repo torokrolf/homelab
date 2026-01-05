@@ -3,8 +3,6 @@
 [🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
 
 ---
-
-
 # Homelab Hardware
 ---
 <p align="center">
