@@ -1,4 +1,8 @@
+← [Back to Homelab Overview](../README.md)
+
 [🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
+
+---
 ## 📚 Table of Contents
 
 - [00. Homelab Hardware](./00-Homelab_Hardware/README.md)
@@ -44,5 +48,5 @@ Emellett fontos szempont volt, hogy az álláspályázatok során a munkáltató
 - **Komolyabb switch vásárlása.** Ki szeretném próbálni a 802.1x port based autentikációt és beállítani a Radius felügyeletet a portokon. DHCP snooping és port security által még tovább növelhetném a biztonságot.
 
 ---
-**Köszönöm, hogy megnézted!**
 
+← [Back to Homelab Overview](../README.md)
