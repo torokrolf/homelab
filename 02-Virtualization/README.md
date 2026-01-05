@@ -4,6 +4,4 @@
 
 ---
 
----
 
-← [Back to Homelab Overview](../README.md)
