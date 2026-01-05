@@ -4,7 +4,7 @@
 
 ---
 
-# Operációs Rendszerek
+# Operációs rendszerek összefoglaló
 
 | Platform | Típus    | Verziók |
 |----------|---------|---------|
