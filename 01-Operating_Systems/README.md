@@ -1,4 +1,4 @@
-← [Back to Homelab Overview](../README.md)
+← [Vissza a Homelab főoldalra](../README_HU.md)
 
 [🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
 
@@ -46,6 +46,7 @@
 - **Macrium Reflect (For dual-boot Windows + Linux laptops)**
 - **OpenVPN client**
 - **Wireguard client**
+
 
 
 
