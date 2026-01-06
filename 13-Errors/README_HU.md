@@ -31,6 +31,8 @@
 - **DNS override / lokális BIND9 DNS**: a `*.trkrolf.com` lekérdezéseket a helyi DNS szerver kezeli.
 - Így internet nélkül is mindig a **192.168.2.202 Nginx IP-jére** oldódik fel a név.
 
+---
+
 ## SSH - SSH belépés LXC / Ubuntu esetén
 
 **Probléma:**
@@ -43,6 +45,8 @@
 **Nem ajánlott megoldás:**
 - Root SSH login engedélyezése (`PermitRootLogin yes`)
 - SSH belépés engedélyezése jelszóval vagy SSH kulccsal
+
+---
 
 ## Megosztás - SMB megosztás elérése LXC-ből + race condition
 
@@ -58,6 +62,8 @@
 **Biztonsági megjegyzés:**  
 - Privileged LXC esetén tudok mountolni SMB megosztást, de ekkor a konténer root-ja és a Proxmox host root-ja ugyanaz → **biztonsági kockázat**  
 - Unprivileged LXC + host mount → biztonságos és működőképes megoldás, hiszen a Proxmox root-ja és a konténer root-ja két külön root, és az konténer root-ja alacsonyabb jogokkal rendelkezik, így a Proxmox hoston nem csinálhat veszélyesműveleteket.
+
+---
 
 ## Megosztás - Dinamikus NFS mount qBittorrentet futtató VM-hez race condition kezeléssel és qBittorrent leállítása ha a megosztás eltűnik
 
@@ -82,7 +88,9 @@
   - Leállítja a qBittorrentet
   - Unmountolja a megosztást
 - Systemd szolgáltatás biztosítja a script automatikus indítását és újraindítását
-- 
+
+---
+
 ## Hardver - Külső SSD stabilitása USB-n — TP-Link UE330-on keresztül vs. direkt USB-n csatlakozás
 
 **Probléma:** 
@@ -91,6 +99,8 @@
 **Megoldás:**  
 - Az SSD **TP-Link USB hub-on keresztül** csatlakoztatva **stabilan működik** már több mint 6 hónapja.  
 - Ennek oka valószínűleg a TP-Link UE330 stabilabb áramellátása.
+
+---
 
 ## Hardver - M70q belső hálózati adapter stabilitási problémája---megoldás külső USB adapterrel (TP-Link UE330)
 
@@ -103,6 +113,8 @@
 **Általam választott megoldás**:
 - TP-Link UE330 USB hálózati adapter használata: stabilan működik, a kapcsolat fél éve problémamentes.
 
+---
+
 ## Hardver - Lokális és publikus DNS problémák laptopom Wi-Fi adaptere miatt
 
 ### Probléma
@@ -112,6 +124,8 @@
 ### Megoldás
 - A MediaTek 7921 helyett Intel AX210 adaptert használtam.  
 - Az Intel adapterrel a DNS feloldás stabilan működik, lokális és publikus neveknél is.
+
+---
 
 ## DDNS - DDNS nem frissül Cloudflare-en PFSense WAN interfészen lévő privát IP használata miatt
 
