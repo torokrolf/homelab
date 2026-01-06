@@ -14,7 +14,7 @@
 
 A homelabban **VM-ként** futtatom a TrueNAS-t, hogy egyszerűen kezelhessem a tárolókat és megosztásokat.
 
-**Miért TrueNAS:**
+### TrueNAS - Miért TrueNAS:
 
 - SMB/CIFS megosztások könnyű létrehozása és kezelése  
 - Felhasználók és hozzáférési jogosultságok (policy-k) egyszerű beállítása  
@@ -25,4 +25,5 @@ A homelabban **VM-ként** futtatom a TrueNAS-t, hogy egyszerűen kezelhessem a t
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
