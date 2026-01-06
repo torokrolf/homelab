@@ -1,5 +1,7 @@
 # Errors
 
+---
+
 ## 📚 Tartalomjegyzék
 
 - [DNS – Publikus domain névfeloldás internet nélkül](#dns---publikus-domain-névfeloldás-internet-nélkül)
@@ -11,6 +13,7 @@
 - [Hardver – Lokális és publikus DNS problémák Wi-Fi adapter miatt](#hardver---lokális-és-publikus-dns-problémák-laptopom-wi-fi-adaptere-miatt)
 - [DDNS – DDNS nem frissül Cloudflare-en pfSense mögött](#ddns---ddns-nem-frissül-cloudflare-en-pfsense-wan-interfészen-lévő-privát-ip-használata-miatt)
 
+---
 
 ## DNS - Publikus domain névfeloldás internet nélkül
 
