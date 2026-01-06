@@ -17,7 +17,7 @@
 
 ---
 ## Hibák
-### Trusted Domains / Whitelist
+### Hibák - Trusted Domains / Whitelist
 
 Nextcloud csak azokat a címeket engedi, amelyek szerepelnek a `config.php` fájlban a `trusted_domains` listában.
 
@@ -32,6 +32,7 @@ Nextcloud csak azokat a címeket engedi, amelyek szerepelnek a `config.php` fáj
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
