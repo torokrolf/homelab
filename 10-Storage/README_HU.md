@@ -27,3 +27,4 @@ A homelabban **VM-ként** futtatom a TrueNAS-t, hogy egyszerűen kezelhessem a t
 
 
 
+
