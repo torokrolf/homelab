@@ -1,3 +1,9 @@
+← [Vissza a Homelab főoldalra](../README_HU.md)
+
+[🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
+
+---
+
 # Proxmox kisebb (250 GB) SSD-n, VM-ek gyors 1 TB-os M.2 SSD-n külön, szétválasztva
 
 - **Helyspórolás**: A Clonezilla mentés csak a 250 GB-os Proxmox SSD-ről szükséges, mivel a VM-eket a Proxmox Backup Server (PBS) menti. Így nem kell az 1 TB-os meghajtót, ami a Proxmoxot és a VM-eket tartalmazza, feleslegesen menteni, ami gyorsabb és kevesebb tárhelyet igényel.
@@ -23,3 +29,6 @@
 - Nem szükséges Google Drive / más felhő, Nextcloud a saját Google Drive-om
 - Teljes kontroll és biztonság  
 
+---
+
+← [Vissza a Homelab főoldalra](../README_HU.md)
