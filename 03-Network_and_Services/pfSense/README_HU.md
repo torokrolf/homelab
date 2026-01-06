@@ -11,7 +11,7 @@ Homelabomban egy **pfSense alapú tűzfalat és routert** használok.
 
 # 📚 Tartalomjegyzék
 
- [NAT & Routing](#nat--routing)
+- [NAT & Routing](#nat--routing)
 - [DHCP szerver konfigurálása és üzemeltetése](#dhcp-szerver-konfiguralasa-es-uzemeltetese)
 - [NTP szerver futtatása](#ntp-szerver-futtatasa)
 - [WireGuard VPN](#wireguard-vpn)
@@ -59,6 +59,7 @@ Homelabomban egy **pfSense alapú tűzfalat és routert** használok.
 
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
