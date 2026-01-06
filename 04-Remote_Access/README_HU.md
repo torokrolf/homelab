@@ -12,7 +12,7 @@
 
 ---
 
-## RDP (Guacamole)
+## RDP 
 
 - **Miért Guacamole:**
   - Böngészőből kényelmesen elérhető több gép  
@@ -22,7 +22,9 @@
 
 ---
 
-## SSH beállítások Linuxon
+## SSH 
+
+### SSH - Beállítások Linuxon
 
 - **Timeout beállítása**: inaktív SSH session-ök automatikus bontása.
 - **Root felhasználó tiltása SSH-n**: közvetlen root belépés megakadályozása.  
@@ -33,16 +35,17 @@
  
  ---
  
-- **Miért Termius:**
+### SSH - Miért Termius
+
   - Több gép egyszerre kezelhető egy helyről, **profilokkal és csoportokkal**  
   - Beépített **SSH key management**: kulcsok egyszerű importálása és használata  
   - Kényelmes **multiplatform**: Windows, Linux, macOS, mobil  
   - Titkosított konfigurációk, könnyen **szinkronizálható eszközök között**
 
-
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
