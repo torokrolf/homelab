@@ -6,8 +6,6 @@
 
 # Errors
 
----
-
 ## 📚 Tartalomjegyzék
 
 - [DNS – Publikus domain névfeloldás internet nélkül](#dns---publikus-domain-névfeloldás-internet-nélkül)
