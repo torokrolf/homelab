@@ -1,4 +1,4 @@
-    ← [Vissza a Homelab főoldalra](../README_HU.md)
+← [Vissza a Homelab főoldalra](../README_HU.md)
 
 [🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
 
@@ -15,5 +15,6 @@ Nextcloud
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
