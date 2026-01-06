@@ -35,7 +35,10 @@ Homelabomban egy **pfSense alapú tűzfalat és routert** használok.
 ---
 
 ## NTP szerver futtatása <a name="ntp"></a>
-- Időszinkron biztosítása belső klienseknek 
+- Időszinkron biztosítása belső klienseknek
+- Kliensek a **chronyd**-t használják
+- A pfSense szerver alapból a régebbi **ntpd** szervert használja, de a chronyd és az ntpd képes együttműködni hiba nélkül
+- A pfSense szolgál NTP szerverként minden LXC-nek és VM-nek, kivéve a **FreeIPA LXC**-t
 
 ---
 
@@ -59,6 +62,7 @@ Homelabomban egy **pfSense alapú tűzfalat és routert** használok.
 
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
