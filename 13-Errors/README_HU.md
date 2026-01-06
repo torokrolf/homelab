@@ -1,3 +1,9 @@
+← [Vissza a Homelab főoldalra](../README_HU.md)
+
+[🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
+
+---
+
 # Errors
 
 ---
@@ -118,3 +124,7 @@
 ### Megoldás
 - Saját script írása, ami ellenőrzi a publikus IP változását, és ha van változás, frissíti a Cloudflare rekordot.  
 - Így nem csak a WAN IP (ami nálam privát) változása, hanem a script által észlelt publikus IP-változás is triggerelheti a frissítést.
+
+---
+
+← [Vissza a Homelab főoldalra](../README_HU.md)
