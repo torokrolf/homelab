@@ -30,18 +30,15 @@
 - Teljes kontroll és biztonság  
 
 ---
-# Szerverek
+# Minden szolgáltatást, amit tudok, LXC-ként futtatok, minden szolgáltatás külön LXC-n fut
 
-A homelabban a szolgáltatásokat főként **LXC konténerekben** hozom létre, mert ezek **kevesebb erőforrást igényelnek**, mint a teljes virtuális gépek (VM-ek), miközben gyorsan és rugalmasan telepíthetők.
+A fő cél, hogy **minden szolgáltatás külön LXC-ben fusson**, így izoláltak: ha egy konténer leáll, az **nem érinti a többi szolgáltatást**.
 
 **Előnyök LXC használatával VM-ekhez képest:**
 - **Kisebb erőforrásigény**: kevesebb RAM és CPU szükséges, gyorsabb indítás
 - **Gyorsabb deployment**: új konténerek percek alatt létrehozhatók
-- **Egyszerűbb frissítés és karbantartás**: a host rendszeren futnak, így könnyebb menedzselni
-- **Hálózati rugalmasság**: könnyebb belső hálózati és bridge konfigurációk
-- **Skálázhatóság**: több konténer fér el egy hoston, mint VM-ekből ugyanannyi
-
-VM-ekhez képest hátránya, hogy a **konténerek kevésbé izoláltak**, így a host rendszer biztonságára jobban kell figyelni.
+- **Skálázhatóság**: több konténer fér el egy hoston, mint VM
+- **Izoláció**: hibás vagy leállt szolgáltatás nem állítja le a többit
 
 ---
 
