@@ -1,20 +1,29 @@
-## pfSense – Network & Security Setup
+← [Vissza a Homelab főoldalra](../README_HU.md)
+
+[🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
+
+---
+
+# pfSense
 
 Homelabomban egy **pfSense alapú tűzfalat és routert** használok.  
-A célom vállalati környezetben is releváns **hálózati és biztonsági megoldások** megvalósítása volt.
+
+
+# 📚 Tartalomjegyzék – pfSense
+
+- [NAT & Routing](#nat--routing)
+- [Core Network Services](#core-network-services)
+  - [DHCP szerver](#dhcp-szerver)
+  - [NTP szerver](#ntp-szerver)
+- [VPN megoldások](#vpn-megoldások)
+  - [WireGuard VPN](#wireguard-vpn)
+  - [OpenVPN](#openvpn)
+- [Dynamic DNS (DDNS)](#dynamic-dns-ddns)
+
 
 ---
 
-### 🔐 Firewall & Network Security
-- Egyedi **tűzfalszabályok** tervezése és implementálása (LAN / WAN / VPN)
-- **Stateful firewall** működésének gyakorlati alkalmazása
-- Bejövő és kimenő forgalom szeparálása
-- Szolgáltatás- és IP-alapú engedélyezés
-- VPN interfészekhez dedikált firewall szabályok
-
----
-
-### 🌐 NAT & Routing
+## NAT & Routing
 - **Outbound NAT** konfigurálása belső hálózat számára
 - **Port Forward NAT** külső szolgáltatások publikálásához
 - Belső erőforrások védelme NAT-on keresztül
@@ -22,17 +31,18 @@ A célom vállalati környezetben is releváns **hálózati és biztonsági mego
 
 ---
 
-### 📡 Core Network Services
+## Core Network Services
 - **DHCP szerver** konfigurálása és üzemeltetése
   - IP tartományok kezelése
   - Statikus DHCP lease-ek
   - Gateway és DNS kiosztás
 - **NTP szerver** futtatása
   - Időszinkron biztosítása belső klienseknek
+  - 
 
 ---
 
-### 🔑 VPN megoldások
+## VPN megoldások
 - **WireGuard VPN**
   - Modern, gyors VPN megoldás
   - Távoli hozzáférés biztosítása belső hálózathoz
@@ -43,30 +53,16 @@ A célom vállalati környezetben is releváns **hálózati és biztonsági mego
 
 ---
 
-### 🌍 Dynamic DNS (DDNS)
+## Dynamic DNS (DDNS)
 - **DDNS kliens konfigurálása**
 - Dinamikus publikus IP-cím kezelése
 - Külső elérés stabil biztosítása (VPN, szolgáltatások)
 
 ---
 
-### 🛠️ Használt technológiák
-- pfSense
-- Firewall & NAT
-- DHCP, NTP
-- WireGuard, OpenVPN
-- Dynamic DNS (DDNS)
-- TCP/IP, routing, network security
 
----
 
-### 🎯 Mit bizonyít ez a projekt?
-- Valós hálózati problémák megoldása gyakorlatban
-- Biztonságtudatos hálózattervezés
-- VPN és tűzfal technológiák stabil ismerete
-- Homelab környezetben szerzett, **valós életben alkalmazható tapasztalat**
+← [Vissza a Homelab főoldalra](../README_HU.md)
 
-> Ez a projekt bemutatja, hogyan tervezek és üzemeltetek  
-> **biztonságos, skálázható hálózati infrastruktúrát**,  
-> amely megfelel junior / medior rendszer- vagy hálózati üzemeltetői elvárásoknak.
+
 
