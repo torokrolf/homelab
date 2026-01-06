@@ -38,3 +38,4 @@ Nextcloud csak azokat a címeket engedi, amelyek szerepelnek a `config.php` fáj
 
 
 
+
