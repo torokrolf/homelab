@@ -1,6 +1,18 @@
 # Errors
 
-## Publikus domain névfeloldás internet nélkül---megoldás DNS override
+## 📚 Tartalomjegyzék
+
+- [DNS – Publikus domain névfeloldás internet nélkül](#dns---publikus-domain-névfeloldás-internet-nélkül)
+- [SSH – SSH belépés LXC / Ubuntu esetén](#ssh---ssh-belépés-lxc--ubuntu-esetén)
+- [Megosztás – SMB megosztás elérése LXC-ből + race condition](#megosztás---smb-megosztás-elérése-lxc-ből--race-condition)
+- [Megosztás – Dinamikus NFS mount qBittorrenthez + race condition kezelés](#megosztás---dinamikus-nfs-mount-qbittorrentet-futtató-vm-hez-race-condition-kezeléssel-és-qbittorrent-leállítása-ha-a-megosztás-eltűnik)
+- [Hardver – Külső SSD stabilitása USB-n](#hardver---külső-ssd-stabilitása-usb-n--tp-link-ue330-on-keresztül-vs-direkt-usb-n-csatlakozás)
+- [Hardver – M70q hálózati adapter instabilitás](#hardver---m70q-belső-hálózati-adapter-stabilitási-problémája---megoldás-külső-usb-adapterrel-tp-link-ue330)
+- [Hardver – Lokális és publikus DNS problémák Wi-Fi adapter miatt](#hardver---lokális-és-publikus-dns-problémák-laptopom-wi-fi-adaptere-miatt)
+- [DDNS – DDNS nem frissül Cloudflare-en pfSense mögött](#ddns---ddns-nem-frissül-cloudflare-en-pfsense-wan-interfészen-lévő-privát-ip-használata-miatt)
+
+
+## DNS - Publikus domain névfeloldás internet nélkül
 
 **Probléma**:
 - A `*.trkrolf.com` (pl. `zabbix.trkrolf.com`) publikus domain, a Cloudflare nameserverre irányult, ami a 192.168.2.202 Nginx IP-t adta vissza.
@@ -10,7 +22,7 @@
 - **DNS override / lokális BIND9 DNS**: a `*.trkrolf.com` lekérdezéseket a helyi DNS szerver kezeli.
 - Így internet nélkül is mindig a **192.168.2.202 Nginx IP-jére** oldódik fel a név.
 
-## SSH belépés LXC / Ubuntu esetén
+## SSH - SSH belépés LXC / Ubuntu esetén
 
 **Probléma:**
 - LXC-ben csak root van, SSH login tiltva root-al
@@ -23,7 +35,7 @@
 - Root SSH login engedélyezése (`PermitRootLogin yes`)
 - SSH belépés engedélyezése jelszóval vagy SSH kulccsal
 
-## SMB megosztás elérése LXC-ből + race condition
+## Megosztás - SMB megosztás elérése LXC-ből + race condition
 
 **Probléma:**  
 - Unprivileged LXC konténer nem tud közvetlenül SMB/CIFS megosztást mountolni  
@@ -38,7 +50,7 @@
 - Privileged LXC esetén tudok mountolni SMB megosztást, de ekkor a konténer root-ja és a Proxmox host root-ja ugyanaz → **biztonsági kockázat**  
 - Unprivileged LXC + host mount → biztonságos és működőképes megoldás, hiszen a Proxmox root-ja és a konténer root-ja két külön root, és az konténer root-ja alacsonyabb jogokkal rendelkezik, így a Proxmox hoston nem csinálhat veszélyesműveleteket.
 
-## Dinamikus NFS mount qBittorrentet futtató VM-hez race condition kezeléssel és qBittorrent leállítása ha a megosztás eltűnik
+## Megosztás - Dinamikus NFS mount qBittorrentet futtató VM-hez race condition kezeléssel és qBittorrent leállítása ha a megosztás eltűnik
 
 **Fontos: Eredetileg SMB megosztást használtam. A TrueNAS megléte esetén a qBittorrent elindult, de ha ezután leállítottam a TrueNAS-t, a qBittorrent nem állt le, mert az SMB nem kezeli jól a váratlan leválasztást, és a df parancs is fagyott. Linuxos környezetben ezért érdemes inkább a natív NFS-t használni. NFS-re váltás után a probléma teljesen megszűnt.**  
 
@@ -62,7 +74,7 @@
   - Unmountolja a megosztást
 - Systemd szolgáltatás biztosítja a script automatikus indítását és újraindítását
 - 
-## Külső SSD stabilitása USB-n — TP-Link UE330-on keresztül vs. direkt USB-n csatlakozás
+## Hardver - Külső SSD stabilitása USB-n — TP-Link UE330-on keresztül vs. direkt USB-n csatlakozás
 
 **Probléma:** 
 - Egy **Samsung 870 EVO** külső SSD néha **lekapcsolódott**, amikor közvetlenül USB-re volt kötve.  
@@ -71,7 +83,7 @@
 - Az SSD **TP-Link USB hub-on keresztül** csatlakoztatva **stabilan működik** már több mint 6 hónapja.  
 - Ennek oka valószínűleg a TP-Link UE330 stabilabb áramellátása.
 
-## M70q belső hálózati adapter stabilitási problémája---megoldás külső USB adapterrel (TP-Link UE330)
+## Hardver - M70q belső hálózati adapter stabilitási problémája---megoldás külső USB adapterrel (TP-Link UE330)
 
 **Probléma**:
 - M70q gépen a belső hálózati adapter néha elveszíti a kapcsolatot, ami kellemetlen, hiszen többet nem érem el hálózaton (Pl.:SSH), és le kell ülnöm a gép elé, hogy újraindítsam a hálózati adaptert, ami után ismét működik.
@@ -82,7 +94,7 @@
 **Általam választott megoldás**:
 - TP-Link UE330 USB hálózati adapter használata: stabilan működik, a kapcsolat fél éve problémamentes.
 
-## Lokális és publikus DNS problémák laptopom Wi-Fi adaptere miatt
+## Hardver - Lokális és publikus DNS problémák laptopom Wi-Fi adaptere miatt
 
 ### Probléma
 - A lokális DNS néha nem oldotta fel a helyi gépek neveit, sőt néha a publikus neveket (pl. google.com) sem.  
@@ -92,7 +104,7 @@
 - A MediaTek 7921 helyett Intel AX210 adaptert használtam.  
 - Az Intel adapterrel a DNS feloldás stabilan működik, lokális és publikus neveknél is.
 
-## DDNS nem frissül Cloudflare-en PFSense WAN interfészen lévő privát IP használata miatt
+## DDNS - DDNS nem frissül Cloudflare-en PFSense WAN interfészen lévő privát IP használata miatt
 
 ### Probléma
 - Ha a hálózatom publikus IP-je változik, a Cloudflare rekord, ami a publikus IP-t tartalmazza, nem frissül automatikusan.  
