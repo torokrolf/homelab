@@ -14,10 +14,10 @@
 
 ## 🖥️ RDP (Guacamole)
 
-- **Előny:** Böngészőből kényelmesen elérhető több gép  
-- **Miért Guacamole:**  
+- **Miért Guacamole:**
+  - Böngészőből kényelmesen elérhető több gép  
   - Jobb, mint a Proxmox beépített RDP, mert **hangot is átvisz**, ha kell  
-  - Egy helyről, kattintással elérek **bármilyen gépet RDP-n**  
+  - Egy központi helyről, kattintással elérek **bármilyen gépet RDP-n**  
   - **Clipboard átviteli problémák** a Proxmoxnál nem mindig működtek, Guacamole-nál stabilan működik
 
 ---
@@ -34,5 +34,6 @@
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
