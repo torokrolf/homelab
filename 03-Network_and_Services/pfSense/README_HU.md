@@ -12,8 +12,8 @@ Homelabomban egy **pfSense alapú tűzfalat és routert** használok.
 # 📚 Tartalomjegyzék
 
 - [NAT & Routing](#nat--routing)
-- [DHCP szerver konfigurálása és üzemeltetése](#dhcp-szerver-konfiguralasa-es-uzemeltetese)
-- [NTP szerver futtatása](#ntp-szerver-futtatasa)
+- [DHCP szerver konfigurálása és üzemeltetése](#dhcp)
+- [NTP szerver futtatása](#ntp)
 - [WireGuard VPN](#wireguard-vpn)
 - [OpenVPN](#openvpn)
 - [Dynamic DNS (DDNS)](#dynamic-dns-ddns)
@@ -27,14 +27,14 @@ Homelabomban egy **pfSense alapú tűzfalat és routert** használok.
 
 ---
 
-## DHCP szerver konfigurálása és üzemeltetése
+## DHCP szerver konfigurálása és üzemeltetése <a name="dhcp"></a>
 - IP tartományok kezelése
 - Statikus DHCP lease-ek
 - Gateway és DNS kiosztás
 
 ---
 
-## NTP szerver futtatása
+## NTP szerver futtatása <a name="ntp"></a>
 - Időszinkron biztosítása belső klienseknek 
 
 ---
@@ -59,6 +59,7 @@ Homelabomban egy **pfSense alapú tűzfalat és routert** használok.
 
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
