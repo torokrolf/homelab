@@ -1,3 +1,9 @@
+← [Vissza a Homelab főoldalra](../README_HU.md)
+
+[🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
+
+---
+
 # Dashboard
 
 | Service   | Tool  |
@@ -11,6 +17,9 @@
 
 <img src="https://github.com/user-attachments/assets/7508a075-fa1c-4dcb-82d5-00855fa0ec99" alt="Kép leírása" width="700"/>
 
+---
+
+← [Vissza a Homelab főoldalra](../README_HU.md)
 
 
 
