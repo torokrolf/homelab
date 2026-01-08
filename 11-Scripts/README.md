@@ -4,11 +4,14 @@
 
 ---
 #Scripts
+---
+##pfsense
 
 - **ddns-force-update.sh** – pfSense tűzfalon futó script, amely IP változás esetén manuálisan triggereli a DDNS frissítést
 
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
