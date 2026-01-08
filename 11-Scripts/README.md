@@ -17,13 +17,12 @@
 
 ## Proxmox
 
-- **smb-vm-mount.sh** – Korábban a Proxmox host SMB mountolására használt script, amikor az SMB szolgáltatást egy Proxmox VM biztosította **ugyanazon a hoston**, és a megosztást más VM-ek / LXC-k számára a hoston keresztül kellett továbbadni. A megoldás jelenleg **nem használt**, mivel az SMB szolgáltatás **TrueNAS-re lett migrálva**, és a VM-ek, amikhez mountolom ezt a megosztást, másik Proxmox hoston vannak.
-
-
+- **smb-vm-mount.sh** – Régebben a Proxmox host SMB mountolására használt script, amikor a megosztást a Proxmox hoston futó VM szolgáltatta, és ezt a megosztást akartam ugyanehhez a Proxmos hosthoz mountolni, és a versenyhelyzet miatt nem mountolta, ugyanis ahogy elindult a Proxmox, máris mountolt volna, csakhogy nem tudta még mountolni, hiszen a VM még nem állt fel. Ma már nem használatos, mert a TrueNAS külön Proxmox hoston szolgáltatja a megosztást a VM-eknek.
 
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
