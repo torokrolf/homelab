@@ -6,9 +6,10 @@
 
 # Storage
 
-| Service  | Tool    |
-|---------|--------|
-| Storage | TrueNAS |
+| Service          | Tool / Megjegyzés |
+|-----------------|-----------------|
+| Storage          | TrueNAS         |
+| Torrent Client  | qBittorrent (a TrueNAS megosztásokat használja letöltéshez) |
 
 ## TrueNAS
 
@@ -24,6 +25,7 @@ A homelabban **VM-ként** futtatom a TrueNAS-t, hogy egyszerűen kezelhessem a t
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
