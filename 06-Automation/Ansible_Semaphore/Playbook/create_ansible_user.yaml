@@ -5,8 +5,8 @@
   gather_facts: false
 
   vars:
-    ansible_client_username: ansibleuser
-    ansible_client_password: ansibleuserpwd
+    ansible_client_username: username
+    ansible_client_password: pwd
 
   tasks:
     - name: Create ansible user with password
