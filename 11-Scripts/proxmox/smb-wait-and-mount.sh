@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
 
 # NOTE:
 # This script was previously used to mount an SMB share on the Proxmox host
