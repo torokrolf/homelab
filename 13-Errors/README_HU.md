@@ -46,21 +46,32 @@
 
 ---
 
-## Megosztás - SMB megosztás elérése LXC-ből + race condition
+## Megosztás – SMB elérés LXC-ből
 
-**Probléma:**  
-- Unprivileged LXC konténer nem tud közvetlenül SMB/CIFS megosztást mountolni  
-- Race condition: ha a Proxmox host mountolná a megosztást, de a megosztást nyújtó VM vagy NAS még nem elérhető, a mount meghiúsul  
+**Probléma:** 
+- Unprivileged LXC konténer nem képes közvetlenül SMB/CIFS megosztást mountolni
 
 **Megoldás:**  
-- SMB/CIFS mountolása először a Proxmox hoston, majd továbbadása LXC-nek (`mp0:` konfigurációval)  
+- SMB/CIFS megosztás mountolása a Proxmox hoston
+- A mountolt könyvtár továbbadása az LXC konténernek bind mounttal (`mp0:`)
 - Ügyelni a jogosultságokra (uid/gid, file_mode/dir_mode), hogy a konténerben is írható legyen  
-- Host mount script + systemd szolgáltatás, ami várja, hogy a megosztás elérhető legyen, majd mountol  
 
-**Biztonsági megjegyzés:**  
+**Biztonság**
 - Privileged LXC esetén tudok mountolni SMB megosztást, de ekkor a konténer root-ja és a Proxmox host root-ja ugyanaz → **biztonsági kockázat**  
 - Unprivileged LXC + host mount → biztonságos és működőképes megoldás, hiszen a Proxmox root-ja és a konténer root-ja két külön root, és az konténer root-ja alacsonyabb jogokkal rendelkezik, így a Proxmox hoston nem csinálhat veszélyesműveleteket.
 
+---
+
+## Race condition – SMB mount Proxmox boot során
+
+**Probléma:** 
+- A Proxmox host indulásakor a megosztást nyújtó VM / NAS még nem érhető el
+- Az automatikus mount emiatt meghiúsul (race condition)
+
+**Megoldás:**  
+- Mountolás kezelése script + systemd szolgáltatással
+- A szolgáltatás megvárja, amíg a megosztás elérhető, és csak ezután mountol
+- 
 ---
 
 ## Megosztás - Dinamikus NFS mount qBittorrentet futtató VM-hez race condition kezeléssel és qBittorrent leállítása ha a megosztás eltűnik
