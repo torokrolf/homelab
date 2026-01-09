@@ -29,7 +29,14 @@
 
 ---
 
+## Termux / Android
+
+- **toggle_pihole_ssh.sh** – Termux alatt futó Bash script, amely SSH-n keresztül kapcsolja ki- vagy be a Pi-hole-t. Telefonról gyorsan használható, ha egy képtalálatra kattintva a weboldal nem jön be a Pi-hole blokkolás miatt. A script automatikusan ellenőrzi az aktuális állapotot, majd ennek megfelelően engedélyezi vagy tiltja a Pi-hole-t, és értesítést (toast) küld az Androidon.
+
+---
+
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
