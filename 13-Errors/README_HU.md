@@ -10,7 +10,7 @@
 
 - [DNS – Publikus domain névfeloldás internet nélkül](#dns---publikus-domain-névfeloldás-internet-nélkül)
 - [SSH – SSH belépés LXC / Ubuntu esetén](#ssh---ssh-belépés-lxc--ubuntu-esetén)
-- [Megosztás – SMB megosztás elérése LXC-ből](#megosztás---smb-megosztás-elérése-lxc-ből--race-condition)
+- [Megosztás – SMB megosztás elérése LXC-ből](#megosztás---smb-megosztás-elérése-lxc-ből)
 - [Megosztás – Dinamikus NFS mount qBittorrenthez + race condition kezelés](#megosztás---dinamikus-nfs-mount-qbittorrentet-futtató-vm-hez-race-condition-kezeléssel-és-qbittorrent-leállítása-ha-a-megosztás-eltűnik)
 - [Hardver – Külső SSD stabilitása USB-n](#hardver---külső-ssd-stabilitása-usb-n--tp-link-ue330-on-keresztül-vs-direkt-usb-n-csatlakozás)
 - [Hardver – M70q hálózati adapter instabilitás](#hardver---m70q-belső-hálózati-adapter-stabilitási-problémája---megoldás-külső-usb-adapterrel-tp-link-ue330)
