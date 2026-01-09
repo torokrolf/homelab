@@ -9,6 +9,7 @@
 ## 📚 Tartalomjegyzék
 
 - [DNS – Publikus domain névfeloldás internet nélkül](#dns---publikus-domain-névfeloldás-internet-nélkül)
+- [DNS – Pi-hole blokkolja a Google képtalálatokat mobilon](#dns---pi-hole-blokkolja-a-google-képtalálatokat-mobilon)
 - [SSH – SSH belépés LXC / Ubuntu esetén](#ssh---ssh-belépés-lxc--ubuntu-esetén)
 - [Megosztás – SMB elérés LXC-ből](#megosztás--smb-elérés-lxc-ből)
 - [Race condition – SMB mount sorrendiség](#race-condition--smb-mount-sorrendiség)
@@ -30,6 +31,39 @@
 - **DNS override / lokális BIND9 DNS**: a `*.trkrolf.com` lekérdezéseket a helyi DNS szerver kezeli.
 - Így internet nélkül is mindig a **192.168.2.202 Nginx IP-jére** oldódik fel a név.
 
+---
+
+## DNS - Pi-hole blokkolja a Google képtalálatokat mobilon
+
+**Probléma**
+- Mobiltelefonon Google keresésnél a **képtalálatokra kattintva** gyakran:
+  - nem nyílik meg az oldal
+  - vagy a kép nem vezet tovább a forrás weboldalra
+- Asztali gépen ez a jelenség nem vagy ritkábban jelentkezik
+
+**Ok**
+- Mobilon a Google képtalálatok **nem közvetlen képfájlokra mutatnak**, hanem:
+  - hirdetési
+  - tracking
+  - átirányító (redirect) domaineken keresztül nyílnak meg
+- Ezek a domainek gyakran **Pi-hole tiltólistákon szerepelnek**, például:
+  - `googleadservices.com`
+  - `googletagservices.com`
+  - `doubleclick.net`
+- Kattintáskor a Google egy köztes tracking linken irányít tovább, amit a Pi-hole DNS szinten blokkol
+- Egyes képkiszolgáló / CDN domainek (pl. gstatic.com aldomainjei) szintén tiltólistára kerülhetnek
+
+**Megjegyzés**
+- Ez a viselkedés **nem Pi-hole hiba**, hanem a reklám- és követésblokkolás természetes következménye
+- A fenti domainek **szándékosan vannak tiltva** sok alapértelmezett és közösségi blocklisten
+
+**Megoldás, amit alkalmazok**
+- Ideiglenesen kikapcsolni a Pi-hole-t (pl. mobilról SSH-n keresztül, scripttel)
+
+**Egyéb megoldás, de ez nem ajánlott szerintem**
+- Vagy célzott whitelisting alkalmazása (nem ajánlott mindenkinél, mert hirdetések visszatérhetnek)
+
+❗Script megvalósítás: [scripts/smb-vm-mount.sh](/11-Scripts/Android/toggle_pihole_ssh.sh)  
 ---
 
 ## SSH - SSH belépés LXC / Ubuntu esetén
