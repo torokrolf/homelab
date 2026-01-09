@@ -63,7 +63,8 @@
 **Egyéb megoldás, de ez nem ajánlott szerintem**
 - Vagy célzott whitelisting alkalmazása (nem ajánlott mindenkinél, mert hirdetések visszatérhetnek)
 
-❗Script megvalósítás: [scripts/smb-vm-mount.sh](/11-Scripts/Android/toggle_pihole_ssh.sh)  
+❗Script megvalósítás: [scripts/smb-vm-mount.sh](/11-Scripts/Android/toggle_pihole_ssh.sh) 
+
 ---
 
 ## SSH - SSH belépés LXC / Ubuntu esetén
