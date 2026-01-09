@@ -22,7 +22,15 @@
 
 ---
 
+## qBittorrent + NFS (TrueNAS)
+
+- **nfs_qbittorrent.sh** – Script, ami folyamatosan ellenőrzi, hogy a TrueNAS NFS megosztás elérhető-e. Ha igen, mountolja a megosztást és elindítja a **qbittorrent-nox** szolgáltatást; ha a megosztás eltűnik, leállítja a qBittorrentet és unmountolja a megosztást.  
+- **nfs_qbittorrent.service** – systemd service, ami a fenti scriptet automatikusan indítja a boot során és folyamatosan futtatja. Gondoskodik arról, hogy a qBittorrent csak akkor fusson, ha a NAS elérhető.
+
+---
+
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
