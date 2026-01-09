@@ -29,7 +29,7 @@
 - **DNS override / lokális BIND9 DNS**: a `*.trkrolf.com` lekérdezéseket a helyi DNS szerver kezeli.
 - Így internet nélkül is mindig a **192.168.2.202 Nginx IP-jére** oldódik fel a név.
 
-- Script megvalósítás: [scripts/smb-vm-mount.sh](11-Scripts/pfsense/ddns-force-update.sh)  
+❗Script megvalósítás: [scripts/smb-vm-mount.sh](11-Scripts/pfsense/ddns-force-update.sh)  
 ---
 
 ## SSH - SSH belépés LXC / Ubuntu esetén
@@ -88,8 +88,8 @@
 - A mount script ellenőrzi az SMB portot, majd mountol, egyszeri próbálkozással  
 - Így a race condition megszűnik: a mount csak akkor történik meg, amikor a VM elindult és a port elérhető
 
-- Script megvalósítás: [scripts/smb-vm-mount.sh](/11-Scripts/proxmox/smb-vm-mount.sh)  
-- Systemd szolgáltatás: [scripts/smb-vm-mount.service](/11-Scripts/proxmox/smb-vm-mount.service)
+❗Script megvalósítás: [scripts/smb-vm-mount.sh](/11-Scripts/proxmox/smb-vm-mount.sh)  
+❗Systemd szolgáltatás: [scripts/smb-vm-mount.service](/11-Scripts/proxmox/smb-vm-mount.service)
 
 ---
 
