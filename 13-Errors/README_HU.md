@@ -29,7 +29,8 @@
 - **DNS override / lokális BIND9 DNS**: a `*.trkrolf.com` lekérdezéseket a helyi DNS szerver kezeli.
 - Így internet nélkül is mindig a **192.168.2.202 Nginx IP-jére** oldódik fel a név.
 
-❗Script megvalósítás: [scripts/smb-vm-mount.sh](11-Scripts/pfsense/ddns-force-update.sh)  
+❗ Script megvalósítás: [scripts/smb-vm-mount.sh](11-Scripts/pfsense/ddns-force-update.sh) 
+
 ---
 
 ## SSH - SSH belépés LXC / Ubuntu esetén
