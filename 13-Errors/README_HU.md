@@ -68,7 +68,7 @@
 - A Proxmox boot során megpróbálta mountolni egy rajta futó VM SMB megosztását  
 - A VM ekkor még nem futott, így a mount race condition miatt meghiúsult  
 
-**Miért jó a systemd:**  
+**Miért jobb systemd szolgáltatásként csatolni és nem fstab-al:**  
 - Hálózati megosztásoknál (pl. NFS vagy CIFS/Samba) előfordulhat versenyhelyzet: a mount nem sikerül, ha a hálózat még nem állt fel.  
 - Ha fstab-bal próbáljuk mountolni a hálózati megosztást bootkor, és nincs hálózat, a mount nem jön létre. A legtöbb disztribúciónál a boot nem áll le, de nem ideális, ha emiatt a rendszer később problémás.  
 - Külső SSD/HDD esetén fstab tökéletes, mert ott nincs race condition: a mount vagy sikerül, vagy nem.  
@@ -84,7 +84,7 @@
 - A Proxmox csak akkor próbál mountolni, ha  
   - a VM már pingelhető  
   - az SMB szolgáltatás már fut (443 elérhető)  
-- A feltételek teljesülése után a mount egyszer lefut, és sikeres
+- A feltételek teljesülése után a mount script egyszer lefut
 
 ---
 
