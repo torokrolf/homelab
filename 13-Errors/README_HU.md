@@ -76,15 +76,19 @@
 
 **Helyes sorrend:**  
 1. Proxmox host feláll  
-2. VM elindul és pingelhető  
-3. VM SMB szolgáltatás elindul (443 port válaszol)  
-4. Proxmox host mountolja a VM megosztását (egyszeri próbálkozás)
+2. systemd service aktiválódik  
+3. Service pingeli a VM-et (ExecStartPre)  
+4. Ha a VM pingelhető → fut a mount script (ExecStart)  
+5. Script ellenőrzi az SMB portot (445), és csak amikor elérhető → mountol  
+6. Mount sikeres → LXC konténer hozzáférhet a megosztáshoz  
 
 **Megoldás:**  
-- A Proxmox csak akkor próbál mountolni, ha  
-  - a VM már pingelhető  
-  - az SMB szolgáltatás már fut (443 elérhető)  
-- A feltételek teljesülése után a mount script egyszer lefut
+- A systemd service csak a VM elérhetőségét pingeli, nem ellenőrzi az SMB portot  
+- A mount script ellenőrzi az SMB portot, majd mountol, egyszeri próbálkozással  
+- Így a race condition megszűnik: a mount csak akkor történik meg, amikor a VM elindult és a port elérhető
+
+- Script megvalósítás: [scripts/smb-vm-mount.sh](./scripts/smb-vm-mount.sh)  
+- Systemd szolgáltatás: [scripts/smb-vm-mount.service](./scripts/smb-vm-mount.service)
 
 ---
 
