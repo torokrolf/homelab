@@ -1,0 +1,29 @@
+[Unit]
+# Description of the service
+Description=Mount NFS and start qBittorrent if NAS is reachable
+
+# Ensure this service starts only after the network is online
+After=network-online.target
+
+# Make sure the network-online.target is pulled in as a dependency
+Wants=network-online.target
+
+[Service]
+# Type simple: the script runs continuously in the foreground
+Type=simple
+
+# The script to execute
+ExecStart=/usr/local/bin/nfs_qbittorrent.sh
+
+# Always restart the service if it fails
+Restart=always
+
+# Wait 10 seconds before attempting restart
+RestartSec=10
+
+# Run the script as root (required for mounting)
+User=root
+
+[Install]
+# Start this service automatically at the multi-user runlevel
+WantedBy=multi-user.target
