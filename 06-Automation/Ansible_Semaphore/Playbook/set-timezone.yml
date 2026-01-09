@@ -1,0 +1,7 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Set timezone to Europe/Budapest
+      ansible.builtin.timezone:
+        name: Europe/Budapest
