@@ -62,16 +62,24 @@
 
 ---
 
-## Race condition – SMB mount Proxmox boot során
+## Race condition – SMB mount sorrendiség
 
-**Probléma:** 
-- A Proxmox host indulásakor a megosztást nyújtó VM / NAS még nem érhető el
-- Az automatikus mount emiatt meghiúsul (race condition)
+**Probléma:**  
+- A Proxmox boot során megpróbálta mountolni egy rajta futó VM SMB megosztását  
+- A VM ekkor még nem futott, így a mount race condition miatt meghiúsult  
+
+**Helyes sorrend:**  
+1. Proxmox host feláll  
+2. VM elindul és pingelhető  
+3. VM SMB szolgáltatás elindul (443 port válaszol)  
+4. Proxmox host mountolja a VM megosztását (egyszeri próbálkozás)
 
 **Megoldás:**  
-- Mountolás kezelése script + systemd szolgáltatással
-- A szolgáltatás megvárja, amíg a megosztás elérhető, és csak ezután mountol
-- 
+- A Proxmox csak akkor próbál mountolni, ha  
+  - a VM már pingelhető  
+  - az SMB szolgáltatás már fut (443 elérhető)  
+- A feltételek teljesülése után a mount egyszer lefut, és sikeres
+
 ---
 
 ## Megosztás - Dinamikus NFS mount qBittorrentet futtató VM-hez race condition kezeléssel és qBittorrent leállítása ha a megosztás eltűnik
