@@ -1,0 +1,43 @@
+---
+- name: Upgrade all packages on hosts
+  hosts: gepeim
+  become: true
+  tasks:
+    - name: Wait for APT locks to be released (max 5 minutes)
+      shell: |
+        timeout 300 bash -c '
+        while fuser /var/lib/dpkg/lock >/dev/null 2>&1 || \
+              fuser /var/lib/apt/lists/lock >/dev/null 2>&1 || \
+              fuser /var/cache/apt/archives/lock >/dev/null 2>&1; do
+          echo "APT locked, waiting..."
+          sleep 5
+        done'
+      changed_when: false
+      register: apt_lock_wait
+      failed_when: apt_lock_wait.rc != 0
+      environment:
+        DEBIAN_FRONTEND: noninteractive
+        APT_LISTCHANGES_FRONTEND: none
+
+    - name: Update apt package cache
+      apt:
+        update_cache: yes
+      retries: 5
+      delay: 10
+      register: apt_update_result
+      until: apt_update_result is succeeded
+      timeout: 300
+      environment:
+        DEBIAN_FRONTEND: noninteractive
+        APT_LISTCHANGES_FRONTEND: none
+
+    - name: Upgrade all packages
+      apt:
+        upgrade: dist
+        autoremove: yes
+        autoclean: yes
+        dpkg_options: "--force-confdef --force-confold"
+      timeout: 1800
+      environment:
+        DEBIAN_FRONTEND: noninteractive
+        APT_LISTCHANGES_FRONTEND: none
