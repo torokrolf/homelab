@@ -1,1 +1,17 @@
+#!/bin/bash
+
+# Wait until the SMB service on the VM becomes available (TCP port 445)
+until nc -z -w3 192.168.2.200 445; do
+  echo "Waiting for SMB service on 192.168.2.200..."
+  sleep 3
+done
+
+# Local mount point on the Proxmox host
+mountpoint="/mnt/megosztasaim/torrent"
+
+# Mount the SMB share only if it is not already mounted
+if ! mountpoint -q "$mountpoint"; then
+  mount -t cifs //192.168.2.200/torrent "$mountpoint" \
+    -o username=username,password=password,uid=0,gid=0,file_mode=0777,dir_mode=0777,_netdev
+fi
 
