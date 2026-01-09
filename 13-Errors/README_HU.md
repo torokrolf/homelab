@@ -87,7 +87,7 @@
 - A mount script ellenőrzi az SMB portot, majd mountol, egyszeri próbálkozással  
 - Így a race condition megszűnik: a mount csak akkor történik meg, amikor a VM elindult és a port elérhető
 
-- Script megvalósítás: [scripts/smb-vm-mount.sh](./11-Scripts/smb-vm-mount.sh)  
+- Script megvalósítás: [scripts/smb-vm-mount.sh](/Homelab/11-Scripts/smb-vm-mount.sh)  
 - Systemd szolgáltatás: [scripts/smb-vm-mount.service](./scripts/smb-vm-mount.service)
 
 ---
