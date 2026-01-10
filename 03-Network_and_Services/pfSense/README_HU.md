@@ -31,6 +31,8 @@ Homelabomban egy **pfSense alapú tűzfalat és routert** használok.
 - IP tartományok kezelése
 - Statikus DHCP lease-ek
 - Gateway és DNS kiosztás
+- Szerverek és kliensek a 2.0-ás hálózaton MAC-címhez kötött statikus IP-t kapnak a DHCP szervertől
+- A switchnek fix IP-t adok manuálisan, mert így mindig elérhető marad a menedzsment felülete, függetlenül a DHCP-től
 
 ---
 
@@ -62,6 +64,7 @@ Homelabomban egy **pfSense alapú tűzfalat és routert** használok.
 
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
