@@ -6,14 +6,14 @@
 
 # Publikus és privát domain névfeloldás
 
-## 🌐 Publikus domain (Namecheap, Cloudflare)
+## Publikus domain (Namecheap, Cloudflare)
 
 - Saját domain vásárlva a **Namecheap**-en, majd **Cloudflare** nameserverre átköltöztetve.  
 - Publikus szolgáltatások: **nem elérhetők közvetlenül**; lokálisan érem el, távolról **VPN-en keresztül**.  
 
 ---
 
-## 🔐 Privát domain (Bind9)
+## Privát domain (Bind9)
 
 - Privát domain: **`otthoni.local`**  
 - Feloldás: **BIND9 DNS szerver**  
@@ -28,6 +28,7 @@
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
