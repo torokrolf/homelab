@@ -13,7 +13,7 @@
 A homelabban a böngésző figyelmeztetett, mert nem HTTPS-t használtam. A megoldás: hogy **Nginx Proxy Managerrel (NPM)** használok **Let’s Encrypt SSL/TLS tanúsítványt**,  
 **DNS-01 challenge** alapú hitelesítéssel.
 
-### Lényeg röviden
+**Lényeg röviden**
 - A HTTPS működéséhez SSL/TLS tanúsítvány szükséges
 - A **DNS-01 challenge** DNS TXT rekorddal igazolja a domain tulajdonjogát
 - A hitelesítés **Cloudflare API token** segítségével történik
@@ -22,6 +22,7 @@ A homelabban a böngésző figyelmeztetett, mert nem HTTPS-t használtam. A mego
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
