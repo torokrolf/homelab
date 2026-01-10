@@ -7,6 +7,9 @@
 # Nginx Reverse Proxy
 
 - Nginx Proxy Manager-ből egy részlet a proxy hosts-ról
+- 
+- ![Kép leírása](https://github.com/user-attachments/assets/3a8d190b-52aa-4a94-be9f-9aec13829945)
+
 <img src="https://github.com/user-attachments/assets/3a8d190b-52aa-4a94-be9f-9aec13829945" alt="Kép leírása" width="700"/>
 
 ---
@@ -26,6 +29,7 @@ A homelabban zavaró volt a böngészőben megjelenő figyelmeztetések, miszeri
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
