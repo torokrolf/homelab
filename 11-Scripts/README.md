@@ -1,50 +1,43 @@
-← [Vissza a Homelab főoldalra](../README_HU.md)
+← [Back to Homelab Home](../README.md)
 
 [🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
 
 ---
-# Scripts
----
-## pfsense
 
-- **ddns-force-update.sh** – pfSense tűzfalon futó script, amely IP változás esetén manuálisan triggereli a DDNS frissítést
+# Scripts
+
+---
+
+## pfSense
+
+- **ddns-force-update.sh** – Script running on the pfSense firewall to manually trigger a DDNS update when the IP changes.
+
 ---
 
 ## Powershell
 
-- **restic-backup-and-shutdown.ps1** – Restic backup majd automatikus leállítás
+- **restic-backup-and-shutdown.ps1** – Performs a Restic backup and then automatically shuts down the machine.
+
 ---
 
 ## Proxmox
 
-- **smb-vm-mount.sh** – Régebben a Proxmox hosthoz ezzel mountoltam  egy SMB megosztást, és az megosztást ugyanezen a Proxmox hoston futó VM szolgáltatta, és a versenyhelyzet miatt nem mountolta, ugyanis ahogy elindult a Proxmox, máris mountolt volna, csakhogy nem tudta még mountolni, hiszen a VM még nem állt fel. Ma már nem használatos, mert a TrueNAS külön Proxmox hoston szolgáltatja a megosztást a VM-eknek.
-- **smb-vm-mount.service** – systemd service, ami egyszeri futtatással elindítja a mount scriptet (**smb-vm-mount.sh**) a boot után
+- **smb-vm-mount.sh** – Previously used on the Proxmox host to mount an SMB share provided by a VM running on the same host. Due to a race condition, it could fail because Proxmox tries to mount before the VM is up. No longer in use, as TrueNAS on a separate Proxmox host now provides the shares to VMs.  
+- **smb-vm-mount.service** – systemd service that runs the mount script (**smb-vm-mount.sh**) once at boot.
 
 ---
 
 ## qBittorrent + NFS (TrueNAS)
 
-- **nfs_qbittorrent.sh** – Script, ami folyamatosan ellenőrzi, hogy a TrueNAS NFS megosztás elérhető-e. Ha igen, mountolja a megosztást és elindítja a **qbittorrent-nox** szolgáltatást; ha a megosztás eltűnik, leállítja a qBittorrentet és unmountolja a megosztást.  
-- **nfs_qbittorrent.service** – systemd service, ami a **nfs_qbittorrent.sh**  scriptet automatikusan indítja a boot során és folyamatosan futtatja. Gondoskodik arról, hogy a qBittorrent csak akkor fusson, ha a NAS elérhető.
+- **nfs_qbittorrent.sh** – Script that continuously checks if the TrueNAS NFS share is available. If yes, it mounts the share and starts the **qbittorrent-nox** service; if the share disappears, it stops qBittorrent and unmounts the share.  
+- **nfs_qbittorrent.service** – systemd service that automatically runs **nfs_qbittorrent.sh** at boot and keeps it running. Ensures qBittorrent only runs when the NAS is available.
 
 ---
 
 ## Termux / Android
 
-- **toggle_pihole_ssh.sh** – Termux alatt futó Bash script, amely SSH-n keresztül kapcsolja ki- vagy be a Pi-hole-t. Telefonról gyorsan használható, ha egy képtalálatra kattintva a weboldal nem jön be a Pi-hole blokkolás miatt. A script automatikusan ellenőrzi az aktuális állapotot, majd ennek megfelelően engedélyezi vagy tiltja a Pi-hole-t, és értesítést (toast) küld az Androidon.
+- **toggle_pihole_ssh.sh** – Bash script running in Termux to toggle Pi-hole on or off via SSH. Useful when a webpage is blocked by Pi-hole; a single tap on the phone can quickly enable or disable it. The script checks the current state and applies the appropriate action, sending a toast notification on Android.
 
 ---
 
-← [Vissza a Homelab főoldalra](../README_HU.md)
-
-
-
-
-
-
-
-
-
-
-
-
+← [Back to Homelab Home](../README.md)
