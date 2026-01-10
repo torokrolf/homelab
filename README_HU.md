@@ -21,8 +21,9 @@
 - [12. Tervezési döntések](./12-Design_Decisions/README_HU.md)
 - [13. Hibák és hibaelhárítás](./13-Errors/README_HU.md)
 
+---
 
-# 🏡 Homelabom rövid összefoglalója 
+# Homelabom rövid összefoglalója 
 
 ## 🏠 Homelab projekt ismertetése
 
