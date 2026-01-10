@@ -6,8 +6,11 @@
 
 # Virtualization
 
+---
+
 ## Type 1 Hypervisor
 - **Proxmox VE 9**
   - LXC (Linux containers)  
   - VM (Virtual Machines)  
   - Template + Cloud-Init
+
