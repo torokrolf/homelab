@@ -1,12 +1,12 @@
-← [Vissza a Homelab főoldalra](../README_HU.md)
+← [Back to Homelab Home](../README.md)
 
 [🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
 
 ---
 
-# Operating Systems
+# Operating Systems Summary
 
-| Platform | Type     | Versions |
+| Platform | Type    | Versions |
 |----------|---------|---------|
 | Linux    | Server  | CentOS 9 Stream, Ubuntu 22.04 Server |
 | Linux    | Clients | Ubuntu 22.04 Desktop |
@@ -15,49 +15,46 @@
 
 ---
 
-## Linux Server Services (LXC)
-
-- **Bind9** – DNS server  
-- **Nginx** – Web server / reverse proxy  
-- **Ansible + Semaphore** – Automation & orchestration  
-- **Zabbix Server** – Monitoring  
-- **Pi-hole** – Network-wide ad blocker  
-- **FreeIPA** – Identity management  
-- **FreeRADIUS** – Authentication server  
-- **APT-Cacher NG** – Package caching  
-- **Vaultwarden** – Password management  
-- **Restic** – Backup solution  
-- **Open WebUI + OpenAI API** – Self-hosted AI interface  
-- **TrueNAS** – Storage management  
-- **Wireguard** – VPN server  
-- **OpenVPN** – VPN server  
-- **chronyd (NTP)** – Time synchronization  
-
----
-
-## Linux Server Services (VM)
-
-- **iVentoy** – Bootable ISO manager  
+## Services Used on Linux Servers (LXC)
+- Bind9  
+- Nginx  
+- Ansible + Semaphore  
+- Zabbix server  
+- Pi-hole  
+- FreeIPA  
+- FreeRADIUS  
+- APT-Cacher NG  
+- Vaultwarden  
+- Restic  
+- Open WebUI + OpenAI API  
+- TrueNAS  
+- Wireguard  
+- OpenVPN  
+- chronyd (NTP)
 
 ---
 
-## Windows Server Services and Implementations
+## Services Used on Linux Servers (VM)
+- iVentoy
 
-- **Servers:** 2 machines running Windows Server 2019  
-- **Active Directory:**  
+---
+
+## Services and Implementations on Windows Servers
+
+- 2 machines running Windows Server 2019  
+- Active Directory  
   - User creation  
   - Group Policy creation  
-- **DHCP Server:** Configured on both servers with load balancing  
-- **DNS Server:** Configured on both servers with secondary zone in case one server fails  
-  - **DNS Forwarders:** 192.168.3.1 (pfSense); unresolved queries are forwarded here  
-  - **Forward Zone:** `trkrolf.com` → `*.trkrolf.com` pointing to Nginx proxy at 192.168.2.202  
-  - **Conditional Forwarder:** `otthoni.local` → Bind9 DNS at 192.168.2.201 (Windows Server 1 only)  
-- **Backups:**  
-  - Veeam Backup & Replication – for Windows laptops only  
-  - Macrium Reflect – for dual-boot Windows + Linux laptops  
-- **VPN Clients:** OpenVPN and Wireguard  
+- DHCP server – on both servers, with load balancing  
+- DNS server – on both servers, with secondary zone configured in case one server fails  
+- DNS forwarders: 192.168.3.1 (pfSense), any unresolved requests by the DNS server are forwarded here  
+- Forward zone: trkrolf.com → *.trkrolf.com points to Nginx proxy at 192.168.2.202  
+- Conditional forwarder: otthoni.local → directed to Bind9 DNS server at 192.168.2.201, only on Windows Server 1, so it can resolve otthoni.local  
+- Veeam Backup & Replication – only for laptops running Windows  
+- Macrium Reflect – for Windows + Linux dual boot laptops  
+- OpenVPN client  
+- Wireguard client  
 
 ---
 
-← [Vissza a Homelab főoldalra](../README_HU.md)
-
+← [Back to Homelab Home](../README.md)
