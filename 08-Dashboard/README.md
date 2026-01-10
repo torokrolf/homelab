@@ -1,4 +1,4 @@
-← [Vissza a Homelab főoldalra](../README_HU.md)
+← [Back to Homelab Home](../README.md)
 
 [🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
 
@@ -10,18 +10,14 @@
 |-----------|-------|
 | Dashboard | Homarr |
 
-## Homarr dashboard
+## Homarr Dashboard
 
-- A sok szolgáltatás közötti válogatás idővel kényelmetlenné vált, ezért egy **központi dashboardra** rendeztem őket.
-- Erre a célra a **Homarr**-t használom, amely lehetővé teszi, hogy minden szolgáltatást **egyetlen felületről**, gyorsan és egyszerűen érjek el.
-- Külön előnye, hogy **telefonon is kifejezetten jól használható**, így mobilról is könnyen menedzselhető a teljes homelab.
+- Navigating between many services became inconvenient over time, so I organized them on a **central dashboard**.
+- For this purpose, I use **Homarr**, which allows me to access all services **from a single interface**, quickly and easily.
+- An additional advantage is that it is **very mobile-friendly**, so the entire homelab can be easily managed from a phone.
 
-<img src="https://github.com/user-attachments/assets/7508a075-fa1c-4dcb-82d5-00855fa0ec99" alt="Kép leírása" width="700"/>
+![Image description](https://github.com/user-attachments/assets/7508a075-fa1c-4dcb-82d5-00855fa0ec99)
 
 ---
 
-← [Vissza a Homelab főoldalra](../README_HU.md)
-
-
-
-
+← [Back to Homelab Home](../README.md)
