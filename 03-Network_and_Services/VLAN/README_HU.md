@@ -1,3 +1,9 @@
+← [Vissza a Homelab főoldalra](../README_HU.md)
+
+[🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
+
+---
+
 # VLAN kialakítása és hálózati szegmentáció
 
 - **Proxmox alatt VLAN interface létrehozása** (`vmbr0.30`), amely a `vmbr0` bridge-hez tartozik VLAN tag 30-cal.
@@ -9,3 +15,4 @@
 - **TP-Link SG108E switch VLAN konfigurálása** a trunkolt forgalom kezelésére.
 - **Statikus route hozzáadása az ASUS routeren**, hogy az 1.0 hálózat elérje a VLAN hálózatot.
 - **DHCP szolgáltatás engedélyezése** a pfSense VLAN interfészén.
+
