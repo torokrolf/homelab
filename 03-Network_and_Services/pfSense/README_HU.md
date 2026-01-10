@@ -8,6 +8,7 @@
 
 Homelabomban egy **pfSense alapú tűzfalat és routert** használok.  
 
+---
 
 # 📚 Tartalomjegyzék
 
@@ -64,6 +65,7 @@ Homelabomban egy **pfSense alapú tűzfalat és routert** használok.
 
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
