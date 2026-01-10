@@ -56,14 +56,15 @@ Homelabomban egy **pfSense alapú tűzfalat és routert** használok.
 ---
 
 ## Dynamic DNS (DDNS)
-- Dinamikus publikus IP-cím kezelése
-- Szolgáltatások távoli eléréséhez
+- Dinamikus publikus IP-cím kezelése 
+- Fontos, hogy az **internet felől a VPN hálózathoz** mindig hozzáférhessek, még akkor is, ha a publikus IP változik
 
 ---
 
 
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
