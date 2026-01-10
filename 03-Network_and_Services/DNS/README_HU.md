@@ -13,13 +13,6 @@
 
 ---
 
-## 🏠 Nginx Proxy Manager
-
-- Használat célja: kényelmes, **portszám nélküli, domain néven történő hozzáférés** a szolgáltatásokhoz.
-- **SSL tanúsítvány**: Let's Encrypt, DNS-01 challenge + wildcard → böngésző nem jelez HTTP figyelmeztetést.  
-
----
-
 ## 🔐 Privát domain (Bind9)
 
 - Privát domain: **`otthoni.local`**  
@@ -35,6 +28,7 @@
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
