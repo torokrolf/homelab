@@ -6,6 +6,11 @@
 
 # Nginx Reverse Proxy
 
+Az NPM-et azért használom, mert egyszerűen lehet vele **reverse proxy-t és SSL-t kezelni** a homelab szolgáltatásaimhoz.  
+- Könnyen hozzárendelhetem a wildcard tanúsítványt minden aldomainhez  
+- segítségével elrejtem a belső szerverek IP-címét, portját és path-jét. Ez védi a szervert, és egyszerűsíti a hozzáférést.
+- Grafikus felülete miatt gyorsan és átláthatóan konfigurálható
+
 ---
 
 ## SSL/TLS (Let’s Encrypt) – DNS-01 Wildcard megoldás
@@ -21,6 +26,7 @@ A homelabban a böngésző figyelmeztetett, mert nem HTTPS-t használtam. A mego
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
