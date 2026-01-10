@@ -1,8 +1,9 @@
-← [Back to Homelab Overview](../README.md)
+← [Back to Homelab Home](../README.md)
 
 [🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
 
 ---
+
 # 📚 Table of Contents
 
 - [00. Homelab Hardware](./00-Homelab_Hardware/README.md)
@@ -51,4 +52,4 @@ Additionally, it is important that potential employers can easily assess my skil
 
 ---
 
-← [Back to Homelab Overview](../README.md)
+← [Back to Homelab Home](../README.md)
