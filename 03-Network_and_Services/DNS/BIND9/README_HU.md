@@ -1,3 +1,9 @@
+← [Vissza a Homelab főoldalra](../README_HU.md)
+
+[🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
+
+---
+
 # 🌐 Bind9 DNS
 
 - **Bind9** szolgáltatásom két célt szolgál:  
@@ -6,6 +12,17 @@
 
 - Részlet a BIND9 db.otthoni.local zónafájljáról
 <img src="https://github.com/user-attachments/assets/12686bdf-316a-4b5a-9f78-95d481fe005f" alt="Kép leírása" width="500"/>
+
+---
+
+← [Vissza a Homelab főoldalra](../README_HU.md)
+
+
+
+
+
+
+
 
 
 
