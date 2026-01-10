@@ -18,7 +18,7 @@
 - Privát domain: **`otthoni.local`**  
 - Feloldás: **BIND9 DNS szerver**  
 
-**DNS override**
+### Privát domain - DNS override
 
 - A homelab hálózaton belül a `*.trkrolf.com` kéréseket **a lokális DNS IP-címére irányítom**.  
 - Előny:  
@@ -28,6 +28,7 @@
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
