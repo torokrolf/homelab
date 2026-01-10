@@ -14,7 +14,7 @@
 ## SSL/TLS (Let’s Encrypt) – DNS-01 Wildcard megoldás
 
 A homelabban **Nginx Proxy Managerrel (NPM)** használok **Let’s Encrypt SSL/TLS tanúsítványt**,  
-**ACME DNS-01 challenge** alapú hitelesítéssel.
+**DNS-01 challenge** alapú hitelesítéssel.
 
 ### Lényeg röviden
 - A HTTPS működéséhez SSL/TLS tanúsítvány szükséges
@@ -27,4 +27,5 @@ A homelabban **Nginx Proxy Managerrel (NPM)** használok **Let’s Encrypt SSL/T
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
