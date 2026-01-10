@@ -6,8 +6,12 @@
 
 # Virtualization
 
+---
+
 ## VMs and LXCs Running on Proxmox
 <img src="https://github.com/user-attachments/assets/e218f011-7896-4dbe-b5e2-0e13861d0909" alt="Kép leírása" width="500"/>
+
+---
 
 ## 🖥️ Proxmox Ubuntu VM Template + Cloud-init
 
@@ -31,6 +35,8 @@ Mivel a legtöbb VM-et Ubuntu-val használom Proxmoxon, készítettem egy **Ubun
   - Hálózat  
   - Domain és DNS szerver
 
+---
+
 ## 🔄 Proxmox 8 → 9 és PBS 3 → 4 Frissítés
 
 Már néhány hónapja használom a rendszert, és amikor megjelent a Proxmox 9 és a PBS 4, kíváncsi voltam, hogy sikerül-e egy már beállított rendszert problémamentesen frissíteni.
@@ -41,5 +47,8 @@ Már néhány hónapja használom a rendszert, és amikor megjelent a Proxmox 9 
 
 - Proxmox Backup Server (**PBS**) is frissítve: **3 → 4**.
 
+---
+
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
