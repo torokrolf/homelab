@@ -4,7 +4,7 @@
 
 ---
 
-# Virtualization
+# Proxmox
 
 ---
 
@@ -50,5 +50,6 @@ Már néhány hónapja használom a rendszert, és amikor megjelent a Proxmox 9 
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
