@@ -6,9 +6,6 @@
 
 # Nginx Reverse Proxy
 
-- Nginx Proxy Manager-ből egy részlet a proxy hosts-ról
-![Kép leírása](https://github.com/user-attachments/assets/3a8d190b-52aa-4a94-be9f-9aec13829945)
-
 ---
 
 ## SSL/TLS (Let’s Encrypt) – DNS-01 Wildcard megoldás
@@ -25,6 +22,7 @@ A homelabban a böngésző figyelmeztetett, mert nem HTTPS-t használtam. A mego
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
