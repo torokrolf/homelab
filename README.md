@@ -23,7 +23,7 @@
 
 ---
 
-# 🏡 Brief Summary of My Homelab
+# Brief Summary of My Homelab
 
 ## 🏠 Project Overview
 
