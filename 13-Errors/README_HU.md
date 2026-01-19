@@ -130,7 +130,7 @@
 
 ## Megosztás - Dinamikus NFS mount qBittorrentet futtató VM-hez race condition kezeléssel és qBittorrent leállítása ha a megosztás eltűnik
 
-**Fontos: Eredetileg SMB megosztást használtam. A TrueNAS megléte esetén a qBittorrent elindult, de ha ezután leállítottam a TrueNAS-t, a qBittorrent nem állt le, mert az SMB nem kezeli jól a váratlan leválasztást, és a df parancs is fagyott. Linuxos környezetben ezért érdemes inkább a natív NFS-t használni. NFS-re váltás után a probléma teljesen megszűnt.**  
+**Fontos: Eredetileg SMB megosztást használtam. A TrueNAS megléte esetén a qBittorrent elindult, de ha ezután leállítottam a TrueNAS-t, a qBittorrent nem állt le, mert az SMB nem kezeli jól a váratlan leválasztást, és ilyenkor a df parancs is fagyott. Linuxos környezetben ezért érdemes inkább a natív NFS-t használni. NFS-re váltás után a probléma teljesen megszűnt.**  
 
 **Probléma:** 
 - Amikor a kliens gép (Ubuntu/Proxmox) elindul, a systemd megpróbálja elindítani a szolgáltatásokat.  
