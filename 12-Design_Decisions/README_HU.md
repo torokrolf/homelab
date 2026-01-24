@@ -4,6 +4,11 @@
 
 ---
 
+## Design decisions and reasoning
+
+Itt bemutatom, hogy miért esett a döntésem bizonyos technológiákra és architektúrákra.
+
+---
 # Proxmox kisebb (250 GB) SSD-n, VM-ek gyors 1 TB-os M.2 SSD-n külön, szétválasztva
 
 - **Helyspórolás**: A Clonezilla mentés csak a 250 GB-os Proxmox SSD-ről szükséges, mivel a VM-eket a Proxmox Backup Server (PBS) menti. Így nem kell az 1 TB-os meghajtót, ami a Proxmoxot és a VM-eket tartalmazza, feleslegesen menteni, ami gyorsabb és kevesebb tárhelyet igényel.
@@ -39,15 +44,6 @@ A fő cél, hogy **minden szolgáltatás külön LXC-ben fusson**, így izolált
 - **Gyorsabb deployment**: új konténerek percek alatt létrehozhatók
 - **Skálázhatóság**: több konténer fér el egy hoston, mint VM
 - **Izoláció**: hibás vagy leállt szolgáltatás nem állítja le a többit
-
----
-# Reverse proxy (Nginx / Traefik) – lokális DNS név használata
-
-- **Fontos tervezési elv**, hogy **sem Nginx, sem Traefik esetén nem fix IP-címeket használok**, hanem **lokális DNS neveket**.
-- Ennek oka, hogy **IP-cím változás esetén ne kelljen minden konfigurációt módosítani**, elegendő legyen **csak a központosított DNS szerveren átírni** az adott rekordot.
-- Ez a megközelítés:
-  - **rugalmasabb** (IP-csere nem fájdalmas)
-  - **átláthatóbb** (beszédes hostnevek)
 
 ---
 
