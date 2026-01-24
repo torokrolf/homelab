@@ -6,64 +6,45 @@
 
 ## Design decisions and reasoning
 
-This document explains **why I chose specific technologies and architectures**, and **why I use them the way I do** in my homelab setup.  
-The main goals are **clarity, reliability, easy maintenance, and full control** over my own infrastructure.
+Here I explain why I chose certain technologies and architectures.
 
 ---
+# Proxmox on a smaller (250 GB) SSD, VMs on a separate fast 1 TB M.2 SSD
 
-## Proxmox on a smaller (250 GB) SSD, VMs on a separate fast 1 TB M.2 SSD
+- **Space saving**: Clonezilla backups are only required for the 250 GB Proxmox SSD, since virtual machines are backed up using Proxmox Backup Server (PBS). This means the 1 TB drive that stores the VMs does not need to be backed up unnecessarily, resulting in faster backups and reduced storage usage.
+- **I/O separation**: Both the Proxmox host and the virtual machines perform I/O operations. If they were on the same disk, the load would accumulate. Using separate SSDs distributes the workload, providing a more stable and faster system.
 
-- **Space saving**: Clonezilla backups are only required for the 250 GB Proxmox system SSD, since virtual machines are backed up using Proxmox Backup Server (PBS). This avoids unnecessary backups of the larger 1 TB VM disk, making backups faster and more storage-efficient.
-- **I/O separation**: Both the Proxmox host and the VMs perform disk I/O. Keeping them on separate SSDs prevents I/O contention, resulting in better performance and improved system stability.
+# Replacing FreeFileSync with Restic
 
----
+- Important files on my new laptop are backed up to the TrueNAS server using **Restic**.
+- Why Restic:
+  - **Secure**: With Restic, accidentally deleted source files can be restored. With FreeFileSync, if I accidentally synchronize after deleting a source file, recovery is not possible.
+  - **Versioning**: Previous states can also be restored.
+  - **Efficient**: Restic uses compression and is fast. FreeFileSync was much slower at detecting changes and copying modified files.
 
-## Replacing FreeFileSync with Restic
+# Vaultwarden
 
-- Important files on my laptop are backed up to the TrueNAS server using **Restic**.
-- Reasons for choosing Restic:
-  - **Safety**: Accidentally deleted files can be restored. With FreeFileSync, an accidental sync after deletion may permanently remove files.
-  - **Versioning**: Previous versions and historical states can be restored.
-  - **Efficiency**: Restic is fast and uses compression. FreeFileSync was significantly slower at detecting changes and copying modified files.
-
----
-
-## Vaultwarden
-
-- Self-hosted password manager  
+- Self-hosted password management  
 - Passwords never leave my infrastructure  
 - Full control and security  
 
----
-
-## Nextcloud
+# Nextcloud
 
 - Self-hosted file and photo management  
-- No need for Google Drive or other cloud services — Nextcloud acts as my personal Google Drive  
-- Full control and privacy  
+- No need for Google Drive or other cloud services — Nextcloud is my own Google Drive  
+- Full control and security  
 
 ---
+# All services run as LXC containers, one service per container
 
-## All services run as LXC containers, one service per container
+The main goal is that **each service runs in its own LXC container**, ensuring isolation.  
+If one container stops, it **does not affect the other services**.
 
-The core principle is that **each service runs in its own LXC container**, ensuring proper isolation.  
-If one container stops or fails, **it does not affect the other services**.
-
-**Advantages of LXC compared to virtual machines:**
-- **Lower resource usage**: less RAM and CPU required, faster startup
+**Advantages of using LXC compared to virtual machines:**
+- **Lower resource usage**: requires less RAM and CPU, faster startup
 - **Faster deployment**: new containers can be created in minutes
-- **Better scalability**: more services can run on a single host
-- **Isolation**: failures are contained within individual services
-
----
-
-## Reverse proxy (Nginx / Traefik) – using local DNS names
-
-- A **key design rule** is that **neither Nginx nor Traefik uses hardcoded IP addresses**, but instead relies on **local DNS hostnames**.
-- This ensures that **IP address changes do not require updating multiple configurations** — only the DNS record needs to be changed centrally.
-- Benefits of this approach:
-  - **Flexible**: IP changes are painless
-  - **Clean and readable**: descriptive hostnames instead of fixed IPs
+- **Scalability**: more containers can run on a single host than VMs
+- **Isolation**: a faulty or stopped service does not bring down the others
 
 ---
 
