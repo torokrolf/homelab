@@ -41,5 +41,14 @@ A fő cél, hogy **minden szolgáltatás külön LXC-ben fusson**, így izolált
 - **Izoláció**: hibás vagy leállt szolgáltatás nem állítja le a többit
 
 ---
+# Reverse proxy (Nginx / Traefik) – lokális DNS név használata
+
+- **Fontos tervezési elv**, hogy **sem Nginx, sem Traefik esetén nem fix IP-címeket használok**, hanem **lokális DNS neveket**.
+- Ennek oka, hogy **IP-cím változás esetén ne kelljen minden konfigurációt módosítani**, elegendő legyen **csak a központosított DNS szerveren átírni** az adott rekordot.
+- Ez a megközelítés:
+  - **rugalmasabb** (IP-csere nem fájdalmas)
+  - **átláthatóbb** (beszédes hostnevek)
+
+---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
