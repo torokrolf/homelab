@@ -22,9 +22,9 @@ Homelabomban egy **pfSense alapú tűzfalat és routert** használok.
 ---
 
 ## NAT & Routing
-- **Outbound NAT** konfigurálása belső hálózat számára
-- **Port Forward NAT** külső szolgáltatások publikálásához
-- **Hálózatok közötti routing biztosítása**
+- **Outbound NAT** konfigurálása belső hálózat számára  
+- **Port Forward NAT** külső szolgáltatások publikálásához  
+- **Hálózatok közötti routing biztosítása**  
 
 ---
 
@@ -32,7 +32,7 @@ Homelabomban egy **pfSense alapú tűzfalat és routert** használok.
 - IP tartományok kezelése
 - Statikus DHCP lease-ek
 - Gateway és DNS kiosztás
-- Szerverek és kliensek a 2.0-ás hálózaton MAC-címhez kötött statikus IP-t kapnak a DHCP szervertől
+- ARP table static entry, szerverek és kliensek statikus ARP bejegyzést kapnak IP-MAC pároshoz a 2.0-ás hálózaton a DHCP szervertől, védve így az **ARP spoofing** ellen
 - A switchnek fix IP-t adok manuálisan, mert így mindig elérhető marad a menedzsment felülete, függetlenül a DHCP-től
 
 ---
@@ -62,19 +62,4 @@ Homelabomban egy **pfSense alapú tűzfalat és routert** használok.
 
 ---
 
-
-
 ← [Vissza a Homelab főoldalra](../README_HU.md)
-
-
-
-
-
-
-
-
-
-
-
-
-
