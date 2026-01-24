@@ -14,6 +14,18 @@ Azért használok Reverse Proxy-t, mert egyszerű és átlátható módon teszi 
 
 ---
 
+## Lokális DNS nevek használata (Nginx / Traefik)
+
+**Fontos tervezési elv**, hogy **sem Nginx, sem Traefik esetén nem fix IP-címeket használok**, hanem **lokális DNS neveket**.
+
+Ennek oka, hogy **IP-cím változás esetén ne kelljen minden konfigurációt módosítani** – elegendő legyen **csak a központosított DNS szerveren átírni** az adott rekordot.
+
+Ez a megközelítés:
+- **rugalmasabb** – IP-csere esetén nincs újrakonfigurálás
+- **átláthatóbb** – beszédes hostnevek fix IP-címek helyett
+
+---
+
 ## SSL/TLS (Let’s Encrypt) – DNS-01 Wildcard megoldás
 
 A homelab környezetben a böngésző figyelmeztetett, mert a szolgáltatások nem HTTPS-en keresztül voltak elérhetők.  
