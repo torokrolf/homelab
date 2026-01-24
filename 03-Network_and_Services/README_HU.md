@@ -13,7 +13,7 @@
 | **DHCP**               | ISC-KEA, Windows Server 2019 DHCP szerver |
 | **DNS**                | BIND9 + Namecheap + Cloudflare, Windows Server 2019 DNS szerver |
 | **VPN**                | Tailscale, WireGuard, OpenVPN, NordVPN |
-| **Reverse Proxy**      | Nginx Proxy Manager |
+| **Reverse Proxy**      | Nginx Proxy Manager (lecseréltem), Traefik (használom jelenleg) |
 | **Reklámszűrés**       | Pi-hole |
 | **PXE Boot**           | iVentoy |
 | **Radius / LDAP**      | FreeRADIUS, FreeIPA |
@@ -23,3 +23,4 @@
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
