@@ -1,28 +1,43 @@
-← [Back to Homelab Home](../README.md)
+← [Back to the Homelab main page](../README_HU.md)
 
-[🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
-
----
-
-# Nginx Reverse Proxy
-
-I use NPM because it makes it easy to **manage reverse proxies and SSL** for my homelab services.  
-- I can easily assign a wildcard certificate to all subdomains  
-- It allows me to hide the internal servers’ IP addresses, ports, and paths. This protects the servers and simplifies access.  
-- Its graphical interface makes configuration fast and clear
+[🇬🇧 English](README.md) | [🇭🇺 Hungarian](README_HU.md)
 
 ---
 
-## SSL/TLS (Let’s Encrypt) – DNS-01 Wildcard Method
+# Reverse Proxy
 
-In my homelab, the browser warned me because I was not using HTTPS. The solution: I use **Let’s Encrypt SSL/TLS certificates with Nginx Proxy Manager (NPM)**, authenticated via the **DNS-01 challenge** method.
+I use a Reverse Proxy because it provides a simple and transparent way to manage **SSL/TLS certificates** for my homelab services.
 
-**Key points:**  
-- SSL/TLS certificate is required for HTTPS  
-- **DNS-01 challenge** verifies domain ownership using a DNS TXT record  
-- Verification is done via **Cloudflare API token**  
-- NPM creates a temporary TXT record (_acme-challenge.trkrolf.com  TXT  <ACME identifier>)
+- A wildcard certificate can be easily assigned to all subdomains
+- It hides internal server IP addresses, ports, and paths from the URL, which improves security and simplifies access
+- Thanks to its graphical interface, it can be configured quickly and clearly
 
 ---
 
-← [Back to Homelab Home](../README.md)
+## Using local DNS names (Nginx / Traefik)
+
+A **key design principle** is that **neither Nginx nor Traefik uses fixed IP addresses**, but instead relies on **local DNS names**.
+
+The reason for this is that **when an IP address changes, there is no need to modify every configuration** — it is sufficient to **update the corresponding record on the centralized DNS server**.
+
+This approach is:
+- **More flexible** – IP changes do not require reconfiguration
+- **More transparent** – descriptive hostnames instead of fixed IP addresses
+
+---
+
+## SSL/TLS (Let’s Encrypt) – DNS-01 Wildcard solution
+
+In the homelab environment, the browser showed warnings because the services were not accessible over HTTPS.  
+The solution was to use a **Reverse Proxy with Let’s Encrypt SSL/TLS certificates**, using **DNS-01 challenge–based validation**.
+
+**In short**
+- HTTPS requires an SSL/TLS certificate
+- The **DNS-01 challenge** verifies domain ownership using a DNS TXT record
+- Validation is performed using a **Cloudflare API token**
+- The Reverse Proxy temporarily creates a TXT record  
+  (`_acme-challenge.trkrolf.com  TXT  <ACME identifier>`)
+
+---
+
+← [Back to the Homelab main page](../README_HU.md)
