@@ -4,7 +4,7 @@
 
 ---
 
-## 📚 Table of Contents
+# 📚 Table of Contents
 
 - [Clonezilla](./Clonezilla/README.md)
 - [Macrium Reflect](./Macrium_Reflect/README.md)
@@ -35,5 +35,6 @@
 ---
 
 ← [Back to Homelab Home](../README.md)
+
 
 
