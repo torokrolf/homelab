@@ -2,8 +2,10 @@
 - name: Configure APT proxy
   hosts: gepeim
   become: true
+  gather_facts: false
+
   tasks:
-    - name: Set apt proxy
+    - name: Set APT proxy
       copy:
         dest: /etc/apt/apt.conf.d/01proxy
         content: 'Acquire::http::Proxy "http://192.168.2.207:3142";'
