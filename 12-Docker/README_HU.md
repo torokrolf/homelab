@@ -4,10 +4,7 @@
 
 ---
 
-# Docker szolgáltatások a Homelabban
-
-Ebben a mappában találhatóak a homelabban futó Docker szolgáltatások.  
-Minden szolgáltatás **LXC konténeren belül fut Dockerrel**, néhány szolgáltatás külön LXC-ben a tiszta izoláció és egyszerűbb menedzsment miatt.
+# Docker szolgáltatások a Homelabban, LXC konténerben használva
 
 ---
 
@@ -29,19 +26,9 @@ Minden szolgáltatás **LXC konténeren belül fut Dockerrel**, néhány szolgá
 
 - Minden szolgáltatás saját **LXC konténerben** fut, azon belül Docker izolálja az egyes konténereket.
 - Ez **könnyen elkülöníti a szolgáltatásokat**, frissíthetőek az image-ek, a hálózat tisztán tartható.
-- Névkonvenció: **container name = szolgáltatás neve**, így könnyen áttekinthető a `docker ps`-ben.
 
 ---
 
-## Használat
-
-1. Lépj a szolgáltatás mappájába:
-
-```bash
-cd Docker/<szolgáltatás-neve>
 
 
----
-
-← [Back to the Homelab main page](../README_HU.md)
 
