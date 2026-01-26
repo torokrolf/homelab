@@ -4,8 +4,7 @@
 
 ---
 
-# Docker szolgáltatások a Homelabban, LXC konténerben használva
-
+# Docker
 ---
 
 ## Jelenleg futó Docker szolgáltatások
@@ -22,12 +21,18 @@
 
 ---
 
-## Megjegyzések
+## Docker - Miért Docker
 
-- Minden szolgáltatás saját **LXC konténerben** fut, azon belül Docker izolálja az egyes konténereket.
-- Ez **könnyen elkülöníti a szolgáltatásokat**, frissíthetőek az image-ek, a hálózat tisztán tartható.
+A Docker használata a homelabban több szempontból is nagyon praktikus:
+
+- **Egyszerűség** – gyorsan indíthatóak és frissíthetőek a szolgáltatások, nincs szükség teljes OS telepítésre minden egyes új apphoz.  
+- **Izoláció** – minden szolgáltatás saját konténerben fut, így a hibák vagy konfigurációs problémák nem hatnak a többi szolgáltatásra.  
+- **Könnyű karbantartás** – image-ek frissítése, backup készítése és konténerek újraindítása egyszerűen, pár parancs segítségével.  
+- **Rugalmasság** – új szolgáltatások hozzáadása egyszerű: csak létre kell hozni egy új Docker Compose mappát.  
+- **Átláthatóság** – a konténerek nevei és konfigurációi következetesen kezelhetők, könnyen áttekinthető a  Portainer felületén.
 
 ---
+
 
 
 
