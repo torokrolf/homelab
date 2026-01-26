@@ -4,14 +4,18 @@
 
 ---
 
-# Tartalomjegyzék
+# 1. Automation
+
+---
+
+## 1.1 Tartalomjegyzék
 
 - [Ansible_Semaphore](./ansible/README_HU.md)
 - [Cron_Cronicle](./cron/README_HU.md)
 
 ---
 
-## Szolgáltatások
+## 1.2 Szolgáltatások
 
 | Szolgáltatás / Eszköz | Funkció / Leírás |
 |-----------------------|-----------------|
@@ -23,7 +27,7 @@
 
 ---
 
-# Ansible + Semaphore Server
+## 1.3 Ansible + Semaphore Server
 
 Ansible szerver célja: központi automatizáció és konfiguráció‑menedzsment a homelab kliensgépein.
 Semaphore szerver célja: egyszerű grafikus felületen vezényelni az Ansible playbookokat.
@@ -34,7 +38,7 @@ Semaphore szerver célja: egyszerű grafikus felületen vezényelni az Ansible p
 
 ---
 
-## ⚙️ Megvalósított automatizálási feladatok
+### 1.3.1 Megvalósított automatizálási feladatok
 
 - **Update task**: Operációs rendszerek és alkalmazások frissítése a Proxmox VM/LXC klienseken.  
 - **Időzónák beállítása**:  Minden kliensgépen a helyes időzóna konfigurálva van.  
@@ -45,6 +49,7 @@ Semaphore szerver célja: egyszerű grafikus felületen vezényelni az Ansible p
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
