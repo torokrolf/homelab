@@ -4,7 +4,7 @@
 
 ---
 
-## 📚 Tartalomjegyzék
+# 📚 Tartalomjegyzék
 
 - [Clonezilla](./Clonezilla/README_HU.md)
 - [Macrium Reflect](./Macrium_Reflect/README_HU.md)
@@ -33,6 +33,7 @@
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
