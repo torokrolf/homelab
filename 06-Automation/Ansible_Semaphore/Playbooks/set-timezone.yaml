@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: gepeim
   become: yes
   tasks:
     - name: Set timezone to Europe/Budapest
