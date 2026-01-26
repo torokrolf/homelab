@@ -10,6 +10,15 @@
 |----------------|------------|
 | Automation     | Ansible, Semaphore, Cron, Cronicle |
 
+---
+
+# Tartalomjegyzék
+
+- [Ansible](./ansible/README_HU.md)
+- [Cron / Cronicle](./cron/README_HU.md)
+
+---
+
 # Ansible + Semaphore Server
 
 The Ansible server provides central automation and configuration management for the homelab client machines.  
@@ -31,5 +40,6 @@ The Semaphore server allows running Ansible playbooks via a simple graphical int
 ---
 
 ← [Back to Homelab Home](../README.md)
+
 
 
