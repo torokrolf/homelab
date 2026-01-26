@@ -5,7 +5,7 @@
   gather_facts: false
 
   vars:
-    ansiblekliens_username: name
+    ansiblekliens_username: username
     ansiblekliens_password: pwd
 
   tasks:
