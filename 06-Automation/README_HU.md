@@ -4,11 +4,20 @@
 
 ---
 
+# Tartalomjegyzék
+
+- [Ansible](./ansible/README_HU.md)
+- [Cron / Cronicle](./cron/README_HU.md)
+
+---
+
 # Automation
 
 | Szolgáltatás / Eszköz | Leírás |
 |---------------|-------------|
 | Automation    | Ansible, Semaphore, Cron, Cronicle |
+
+---
 
 # Ansible + Semaphore Server
 
@@ -32,6 +41,7 @@ Semaphore szerver célja: egyszerű grafikus felületen vezényelni az Ansible p
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
