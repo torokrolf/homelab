@@ -10,8 +10,8 @@
 
 ## 1.1 Tartalomjegyzék
 
-- [Ansible_Semaphore](./ansible/README_HU.md)
-- [Cron_Cronicle](./cron/README_HU.md)
+- [Ansible_Semaphore](./Ansible_Semaphore/README_HU.md)
+- [Cron_Cronicle](./Cron_Cronicle/README_HU.md)
 
 ---
 
@@ -49,6 +49,7 @@ Semaphore szerver célja: egyszerű grafikus felületen vezényelni az Ansible p
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
