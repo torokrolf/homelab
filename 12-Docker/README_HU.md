@@ -1,4 +1,4 @@
-← [Back to the Homelab main page](../README_HU.md)
+← [Vissza a Homelab főoldalra](../README_HU.md)
 
 [🇬🇧 English](README.md) | [🇭🇺 Hungarian](README_HU.md)
 
@@ -32,6 +32,7 @@ A Docker használata a homelabban több szempontból is nagyon praktikus:
 - **Átláthatóság** – a konténerek nevei és konfigurációi következetesen kezelhetők, könnyen áttekinthető a  Portainer felületén.
 
 ---
+← [Vissza a Homelab főoldalra](../README_HU.md)
 
 
 
