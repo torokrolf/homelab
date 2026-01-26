@@ -11,11 +11,15 @@
 
 ---
 
-# Automation
+## Szolgáltatások
 
-| Szolgáltatás / Eszköz | Leírás |
-|---------------|-------------|
-| Automation    | Ansible, Semaphore, Cron, Cronicle |
+| Szolgáltatás / Eszköz | Funkció / Leírás |
+|-----------------------|-----------------|
+| **Ansible**           | Központi konfiguráció‑menedzsment és automatizáció VM-ek és LXC-k kezelésére |
+| **Semaphore**         | Webes felület az Ansible playbookok vezénylésére, egyszerű és áttekinthető menedzsment |
+| **Cron**              | Időzített feladatok futtatása Linux rendszereken |
+| **Cronicle**          | A Cron webes felülete |
+
 
 ---
 
@@ -41,6 +45,7 @@ Semaphore szerver célja: egyszerű grafikus felületen vezényelni az Ansible p
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
