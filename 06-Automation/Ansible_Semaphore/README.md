@@ -1,17 +1,27 @@
-← [Back to Homelab Home](../README.md)
+← [Back to the Homelab main page](../README_HU.md)
 
-[🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
+[🇬🇧 English](README.md) | [🇭🇺 Hungarian](README_HU.md)
 
 ---
 
-# Implemented Features
-Automation currently focuses on basic system maintenance and configuration tasks; additional playbooks and workflows are planned for future expansion.
+# 1. Ansible_Semaphore
 
-- Can be used via CLI and Semaphore Web UI.
+---
 
-## Playbooks in Use
-- Automating updates for VMs and LXCs with playbooks  
-- Creating common users across multiple machines  
-- Centralized management and distribution of SSH keys  
-- Managing shared configuration files (e.g., NTP server setup)  
-- Standardizing time zone settings across the infrastructure
+## 1.2 Implemented Features
+The automation currently focuses on basic system maintenance and configuration tasks; additional playbooks and workflows are planned for future expansion.
+
+- Usable via both CLI and the Semaphore Web UI.
+
+---
+
+## 1.3 Used Playbooks
+- Automates updates for VMs and LXCs using Ansible playbooks.  
+- Creates common users across multiple machines.  
+- Manages and distributes SSH keys consistently.  
+- Handles common configuration files (e.g., NTP server settings).  
+- Ensures consistent time zone configuration across the infrastructure.
+
+---
+
+← [Back to the Homelab main page](../README_HU.md)
