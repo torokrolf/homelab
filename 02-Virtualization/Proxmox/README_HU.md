@@ -19,12 +19,12 @@ A Proxmox környezetben futó összes virtuális gép és LXC konténer egysége
 **LXC formátum:**
 <szolgáltatás-neve>-<ip-utolsó-oktett>
 
-**Például:** unbound-223, traefik-224
+- **Például:** unbound-223, traefik-224
 
 **VM formátum:**
 <OS-neve>-<ip-utolsó-oktett>
 
-**Például:** winszerver-234, win11kliens-231
+- **Például:** winszerver-234, win11kliens-231
 
 ---
 
@@ -65,6 +65,7 @@ Már néhány hónapja használom a rendszert, és amikor megjelent a Proxmox 9 
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
