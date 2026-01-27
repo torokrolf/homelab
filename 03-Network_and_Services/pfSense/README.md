@@ -32,7 +32,7 @@ In my homelab, I use a **pfSense-based firewall and router**.
 - Manage IP ranges
 - Static DHCP leases
 - Assign gateways and DNS servers
-- **ARP table static entry**: servers and clients receive a static ARP entry for the IP-MAC pair on the 2.0 network via the DHCP server, protecting against **ARP spoofing**
+- ARP table static entry: servers and clients receive a static ARP entry for the IP-MAC pair on the 2.0 network via the DHCP server, protecting against **ARP spoofing**
 - The switch is assigned a fixed IP manually to always keep the management interface accessible, independent of DHCP
 
 ---
@@ -63,3 +63,4 @@ In my homelab, I use a **pfSense-based firewall and router**.
 ---
 
 ← [Back to Homelab main page](../README.md)
+
