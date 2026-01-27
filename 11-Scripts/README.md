@@ -15,14 +15,14 @@
 
 ## Powershell
 
-- **restic-backup-and-shutdown.ps1** – Performs a Restic backup and then automatically shuts down the machine.
+- **[restic-backup-and-shutdown.ps1](./windows/restic-backup-and-shutdown.ps1)** – Performs a Restic backup and then automatically shuts down the machine.
 
 ---
 
 ## Proxmox
 
-- **smb-vm-mount.sh** – Previously used on the Proxmox host to mount an SMB share provided by a VM running on the same host. Due to a race condition, it could fail because Proxmox tries to mount before the VM is up. No longer in use, as TrueNAS on a separate Proxmox host now provides the shares to VMs.  
-- **smb-vm-mount.service** – systemd service that runs the mount script (**smb-vm-mount.sh**) once at boot.
+- **[smb-vm-mount.sh](./proxmox/smb-vm-mount.sh)** – Previously used on the Proxmox host to mount an SMB share provided by a VM running on the same host. Due to a race condition, it could fail because Proxmox tries to mount before the VM is up. No longer in use, as TrueNAS on a separate Proxmox host now provides the shares to VMs.  
+- **[smb-vm-mount.service](./proxmox/smb-vm-mount.service)** – systemd service that runs the mount script (**smb-vm-mount.sh**) once at boot.
 
 ---
 
@@ -40,4 +40,5 @@
 ---
 
 ← [Back to Homelab Home](../README.md)
+
 
