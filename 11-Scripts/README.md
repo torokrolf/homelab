@@ -9,8 +9,7 @@
 ---
 
 ## pfSense
-
-- **ddns-force-update.sh** – Script running on the pfSense firewall to manually trigger a DDNS update when the IP changes.
+- **[ddns-force-update.sh](./pfsense/ddns-force-update.sh)** – Script running on the pfSense firewall to manually trigger a DDNS update when the IP changes.
 
 ---
 
@@ -41,3 +40,4 @@
 ---
 
 ← [Back to Homelab Home](../README.md)
+
