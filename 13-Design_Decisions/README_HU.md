@@ -4,7 +4,7 @@
 
 ---
 
-# Tervezési döntések
+# Tervezési döntések és érvek
 
 Itt bemutatom, hogy miért esett a döntésem bizonyos technológiákra és architektúrákra.
 
