@@ -4,7 +4,7 @@
 
 ---
 
-# 1. Automation
+# 1. 📚 Automation
 
 ---
 
@@ -49,6 +49,7 @@ Semaphore szerver célja: egyszerű grafikus felületen vezényelni az Ansible p
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
