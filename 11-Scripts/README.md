@@ -28,17 +28,18 @@
 
 ## qBittorrent + NFS (TrueNAS)
 
-- **nfs_qbittorrent.sh** – Script that continuously checks if the TrueNAS NFS share is available. If yes, it mounts the share and starts the **qbittorrent-nox** service; if the share disappears, it stops qBittorrent and unmounts the share.  
-- **nfs_qbittorrent.service** – systemd service that automatically runs **nfs_qbittorrent.sh** at boot and keeps it running. Ensures qBittorrent only runs when the NAS is available.
+- **[nfs_qbittorrent.sh](./qBittorrent/nfs_qbittorrent.sh)** – Script that continuously checks if the TrueNAS NFS share is available. If yes, it mounts the share and starts the **qbittorrent-nox** service; if the share disappears, it stops qBittorrent and unmounts the share.  
+- **[nfs_qbittorrent.service](./qBittorrent/nfs_qbittorrent.service)** – systemd service that automatically runs **nfs_qbittorrent.sh** at boot and keeps it running. Ensures qBittorrent only runs when the NAS is available.
 
 ---
 
 ## Termux / Android
 
-- **toggle_pihole_ssh.sh** – Bash script running in Termux to toggle Pi-hole on or off via SSH. Useful when a webpage is blocked by Pi-hole; a single tap on the phone can quickly enable or disable it. The script checks the current state and applies the appropriate action, sending a toast notification on Android.
+- **[toggle_pihole_ssh.sh](./Android/toggle_pihole_ssh.sh)** – Bash script running in Termux to toggle Pi-hole on or off via SSH. Useful when a webpage is blocked by Pi-hole; a single tap on the phone can quickly enable or disable it. The script checks the current state and applies the appropriate action, sending a toast notification on Android.
 
 ---
 
 ← [Back to Homelab Home](../README.md)
+
 
 
