@@ -23,16 +23,13 @@
 
 ## Docker - Miért Docker
 
-A Docker használata a homelabban több szempontból is nagyon praktikus:
+- **Kernel-függetlenség**: LXC használata mellett többször belefutottam olyan hibákba, ahol egy-egy szolgáltatás csak meghatározott Linux kernel-verzión futott stabilan. A gazdagép frissítése után a szolgáltatások gyakran megálltak vagy újra kellett konfigurálni őket. A Docker izolációs rétege megszünteti ezt a közvetlen függőséget, így a rendszer stabilabb marad kernel-frissítések után is.
 
-- **Egyszerűség** – gyorsan indíthatóak és frissíthetőek a szolgáltatások, nincs szükség teljes OS telepítésre minden egyes új apphoz.  
-- **Izoláció** – minden szolgáltatás saját konténerben fut, így a hibák vagy konfigurációs problémák nem hatnak a többi szolgáltatásra.  
-- **Könnyű karbantartás** – image-ek frissítése, backup készítése és konténerek újraindítása egyszerűen, pár parancs segítségével.  
-- **Rugalmasság** – új szolgáltatások hozzáadása egyszerű: csak létre kell hozni egy új Docker Compose mappát.  
-- **Átláthatóság** – a konténerek nevei és konfigurációi következetesen kezelhetők, könnyen áttekinthető a  Portainer felületén.
+- **Telepítési komplexitás**: Míg LXC-ben minden alkalmazást manuálisan, lépésről lépésre kell telepíteni az OS-en belül, a Docker-nél az előre csomagolt image-ek drasztikusan leegyszerűsítik a folyamatot. Nincs szükség a függőségek (libek, környezeti változók) egyenkénti vadászatára.
 
 ---
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
