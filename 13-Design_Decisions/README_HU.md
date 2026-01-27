@@ -4,7 +4,7 @@
 
 ---
 
-## Design decisions and reasoning
+# Tervezési döntések
 
 Itt bemutatom, hogy miért esett a döntésem bizonyos technológiákra és architektúrákra.
 
