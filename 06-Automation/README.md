@@ -4,7 +4,7 @@
 
 ---
 
-# 1. Automation
+# 1. 📚 Automation
 
 ---
 
@@ -48,3 +48,4 @@ The Semaphore server allows running Ansible playbooks via a simple graphical web
 ---
 
 ← [Back to the Homelab main page](../README_HU.md)
+
