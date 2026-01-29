@@ -37,7 +37,7 @@
 - **RAM:** 64 GB  
 - **System drive:** 256 GB SSD (Proxmox)  
 - **Storage:**  
-  - Crucial T500 PRO 1 TB M.2 NVME PCI-E 4.0 x4
+  - Crucial T500 PRO 1 TB M.2 NVME PCI-E 4.0 x4 (for VM/LXC)
 
 ---
 
