@@ -37,7 +37,7 @@
 - **RAM:** 64 GB  
 - **Rendszer meghajtó:** 256 GB SSD (Proxmox)  
 - **Adattárolás:**  
-  - Crucial T500 PRO 1 TB M.2 NVME PCI-E 4.0 x4 
+  - Crucial T500 PRO 1 TB M.2 NVME PCI-E 4.0 x4 (VM/LXC-nek)
 
 ---
 
