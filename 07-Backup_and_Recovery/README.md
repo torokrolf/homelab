@@ -1,4 +1,4 @@
-← [Back to the Homelab main page](../README_HU.md)
+← [Back to Homelab Home](../README.md)
 
 [🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
 
@@ -20,33 +20,35 @@
 
 ---
 
-## 1.2 My Applied Backup Strategy
- 
+## 1.2 My Backup Strategy
+
 - Full Proxmox host image with Clonezilla (**block-level backup**)
-- VM and LXC backups to Proxmox Backup Server (**block-level incremental backup**)  
-- Windows laptop system backup with Veeam Backup & Replication Community Edition to an SMB share (**block-level incremental backup**)
+- VM and LXC backups to Proxmox Backup Server (**block-level incremental backup**)
+- Windows laptop system backup with Veeam Backup & Replication Community Edition to SMB share (**block-level incremental backup**)
 - Windows and Ubuntu dual-boot machine backup with Macrium Reflect
 - Nextcloud file sharing between laptop and phone
-- One-way photo sync from phone to SMB share using FolderSync (**one-way synchronization**)
-- Laptop file sync with FreeFileSync, later replaced by Restic for versioned backups (**file-level backup**)
+- Phone photos backed up to SMB share via FolderSync (**one-way sync**)
+- Laptop file sync with FreeFileSync, later replaced by Restic for versioned backup (**file-level backup**)
 
 ---
 
-## 1.3 Veeam or Macrium for backing up a dual-boot machine?
+## 1.3 Veeam or Macrium for Dual-Boot Machines?
 
-I use Veeam B&R to back up either Linux or Windows using an agent. However, I do not use it for dual-boot systems because:
+I use Veeam B&R to back up Linux or Windows with its agent. However, for dual-boot systems:
 
-- The Windows agent and Linux agent cannot run at the same time
-- It only sees and backs up the currently running operating system
+- The Windows agent and Linux agent cannot run simultaneously
+- The agent can only see and back up the currently running OS
+- Without the agent, a full disk backup is possible, but Linux filesystems are often not handled properly
 
-For dual-boot machines (e.g., an old laptop with Ubuntu + Windows), Macrium should be used.
+For dual-boot machines (e.g., an old laptop with Ubuntu + Windows), Macrium should be used.  
 
 Macrium creates a full disk image:
 
-- It does not care what operating system is on the disk
-- It backs up the partition table, bootloader, and everything else
+- It doesn’t care which OS is installed
+- It backs up the partition table, bootloader, everything
 - Perfect for dual-boot / multi-boot machines
+- Boot partitions are also backed up
 
 ---
 
-← [Back to the Homelab main page](../README_HU.md)
+← [Back to Homelab Home](../README.md)
