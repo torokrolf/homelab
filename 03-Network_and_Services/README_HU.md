@@ -276,9 +276,10 @@ Segítségével gyorsan lehet diagnosztizálni hálózati problémákat és meg�
 <a name="dhcp2"></a>
 ## 1.12 DHCP
 
-[LSD pfSense](#dhcp2)  
+[LSD pfSense](#dhcp)  
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
