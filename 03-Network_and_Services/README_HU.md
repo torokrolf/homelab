@@ -34,14 +34,14 @@ Homelabomban egy **pfSense alapú tűzfalat és routert** használok.
 
 ---
 
-## NAT & Routing
+### 1.2.1 NAT & Routing
 - **Outbound NAT** konfigurálása belső hálózat számára  
 - **Port Forward NAT** külső szolgáltatások publikálásához  
 - **Hálózatok közötti routing biztosítása**  
 
 ---
 
-## DHCP szerver konfigurálása és üzemeltetése <a name="dhcp"></a>
+### 1.2.2 DHCP szerver konfigurálása és üzemeltetése <a name="dhcp"></a>
 - IP tartományok kezelése
 - Statikus DHCP lease-ek
 - Gateway és DNS kiosztás
@@ -50,7 +50,7 @@ Homelabomban egy **pfSense alapú tűzfalat és routert** használok.
 
 ---
 
-## NTP szerver futtatása <a name="ntp"></a>
+### 1.2.3 NTP szerver futtatása <a name="ntp"></a>
 - Időszinkron biztosítása belső klienseknek
 - Kliensek a **chronyd**-t használják
 - A pfSense szerver alapból a régebbi **ntpd** szervert használja, de a chronyd és az ntpd képes együttműködni hiba nélkül
@@ -58,18 +58,18 @@ Homelabomban egy **pfSense alapú tűzfalat és routert** használok.
 
 ---
 
-## WireGuard VPN
+### 1.2.4 WireGuard VPN
 - Modern, gyors VPN megoldás
 - Távoli hozzáférés biztosítása belső hálózathoz
 
-## OpenVPN
+### 1.2.5 OpenVPN
 - Tanúsítvány-alapú hitelesítés
 - Kompatibilitás különböző kliensekkel
 - VPN-en keresztüli routing és tűzfalszabályok kialakítása
 
 ---
 
-## Dynamic DNS (DDNS)
+### 1.2.6 Dynamic DNS (DDNS)
 - Dinamikus publikus IP-cím kezelése 
 - Fontos, hogy az **internet felől a VPN hálózathoz** mindig hozzáférhessek, még akkor is, ha a publikus IP változik
 
@@ -277,6 +277,7 @@ Segítségével gyorsan lehet diagnosztizálni hálózati problémákat és meg�
 
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
