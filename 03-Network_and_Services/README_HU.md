@@ -10,9 +10,9 @@
 
 ## 1.1 Hálózat és Szolgáltatások
 
-| Szolgáltatás / Terület   | Eszközök / Szoftverek |
-|--------------------------|-----------------------|
-| [ugras](#pfsense)**Tűzfal / Router**      | pfSense                                                         |
+| Szolgáltatás / Terület         | Eszközök / Szoftverek |
+|--------------------------      |-----------------------|
+| [Tűzfal / Router](#pfsense)    | pfSense                                                         |
 | **VPN**                  | Tailscale, WireGuard, OpenVPN, NordVPN                          |
 | **APT cache proxy**      | APT-Cache-NG                                                    |
 | **VLAN**                 | TP-LINK SG108E switch                                           |
@@ -277,6 +277,7 @@ Segítségével gyorsan lehet diagnosztizálni hálózati problémákat és meg�
 
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
