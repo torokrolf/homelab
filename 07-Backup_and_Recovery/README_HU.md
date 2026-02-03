@@ -51,7 +51,7 @@ A Macrium teljes disk image-et csinál:
 
 ---
 
-<a name="clonezila"></a>
+<a name="clonezilla"></a>
 Clonezilla
 
 ---
@@ -89,6 +89,7 @@ Nextcloud csak azokat a címeket engedi, amelyek szerepelnek a `config.php` fáj
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
