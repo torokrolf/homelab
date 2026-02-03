@@ -46,7 +46,9 @@ A Macrium teljes disk image-et csinál:
 - nem érdekli milyen OS van rajta
 - menti a partíciós táblát, bootloadert, mindent
 - tökéletes dualboot / multiboot gépre
+- boot partíciókat is menti
 
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
