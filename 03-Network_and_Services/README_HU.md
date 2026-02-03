@@ -13,7 +13,7 @@
 | Szolgáltatás / Terület         | Eszközök / Szoftverek |
 |--------------------------      |-----------------------|
 | [1.2 Tűzfal / Router](#pfsense)    | pfSense                                                         |
-| [1.3 VPN](vpn)                  | Tailscale, WireGuard, OpenVPN, NordVPN                          |
+| [1.3 VPN](#vpn)                  | Tailscale, WireGuard, OpenVPN, NordVPN                          |
 | [1.4 APT cache proxy](#apt)      | APT-Cache-NG                                                    |
 | [1.5 VLAN](#vlan)                 | TP-LINK SG108E switch                                           |
 | **Reverse Proxy**        | Nginx Proxy Manager (lecseréltem), Traefik (használom jelenleg) |
@@ -282,6 +282,7 @@ Segítségével gyorsan lehet diagnosztizálni hálózati problémákat és meg�
 
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
