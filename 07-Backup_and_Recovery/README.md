@@ -10,44 +10,103 @@
 
 ## 1.1 📚 Table of Contents
 
-- [Clonezilla](./Clonezilla/)
-- [Macrium Reflect](./Macrium_Reflect/)
-- [Nextcloud](./Nextcloud/)
-- [Proxmox Backup Server](./Proxmox_Backup_Server/)
-- [Rclone](./Rclone/)
-- [Restic](./Restic/)
-- [Veeam Backup & Replication](./Veeam_Backup_Replication/)
+- [1.2 Clonezilla](#clonezilla)
+- [1.3 Macrium Reflect](#macriumreflect)
+- [1.4 Nextcloud](#nextcloud)
+- [1.5 Proxmox Backup Server](#pbs)
+- [1.6 Rclone](#rclone)
+- [1.7 Restic](#restic)
+- [1.8 Veeam Backup & Replication](#veeam)
 
 ---
 
-## 1.2 My Backup Strategy
+## My Backup Strategy
 
-- Full Proxmox host image with Clonezilla (**block-level backup**)
-- VM and LXC backups to Proxmox Backup Server (**block-level incremental backup**)
-- Windows laptop system backup with Veeam Backup & Replication Community Edition to SMB share (**block-level incremental backup**)
-- Windows and Ubuntu dual-boot machine backup with Macrium Reflect
-- Nextcloud file sharing between laptop and phone
-- Phone photos backed up to SMB share via FolderSync (**one-way sync**)
-- Laptop file sync with FreeFileSync, later replaced by Restic for versioned backup (**file-level backup**)
+- Full Proxmox host image with Clonezilla (**block-level backup**)  
+- VM and LXC backups to Proxmox Backup Server (**block-level incremental backup**)  
+- Windows laptop system backup with Veeam Backup & Replication Community Edition to SMB share (**block-level incremental backup**)  
+- Windows and Ubuntu dual-boot machine backup with Macrium Reflect  
+- Nextcloud file sharing between laptop and phone  
+- Phone photos backed up to SMB share via FolderSync (**one-way sync**)  
+- Laptop file sync with FreeFileSync, later replaced by Restic for versioned backup (**file-level backup**)  
 
 ---
 
-## 1.3 Veeam or Macrium for Dual-Boot Machines?
+## Veeam or Macrium for Dual-Boot Machines?
 
 I use Veeam B&R to back up Linux or Windows with its agent. However, for dual-boot systems:
 
-- The Windows agent and Linux agent cannot run simultaneously
-- The agent can only see and back up the currently running OS
-- Without the agent, a full disk backup is possible, but Linux filesystems are often not handled properly
+- Windows agent and Linux agent cannot run simultaneously  
+- The agent only sees and backs up the currently running OS  
+- Without the agent, a full disk backup is possible, but Linux filesystems are often not handled properly  
 
 For dual-boot machines (e.g., an old laptop with Ubuntu + Windows), Macrium should be used.  
 
 Macrium creates a full disk image:
 
-- It doesn’t care which OS is installed
-- It backs up the partition table, bootloader, everything
-- Perfect for dual-boot / multi-boot machines
-- Boot partitions are also backed up
+- It doesn’t care which OS is installed  
+- Backs up the partition table, bootloader, everything  
+- Perfect for dual-boot / multi-boot machines  
+- Boot partitions are also backed up  
+
+---
+
+<a name="clonezilla"></a>
+## 1.2 Clonezilla
+
+---
+
+<a name="macriumreflect"></a>
+## 1.3 Macrium Reflect
+
+---
+
+<a name="nextcloud"></a>
+## 1.4 Nextcloud
+
+---
+
+<img width="2542" height="656" alt="image" src="https://github.com/user-attachments/assets/ed38c604-a50b-4b80-a4b4-331a7696582a" />
+
+---
+
+### 1.4.1 Advantages of Nextcloud
+
+- Self-hosted file and photo management  
+- No need for Google Drive / other cloud services; Nextcloud is my own personal cloud  
+- Full control and security  
+
+---
+
+### 1.4.2 Issues
+### Issues – Trusted Domains / Whitelist
+
+Nextcloud only allows access from addresses listed in the `config.php` file under the `trusted_domains` list.
+
+- If an address is not whitelisted, it may work via IP but not DNS (or vice versa), and Nextcloud will give an untrusted domain error  
+- If accessed through an **NGINX reverse proxy** (e.g., `nextcloud.trkrolf.com`), the **DNS name must be added** to the whitelist  
+- If using a **local DNS name** (e.g., `nextcloud.home.local`) or an **IP address**, these must also be added separately  
+- **When using Tailscale**, the server’s **Tailscale IP** must also be added; otherwise, remote access will not work  
+
+---
+
+<a name="pbs"></a>
+## 1.5 Proxmox Backup Server
+
+---
+
+<a name="rclone"></a>
+## 1.6 Rclone
+
+---
+
+<a name="restic"></a>
+## 1.7 Restic
+
+---
+
+<a name="veeam"></a>
+## 1.8 Veeam Backup & Replication
 
 ---
 
