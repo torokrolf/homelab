@@ -28,15 +28,15 @@
 
 ## 1.2 VPN használat a homelabhoz
 
-- **OpenVPN** és **WireGuard** VPN szervereket használok, de kipróbáltam a **Tailscale**-t is.
-- Telefonról így egyszerűen elérem a homelabomat és a rajta futó szolgáltatásokat.
+- **OpenVPN** és **WireGuard** VPN szervereket használok, de kipróbáltam a **Tailscale**-t és a **NordVPN Meshnet** rendszerét is.
+- A nyilvánosan elérhető szolgáltatások internet felől közvetlenül elérhetők, hogy ne legyen szükség VPN kliens beállítására a használatukhoz.
+- A belső, privát szolgáltatások kizárólag VPN-en keresztül érhetők el, így csak a megfelelő jogosultsággal rendelkező felhasználók férhetnek hozzájuk.
 - A **full tunnel** mód beállításával a telefon a **AdGuard Home forwarder DNS-t** használja reklámblokkolásra.
-- A publikusan elérhető szervereknél port forwarding-ot használok, hogy az internet felől "bárki" elérje.
-- A privát szervereknél VPN-t használok, hogy az internet felől elérje, akinek van hozzá jogosultságe.
 
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
