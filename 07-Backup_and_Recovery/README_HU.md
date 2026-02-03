@@ -7,12 +7,12 @@
 # 📚 Tartalomjegyzék
 
 - [Clonezilla](./Clonezilla/)
-- [Macrium Reflect](./Macrium_Reflect/README_HU.md)
-- [Nextcloud](./Nextcloud/README_HU.md)
-- [Proxmox Backup Server](./Proxmox_Backup_Server/README_HU.md)
-- [Rclone](./Rclone/README_HU.md)
-- [Restic](./Restic/README_HU.md)
-- [Veeam Backup & Replication](./Veeam_Backup_Replication/README_HU.md)
+- [Macrium Reflect](./Macrium_Reflect/)
+- [Nextcloud](./Nextcloud/)
+- [Proxmox Backup Server](./Proxmox_Backup_Server/)
+- [Rclone](./Rclone/)
+- [Restic](./Restic/)
+- [Veeam Backup & Replication](./Veeam_Backup_Replication/)
 
 ---
 
@@ -33,6 +33,7 @@
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
