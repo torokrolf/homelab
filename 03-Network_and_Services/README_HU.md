@@ -10,32 +10,273 @@
 
 ## 1.1 Hálózat és Szolgáltatások
 
-| Szolgáltatás / Terület | Eszközök / Szoftverek |
-|------------------------|----------------------|
-| **Tűzfal / Router**     | pfSense |
-| **VLAN**               | TP-LINK SG108E switch |
-| **DHCP**               | ISC-KEA, Windows Server 2019 DHCP szerver |
-| **DNS**                | BIND9 + Namecheap + Cloudflare, Windows Server 2019 DNS szerver |
-| **VPN**                | Tailscale, WireGuard, OpenVPN, NordVPN |
-| **Reverse Proxy**      | Nginx Proxy Manager (lecseréltem), Traefik (használom jelenleg) |
-| **Reklámszűrés**       | Pi-hole |
-| **PXE Boot**           | iVentoy |
-| **Radius / LDAP**      | FreeRADIUS, FreeIPA |
-| **Hálózati hibakeresés** | Wireshark |
-| **APT cache proxy** | APT-Cache-NG        |
+| Szolgáltatás / Terület   | Eszközök / Szoftverek |
+|--------------------------|-----------------------|
+| **Tűzfal / Router**      | pfSense                                                         |
+| **VPN**                  | Tailscale, WireGuard, OpenVPN, NordVPN                          |
+| **APT cache proxy**      | APT-Cache-NG                                                    |
+| **VLAN**                 | TP-LINK SG108E switch                                           |
+| **Reverse Proxy**        | Nginx Proxy Manager (lecseréltem), Traefik (használom jelenleg) |
+| **DHCP**                 | ISC-KEA, Windows Server 2019 DHCP szerver                       |
+| **DNS**                  | BIND9 + Namecheap + Cloudflare, Windows Server 2019 DNS szerver |
+| **Reklámszűrés**         | Pi-hole                                                         |
+| **PXE Boot**             | iVentoy                                                         |
+| **Radius / LDAP**        | FreeRADIUS, FreeIPA                                             |
+| **Hálózati hibakeresés** | Wireshark                                                       |
+
 
 ---
 
-## 1.2 VPN használat a homelabhoz
+## 1.2 pfSense
+
+Homelabomban egy **pfSense alapú tűzfalat és routert** használok.  
+
+---
+
+## NAT & Routing
+- **Outbound NAT** konfigurálása belső hálózat számára  
+- **Port Forward NAT** külső szolgáltatások publikálásához  
+- **Hálózatok közötti routing biztosítása**  
+
+---
+
+## DHCP szerver konfigurálása és üzemeltetése <a name="dhcp"></a>
+- IP tartományok kezelése
+- Statikus DHCP lease-ek
+- Gateway és DNS kiosztás
+- ARP table static entry, szerverek és kliensek statikus ARP bejegyzést kapnak IP-MAC pároshoz a 2.0-ás hálózaton a DHCP szervertől, védve így az **ARP spoofing** ellen
+- A switchnek fix IP-t adok manuálisan, mert így mindig elérhető marad a menedzsment felülete, függetlenül a DHCP-től
+
+---
+
+## NTP szerver futtatása <a name="ntp"></a>
+- Időszinkron biztosítása belső klienseknek
+- Kliensek a **chronyd**-t használják
+- A pfSense szerver alapból a régebbi **ntpd** szervert használja, de a chronyd és az ntpd képes együttműködni hiba nélkül
+- A pfSense szolgál NTP szerverként minden LXC-nek és VM-nek, kivéve a **FreeIPA LXC**-t
+
+---
+
+## WireGuard VPN
+- Modern, gyors VPN megoldás
+- Távoli hozzáférés biztosítása belső hálózathoz
+
+## OpenVPN
+- Tanúsítvány-alapú hitelesítés
+- Kompatibilitás különböző kliensekkel
+- VPN-en keresztüli routing és tűzfalszabályok kialakítása
+
+---
+
+## Dynamic DNS (DDNS)
+- Dinamikus publikus IP-cím kezelése 
+- Fontos, hogy az **internet felől a VPN hálózathoz** mindig hozzáférhessek, még akkor is, ha a publikus IP változik
+
+---
+
+## 1.3 VPN használat a homelabhoz
 
 - **OpenVPN** és **WireGuard** VPN szervereket használok, de kipróbáltam a **Tailscale**-t és a **NordVPN Meshnet** rendszerét is.
 - A nyilvánosan elérhető szolgáltatások internet felől közvetlenül elérhetők, hogy ne legyen szükség VPN kliens beállítására a használatukhoz.
 - A belső, privát szolgáltatások kizárólag VPN-en keresztül érhetők el, így csak a megfelelő jogosultsággal rendelkező felhasználók férhetnek hozzájuk.
 - A **full tunnel** mód beállításával a telefon a **AdGuard Home forwarder DNS-t** használja reklámblokkolásra.
+---
+
+## 1.4 APT Cache NG
 
 ---
 
+# Miért használom?
+
+- Hajnali 3-ra időzített **Ansible** által vezényelt VM és LXC frissítésekhez használom.  
+- Cél: ne kelljen minden VM/LXC-re külön letölteni a csomagokat, felesleges adatforgalmat generálva.  
+- A cache proxy tárolja a letöltött csomagokat, amiket egy kliens már kért. Ha egy másik gép kéri ugyanazt a csomagot, és szerepel a cache-ben, azaz van hit, akkor a gépek a frissítéseket az APT cache proxy szerverről töltik, nem az internetről, ezzel sávszélességet és adatforgalmat spórolok.
+
+Látható, hogy volt olyan nap, amikor a találati arány 88,26% volt: a 34,05 MB forgalomból 30,05 MB-ot a cache-ből tudott kiszolgálni. A legrosszabb napokon is a 996 MB forgalomból 526 MB-ot szolgált ki, ami 52%-os hatékonyságot jelent. Összességében 6,3 GB adatot szolgáltatott, amelyből csupán 2,2 GB kellett az internetről letölteni, így kb. 4 GB sávszélességet spóroltam.
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/d2e4134c-879c-4b88-b3f6-ccb0553a6d9f" alt="Leírás" width="800">
+</div>
+
+---
+
+# 1.5 VLAN kialakítása és hálózati szegmentáció
+
+- **Proxmox alatt VLAN interface létrehozása** (`vmbr0.30`), amely a `vmbr0` bridge-hez tartozik VLAN tag 30-cal.
+- A `vmbr0` bridge-en **VLAN-aware** mód engedélyezése, hogy a VLAN tagek kezelése ne dobódjon el.
+- A megfelelő **VM-ek VLAN taggel ellátása**, így elkülönültek a tag nélküli 2.0 hálózattól.
+- **Új alhálózat létrehozása a VLAN számára** (192.168.3.0/24), default gateway a pfSense VLAN interfésze.
+- **pfSense-en VLAN interfész létrehozása** és IP-cím kiosztása a VLAN hálózathoz.
+- **pfSense firewall szabályok és NAT konfiguráció** a VLAN és más hálózatok közötti kommunikációhoz.
+- **TP-Link SG108E switch VLAN konfigurálása** a trunkolt forgalom kezelésére.
+- **Statikus route hozzáadása az ASUS routeren**, hogy az 1.0 hálózat elérje a VLAN hálózatot.
+- **DHCP szolgáltatás engedélyezése** a pfSense VLAN interfészén.
+
+---
+
+# 1.6 Reverse Proxy
+
+Azért használok Reverse Proxy-t, mert egyszerű és átlátható módon teszi lehetővé az **SSL/TLS tanúsítványok kezelését** a homelab szolgáltatásaimhoz.
+
+- Könnyen hozzárendelhető egy wildcard tanúsítvány minden aldomainhez
+- Elrejti a belső szerverek IP-címét, portját és útvonalát az URL-ből, ami növeli a biztonságot és egyszerűsíti a hozzáférést
+- Grafikus felületének köszönhetően gyorsan és átláthatóan konfigurálható
+
+---
+
+## Lokális DNS nevek használata (Nginx / Traefik)
+
+**Fontos tervezési elv**, hogy **sem Nginx, sem Traefik esetén nem fix IP-címeket használok**, hanem **lokális DNS neveket**.
+
+Ennek oka, hogy **IP-cím változás esetén ne kelljen minden konfigurációt módosítani** – elegendő legyen **csak a központosított DNS szerveren átírni** az adott rekordot.
+
+Ez a megközelítés:
+- **rugalmasabb** – IP-csere esetén nincs újrakonfigurálás
+- **átláthatóbb** – beszédes hostnevek fix IP-címek helyett
+
+---
+
+## SSL/TLS (Let’s Encrypt) – DNS-01 Wildcard megoldás
+
+A homelab környezetben a böngésző figyelmeztetett, mert a szolgáltatások nem HTTPS-en keresztül voltak elérhetők.  
+A megoldás az volt, hogy **Reverse Proxy-t használok Let’s Encrypt SSL/TLS tanúsítvánnyal**, **DNS-01 challenge** alapú hitelesítéssel.
+
+**Lényeg röviden**
+- A HTTPS használatához SSL/TLS tanúsítvány szükséges
+- A **DNS-01 challenge** egy DNS TXT rekord segítségével igazolja a domain tulajdonjogát
+- A hitelesítés **Cloudflare API token** használatával történik
+- A Reverse Proxy ideiglenes TXT rekordot hoz létre  
+  (`_acme-challenge.trkrolf.com  TXT  <ACME azonosító>`)
+
+---
+
+# 1.7 RADIUS & LDAP
+
+---
+
+## FreeIPA szerver mint LDAP (CentOS 9)
+
+- Egységes felhasználó- és jogosultságkezelés az infrastruktúrán belül.
+
+---
+
+### Megvalósított funkciók
+
+- Felhasználók létrehozása és kezelése.
+- Sudo jogokkal rendelkező felhasználók konfigurálása.
+
+---
+
+## FreeRADIUS szerver mint RADIUS – Pfsense GUI hitelesítés
+
+---
+
+### Megvalósított funkciók
+
+- **Pfsense-re RADIUS beléptetéssel**: a Pfsense GUI-ra  bejelentkezés Radius hitelesítéssel.
+- **Authentication fallback**: ha a RADIUS szerver leáll, a lokális felhasználóval is be lehet jelentkezni.
+- **A lokális és RADIUS felhasználók neve/jelszava azonos**, így a felhasználónak nem kell tudnia, melyik hitelesítésen keresztül lép be.
+- **SQL adatbázis + PhpMyAdmin**: a felhasználók és jogosultságok kényelmesen kezelhetők grafikus felületen, így nem kell fájlokban szerkeszteni vagy logolni, hanem közvetlenül az adatbázisból történik a kezelés.
+
+---
+
+# 1.8 Reklámszűrés
+## Pi-hole 
+
+A Pi-hole célja: **DNS alapú reklámszűrés a homelab hálózaton**.
+
+---
+
+## 🌐 Hálózati integráció
+
+- **WireGuard VPN-be integrálva**:  
+  - Minden kliens, például a telefon, a Pi-hole DNS-en keresztül kap reklámszűrést, még internetkapcsolat esetén is.
+- Upstream DNS szerver: lokális **BIND9** szerver. 
+
+---
+
+<img src="https://github.com/user-attachments/assets/2d1971e8-aa55-4ebf-9fb2-3b0e95681515" alt="Kép leírása" width="700"/>
+
+---
+
+# 1.9 PXE Boot Server
+## iVentoy
+
+A cél: Nem kell minden gépen külön telepítőt futtatni USB-ről vagy CD-ről, segítségével bármilyen iso-t futtathatok (Clonezilla, Windows telepítő, Ubuntu telepítő stb.).
+
+---
+
+## 💻 Tesztek
+
+- **Clonezilla futtatása**:
+  - gépek klónozására SSH kapcsolaton keresztül.  
+  - disaster recovery tesztelés Clonezillával
+
+- **Automatikus indítás**:  
+  - iVentoy service létrehozva, így a rendszer **indításakor elindul**, jobb megoldás, mint cron-al indítani.
+
+**A lenti képen látható a legalsó sorban, hogy csatlakozott a PXE szerverhez egy gép.**
+
+<img width="800" alt="kép" src="https://github.com/user-attachments/assets/b9906010-79dc-44ec-b386-403fbe40a8f9" />
+
+---
+
+---
+
+# Publikus és privát domain névfeloldás
+
+## Publikus domain (Namecheap, Cloudflare)
+
+- Saját domain vásárlva a **Namecheap**-en, majd **Cloudflare** nameserverre átköltöztetve.  
+- Publikus szolgáltatások: **nem elérhetők közvetlenül**; lokálisan érem el, távolról **VPN-en keresztül**.  
+
+---
+
+# 1.10 DNS
+
+## Privát domain (Bind9)
+
+- Privát domain: **`otthoni.local`**  
+- Feloldás: **BIND9 DNS szerver**  
+
+### Privát domain - DNS override
+
+- A homelab hálózaton belül a `*.trkrolf.com` kéréseket **a lokális DNS IP-címére irányítom**.  
+- Előny:  
+  - Nem a publikus DNS szerver oldja fel a nevet  
+  - Internetkapcsolat nélkül is működik az otthoni szolgáltatások elérése
+
+---
+---
+
+# 🌐 Bind9 DNS
+
+- **Bind9** szolgáltatásom két célt szolgál:  
+  1. Az **otthoni `.local` domain**-emre autoritatív, így az otthoni gépek és szolgáltatások mindig elérhetők.  
+  2. A **`trkrolf.com`** domain felülírása az **NGINX szerverem IP-címére**, így internetkapcsolat hiányában is elérem az otthoni szolgáltatásokat, mivel a névfeloldás nem a Cloudflare nameserverről történik.  
+
+- Részlet a BIND9 db.otthoni.local zónafájljáról
+<img src="https://github.com/user-attachments/assets/12686bdf-316a-4b5a-9f78-95d481fe005f" alt="Kép leírása" width="500"/>
+
+---
+
+
+
+
+
+
+# 1.5 Wireshark Alapok
+
+Segítségével gyorsan lehet diagnosztizálni hálózati problémákat és megérteni az alapvető protokollok működését.
+
+**Protokollok gyakorlati tanulmányozására használtam, a mélyebb megértés érdekében (DNS, DHCP, ARP, TCP)**:
+- **DNS** lekérdezések és válaszok követése
+- **DHCP** üzenetek figyelése
+- **ARP** kommunikáció nyomon követése
+- **TCP 3-way handshake** vizsgálata
+
+
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
