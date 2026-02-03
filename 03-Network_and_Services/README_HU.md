@@ -10,20 +10,19 @@
 
 ## 1.1 Hálózat és Szolgáltatások
 
-| Szolgáltatás / Terület         | Eszközök / Szoftverek |
-|--------------------------      |-----------------------|
-| [1.2 Tűzfal / Router](#pfsense)    | pfSense                                                         |
-| [1.3 VPN](#vpn)                  | Tailscale, WireGuard, OpenVPN, NordVPN                          |
-| [1.4 APT cache proxy](#apt)      | APT-Cache-NG                                                    |
-| [1.5 VLAN](#vlan)                 | TP-LINK SG108E switch                                           |
-| **Reverse Proxy**        | Nginx Proxy Manager (lecseréltem), Traefik (használom jelenleg) |
-| **DHCP**                 | ISC-KEA, Windows Server 2019 DHCP szerver                       |
-| **DNS**                  | BIND9 + Namecheap + Cloudflare, Windows Server 2019 DNS szerver |
-| **Reklámszűrés**         | Pi-hole                                                         |
-| **PXE Boot**             | iVentoy                                                         |
-| **Radius / LDAP**        | FreeRADIUS, FreeIPA                                             |
-| **Hálózati hibakeresés** | Wireshark                                                       |
-
+| Szolgáltatás / Terület                 | Eszközök / Szoftverek |
+|--------------------------              |-----------------------|
+| [1.2 Tűzfal / Router](#pfsense)             | pfSense                                                         |
+| [1.3 VPN](#vpn)                             | Tailscale, WireGuard, OpenVPN, NordVPN                          |
+| [1.4 APT cache proxy](#apt)                 | APT-Cache-NG                                                    |
+| [1.5 VLAN](#vlan)                           | TP-LINK SG108E switch                                           |
+| [1.6 Reverse Proxy](#reverseproxy)          | Nginx Proxy Manager (lecseréltem), Traefik (használom jelenleg) |
+| [1.7 Radius / LDAP](#radiusldap)            | FreeRADIUS, FreeIPA                                             |
+| [1.8 Reklámszűrés](#reklamszures)           | Pi-hole                                                         |       
+| [1.9 PXE Boot](#pxe)                        | iVentoy                                                         |
+| [1.10 DNS](#dns)                            | BIND9 + Namecheap + Cloudflare, Windows Server 2019 DNS szerver |
+| [1.11 Hálózati hibakeresés](#hibakereses)   | Wireshark                                                       |
+| [1.12 DHCP](#dhcp)                          | ISC-KEA, Windows Server 2019 DHCP szerver                       |
 
 ---
 
@@ -119,7 +118,8 @@ Látható, hogy volt olyan nap, amikor a találati arány 88,26% volt: a 34,05 M
 
 ---
 
-# 1.6 Reverse Proxy
+<a name="reverseproxy"></a>
+## 1.6 Reverse Proxy
 
 Azért használok Reverse Proxy-t, mert egyszerű és átlátható módon teszi lehetővé az **SSL/TLS tanúsítványok kezelését** a homelab szolgáltatásaimhoz.
 
@@ -129,7 +129,7 @@ Azért használok Reverse Proxy-t, mert egyszerű és átlátható módon teszi 
 
 ---
 
-## Lokális DNS nevek használata (Nginx / Traefik)
+### 1.6.1 Lokális DNS nevek használata (Nginx / Traefik)
 
 **Fontos tervezési elv**, hogy **sem Nginx, sem Traefik esetén nem fix IP-címeket használok**, hanem **lokális DNS neveket**.
 
@@ -141,7 +141,7 @@ Ez a megközelítés:
 
 ---
 
-## SSL/TLS (Let’s Encrypt) – DNS-01 Wildcard megoldás
+### 1.6.2 SSL/TLS (Let’s Encrypt) – DNS-01 Wildcard megoldás
 
 A homelab környezetben a böngésző figyelmeztetett, mert a szolgáltatások nem HTTPS-en keresztül voltak elérhetők.  
 A megoldás az volt, hogy **Reverse Proxy-t használok Let’s Encrypt SSL/TLS tanúsítvánnyal**, **DNS-01 challenge** alapú hitelesítéssel.
@@ -155,28 +155,29 @@ A megoldás az volt, hogy **Reverse Proxy-t használok Let’s Encrypt SSL/TLS t
 
 ---
 
-# 1.7 RADIUS & LDAP
+<a name="radiusldap"></a>
+## 1.7 RADIUS & LDAP
 
 ---
 
-## FreeIPA szerver mint LDAP (CentOS 9)
+### 1.7.1 FreeIPA szerver mint LDAP (CentOS 9)
 
 - Egységes felhasználó- és jogosultságkezelés az infrastruktúrán belül.
 
 ---
 
-### Megvalósított funkciók
+#### 1.7.1.1 Megvalósított funkciók
 
 - Felhasználók létrehozása és kezelése.
 - Sudo jogokkal rendelkező felhasználók konfigurálása.
 
 ---
 
-## FreeRADIUS szerver mint RADIUS – Pfsense GUI hitelesítés
+### 1.7.2 FreeRADIUS szerver mint RADIUS – Pfsense GUI hitelesítés
 
 ---
 
-### Megvalósított funkciók
+#### 1.7.2.1 Megvalósított funkciók
 
 - **Pfsense-re RADIUS beléptetéssel**: a Pfsense GUI-ra  bejelentkezés Radius hitelesítéssel.
 - **Authentication fallback**: ha a RADIUS szerver leáll, a lokális felhasználóval is be lehet jelentkezni.
@@ -185,14 +186,15 @@ A megoldás az volt, hogy **Reverse Proxy-t használok Let’s Encrypt SSL/TLS t
 
 ---
 
-# 1.8 Reklámszűrés
-## Pi-hole 
+<a name="reklamszures"></a>
+## 1.8 Reklámszűrés
+### 1.8.1 Pi-hole 
 
 A Pi-hole célja: **DNS alapú reklámszűrés a homelab hálózaton**.
 
 ---
 
-## 🌐 Hálózati integráció
+#### 1.8.1.1 Hálózati integráció
 
 - **WireGuard VPN-be integrálva**:  
   - Minden kliens, például a telefon, a Pi-hole DNS-en keresztül kap reklámszűrést, még internetkapcsolat esetén is.
@@ -204,14 +206,15 @@ A Pi-hole célja: **DNS alapú reklámszűrés a homelab hálózaton**.
 
 ---
 
-# 1.9 PXE Boot Server
-## iVentoy
+<a name="pxe"></a>
+## 1.9 PXE Boot Server
+### 1.9.1 iVentoy
 
 A cél: Nem kell minden gépen külön telepítőt futtatni USB-ről vagy CD-ről, segítségével bármilyen iso-t futtathatok (Clonezilla, Windows telepítő, Ubuntu telepítő stb.).
 
 ---
 
-## 💻 Tesztek
+### 1.9.2 Tesztek
 
 - **Clonezilla futtatása**:
   - gépek klónozására SSH kapcsolaton keresztül.  
@@ -226,25 +229,27 @@ A cél: Nem kell minden gépen külön telepítőt futtatni USB-ről vagy CD-rő
 
 ---
 
----
+<a name="dns"></a>
+## 1.10 DNS
+### 1.10.1 Publikus domain (Namecheap, Cloudflare)
 
-# Publikus és privát domain névfeloldás
-
-## Publikus domain (Namecheap, Cloudflare)
-
-- Saját domain vásárlva a **Namecheap**-en, majd **Cloudflare** nameserverre átköltöztetve.  
-- Publikus szolgáltatások: **nem elérhetők közvetlenül**; lokálisan érem el, távolról **VPN-en keresztül**.  
-
----
-
-# 1.10 DNS
-
-## Privát domain (Bind9)
+- Saját domain vásárlva **Namecheap**-en, majd **Cloudflare** nameserverre átköltöztetve.  
+- Publikus szolgáltatások: **nem elérhetők közvetlenül**; lokálisan érem el, távolról **VPN-en keresztül**.
+- 
+### 1.10.2 Privát domain (Bind9)
 
 - Privát domain: **`otthoni.local`**  
-- Feloldás: **BIND9 DNS szerver**  
+- Feloldás: **BIND9 DNS szerver**
+- 
+- **Bind9** szolgáltatásom két célt szolgál:  
+  1. Az **otthoni `.local` domain**-re autoritatív, így az otthoni gépek és szolgáltatások mindig elérhetők.  
+  2. A **`trkrolf.com`** domain felülírása LAN-ról kérdezve az **NGINX szerverem IP-címére**, így internetkapcsolat hiányában is elérem az otthoni szolgáltatásokat, mivel a névfeloldás nem a Cloudflare nameserverről történik.  
 
-### Privát domain - DNS override
+- Részlet a BIND9 db.otthoni.local zónafájljáról
+<img src="https://github.com/user-attachments/assets/12686bdf-316a-4b5a-9f78-95d481fe005f" alt="Kép leírása" width="500"/>
+---
+
+#### 1.10.2.1 DNS override
 
 - A homelab hálózaton belül a `*.trkrolf.com` kéréseket **a lokális DNS IP-címére irányítom**.  
 - Előny:  
@@ -252,25 +257,10 @@ A cél: Nem kell minden gépen külön telepítőt futtatni USB-ről vagy CD-rő
   - Internetkapcsolat nélkül is működik az otthoni szolgáltatások elérése
 
 ---
----
 
-# 🌐 Bind9 DNS
-
-- **Bind9** szolgáltatásom két célt szolgál:  
-  1. Az **otthoni `.local` domain**-emre autoritatív, így az otthoni gépek és szolgáltatások mindig elérhetők.  
-  2. A **`trkrolf.com`** domain felülírása az **NGINX szerverem IP-címére**, így internetkapcsolat hiányában is elérem az otthoni szolgáltatásokat, mivel a névfeloldás nem a Cloudflare nameserverről történik.  
-
-- Részlet a BIND9 db.otthoni.local zónafájljáról
-<img src="https://github.com/user-attachments/assets/12686bdf-316a-4b5a-9f78-95d481fe005f" alt="Kép leírása" width="500"/>
-
----
-
-
-
-
-
-
-# 1.5 Wireshark Alapok
+<a name="hibakereses"></a>
+## 1.11 Hálózati hibakeresés
+### 1.11.1 Wireshark Alapok
 
 Segítségével gyorsan lehet diagnosztizálni hálózati problémákat és megérteni az alapvető protokollok működését.
 
@@ -280,8 +270,14 @@ Segítségével gyorsan lehet diagnosztizálni hálózati problémákat és meg�
 - **ARP** kommunikáció nyomon követése
 - **TCP 3-way handshake** vizsgálata
 
+---
+
+<a name="dhcp"></a>
+## 1.12 DHCP
+
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
