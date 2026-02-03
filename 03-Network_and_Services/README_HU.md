@@ -12,7 +12,7 @@
 
 | Szolgáltatás / Terület   | Eszközök / Szoftverek |
 |--------------------------|-----------------------|
-| **Tűzfal / Router**      | pfSense                                                         |
+| [ugras](#pfsense)**Tűzfal / Router**      | pfSense                                                         |
 | **VPN**                  | Tailscale, WireGuard, OpenVPN, NordVPN                          |
 | **APT cache proxy**      | APT-Cache-NG                                                    |
 | **VLAN**                 | TP-LINK SG108E switch                                           |
@@ -27,7 +27,8 @@
 
 ---
 
-## 1.2 pfSense
+<a name="pfsense"></a>
+## 1.2 pfSense 
 
 Homelabomban egy **pfSense alapú tűzfalat és routert** használok.  
 
@@ -276,6 +277,7 @@ Segítségével gyorsan lehet diagnosztizálni hálózati problémákat és meg�
 
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
