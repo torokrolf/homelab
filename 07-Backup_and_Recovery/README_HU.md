@@ -37,7 +37,8 @@
 Veeam B&R-t használok hogy Linuxot vagy Windowst mentsek vele agenttel. Azonban dualbootos rendszernél nem használom, mert:
 
 - Windows agent és Linux agent nem tud egyszerre futni
-- mindig csak az éppen futó rendszert látja és menti
+- az agent mindig csak az éppen futó rendszert látja és menti
+- agent nélkül ugyan lehetne teljes lemezről mentést csinálni, de a linuxos fájlrendszert sokszor nem megfelelően kezeli
 
 Dualbootos gépnél (pl régi laptop ubuntu + windows) Macriumot kell használni.
 
@@ -51,4 +52,5 @@ A Macrium teljes disk image-et csinál:
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
