@@ -20,7 +20,7 @@
 
 ---
 
-### 1.1.2 Alkalmazott mentési stratégiám
+## Alkalmazott mentési stratégiám
  
 - Teljes Proxmox host image Clonezillával (**blokkszintű mentés**)
 - VM és LXC mentések Proxmox Backup Serverre (**blokkszintű inkrementális mentés**)
@@ -32,7 +32,7 @@
 
 ---
 
-### 1.1.3 Veeam vagy Macrium dualbootos gép mentéséhez?
+## Veeam vagy Macrium dualbootos gép mentéséhez?
 
 Veeam B&R-t használok hogy Linuxot vagy Windowst mentsek vele agenttel. Azonban dualbootos rendszernél nem használom, mert:
 
@@ -110,6 +110,7 @@ Nextcloud csak azokat a címeket engedi, amelyek szerepelnek a `config.php` fáj
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
