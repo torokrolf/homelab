@@ -10,9 +10,9 @@
 
 ## 1.1 📚 Tartalomjegyzék
 
-- [1.2 Clonezilla](clonezilla)
+- [1.2 Clonezilla](#clonezilla)
 - [1.3 Macrium Reflect](./Macrium_Reflect/)
-- [1.4 Nextcloud](nextcloud)
+- [1.4 Nextcloud](#nextcloud)
 - [1.5 Proxmox Backup Server](./Proxmox_Backup_Server/)
 - [1.6 Rclone](./Rclone/)
 - [1.7 Restic](./Restic/)
@@ -89,6 +89,7 @@ Nextcloud csak azokat a címeket engedi, amelyek szerepelnek a `config.php` fáj
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
