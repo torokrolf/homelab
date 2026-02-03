@@ -9,10 +9,10 @@
 Itt bemutatom, hogy miért esett a döntésem bizonyos technológiákra és architektúrákra.
 
 ---
-# Proxmox kisebb (250 GB) SSD-n, VM-ek gyors 1 TB-os M.2 SSD-n külön, szétválasztva
+# 1TB-os M.2 SSD-n Proxmox és VM-ek közösen, később ezt szétválasztom és Proxmox kerül a 250 GB SSD-re míg VM-ek gyors 1 TB-os M.2 SSD-re
 
-- **Helyspórolás**: A Clonezilla mentés csak a 250 GB-os Proxmox SSD-ről szükséges, mivel a VM-eket a Proxmox Backup Server (PBS) menti. Így nem kell az 1 TB-os meghajtót, ami a Proxmoxot és a VM-eket tartalmazza, feleslegesen menteni, ami gyorsabb és kevesebb tárhelyet igényel.
-- **I/O terhelés szétválasztása**: a Proxmox host és a VM-ek is végeznek I/O műveleteket. Ha egy lemezen lennének, a terhelés összeadódna; külön SSD-kkel pedig a műveletek eloszlanak, ami stabilabb és gyorsabb rendszert biztosít.
+- **Helyspórolás**: Így Clonezilla mentés csak a 250 GB-os Proxmox-ot tartalmazó SSD-ről szükséges. A VM-eket a Proxmox Backup Server (PBS) menti, róluk szükségtelen Clonezilla mentés. Eredmény gyorsabb és kevesebb tárhelyet igénylő mentés.
+- **I/O terhelés szétválasztása**: a Proxmox host és a VM-ek is végeznek I/O műveleteket. Ha egy lemezen lennének, a terhelés összeadódna, külön SSD-vel pedig a műveletek eloszlanak, ami stabilabb és gyorsabb rendszert biztosít.
 
 # FreeFileSync lecserélése Restic-re
 
@@ -22,19 +22,18 @@ Itt bemutatom, hogy miért esett a döntésem bizonyos technológiákra és arch
     - **Verziózás**: akár korábbi állapotok is visszaállíthatók.
     - **Hatékony**: tömörít, gyors, FreeFileSync sokkal lassabban ellenőrizte le a változásokat és lassabban másolta  a megváltozott fájlokat.
 
-# Vaultwarden
-
-- Self-hosted jelszókezelés  
-- Jelszavak nem kerülnek ki az internetre  
-- Teljes kontroll és biztonság  
-
 # Nextcloud
 
 - Self-hosted fájl- és képkezelés  
 - Nem szükséges Google Drive / más felhő, Nextcloud a saját Google Drive-om
 - Teljes kontroll és biztonság  
 
----
+# Vaultwarden
+
+- Self-hosted jelszókezelés  
+- Jelszavak nem kerülnek ki az internetre  
+- Teljes kontroll és biztonság  
+
 # Minden szolgáltatást, amit tudok, LXC-ként futtatok, minden szolgáltatás külön LXC-n fut
 
 A fő cél, hogy **minden szolgáltatás külön LXC-ben fusson**, így izoláltak: ha egy konténer leáll, az **nem érinti a többi szolgáltatást**.
