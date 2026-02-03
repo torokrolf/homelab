@@ -11,12 +11,12 @@
 ## 1.1 📚 Tartalomjegyzék
 
 - [1.2 Clonezilla](#clonezilla)
-- [1.3 Macrium Reflect](./Macrium_Reflect/)
+- [1.3 Macrium Reflect](#macriumreflect)
 - [1.4 Nextcloud](#nextcloud)
-- [1.5 Proxmox Backup Server](./Proxmox_Backup_Server/)
-- [1.6 Rclone](./Rclone/)
-- [1.7 Restic](./Restic/)
-- [1.8 Veeam Backup & Replication](./Veeam_Backup_Replication/)
+- [1.5 Proxmox Backup Server](#pbs)
+- [1.6 Rclone](#rclone)
+- [1.7 Restic](#restic)
+- [1.8 Veeam Backup & Replication](#veeam)
 
 ---
 
@@ -32,7 +32,7 @@
 
 ---
 
-## 1.1.3 Veeam vagy Macrium dualbootos gép mentéséhez?
+### 1.1.3 Veeam vagy Macrium dualbootos gép mentéséhez?
 
 Veeam B&R-t használok hogy Linuxot vagy Windowst mentsek vele agenttel. Azonban dualbootos rendszernél nem használom, mert:
 
@@ -52,12 +52,17 @@ A Macrium teljes disk image-et csinál:
 ---
 
 <a name="clonezilla"></a>
-Clonezilla
+## 1.2 Clonezilla
+
+---
+
+<a name="macriumreflect"></a>
+## 1.3 Macrium Reflect
 
 ---
 
 <a name="nextcloud"></a>
-# Nextcloud
+## 1.4 Nextcloud
 
 ---
 
@@ -89,6 +94,7 @@ Nextcloud csak azokat a címeket engedi, amelyek szerepelnek a `config.php` fáj
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
