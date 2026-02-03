@@ -4,11 +4,11 @@
 
 ---
 
-# 1. Network and services
+# 1. Network and Services
 
 ---
 
-## 1.1 Network and Services
+## 1.1 Table of Contents
 
 | Service / Area                         | Tools / Software |
 |----------------------------------------|--------------------------------------------------------------------|
@@ -278,3 +278,4 @@ Used to quickly diagnose network problems and understand the operation of basic 
 [See pfSense DHCP](#dhcp)  
 
 ← [Back to Homelab Main Page](../README.md)
+
