@@ -4,7 +4,11 @@
 
 ---
 
-# Hálózat és Szolgáltatások
+# 1. Network and services
+
+---
+
+## 1.1 Hálózat és Szolgáltatások
 
 | Szolgáltatás / Terület | Eszközök / Szoftverek |
 |------------------------|----------------------|
@@ -22,5 +26,16 @@
 
 ---
 
+## VPN használat a homelabhoz
+
+- **OpenVPN** és **WireGuard** VPN szervereket használok, de kipróbáltam a **Tailscale**-t is.
+- Telefonról így egyszerűen elérem a homelabomat és a rajta futó szolgáltatásokat.
+- A **full tunnel** mód beállításával a telefon a **AdGuard Home forwarder DNS-t** használja reklámblokkolásra.
+- Jellyfin szerverem nyilvánosan elérhető internet felől, hogy egyszerűen hozzáférhessek bárhonnan.
+- Minden más szolgáltatás VPN-en keresztül fut, így ezek biztonságban vannak az interneten.
+
+---
+
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
