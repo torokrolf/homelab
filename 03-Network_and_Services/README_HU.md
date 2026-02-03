@@ -13,9 +13,9 @@
 | Szolgáltatás / Terület         | Eszközök / Szoftverek |
 |--------------------------      |-----------------------|
 | [1.2 Tűzfal / Router](#pfsense)    | pfSense                                                         |
-| **VPN**                  | Tailscale, WireGuard, OpenVPN, NordVPN                          |
-| **APT cache proxy**      | APT-Cache-NG                                                    |
-| **VLAN**                 | TP-LINK SG108E switch                                           |
+| [1.3 VPN](vpn)                  | Tailscale, WireGuard, OpenVPN, NordVPN                          |
+| [1.4 APT cache proxy](#apt)      | APT-Cache-NG                                                    |
+| [1.5 VLAN](#vlan)                 | TP-LINK SG108E switch                                           |
 | **Reverse Proxy**        | Nginx Proxy Manager (lecseréltem), Traefik (használom jelenleg) |
 | **DHCP**                 | ISC-KEA, Windows Server 2019 DHCP szerver                       |
 | **DNS**                  | BIND9 + Namecheap + Cloudflare, Windows Server 2019 DNS szerver |
@@ -62,6 +62,8 @@ Homelabomban egy **pfSense alapú tűzfalat és routert** használok.
 - Modern, gyors VPN megoldás
 - Távoli hozzáférés biztosítása belső hálózathoz
 
+---
+
 ### 1.2.5 OpenVPN
 - Tanúsítvány-alapú hitelesítés
 - Kompatibilitás különböző kliensekkel
@@ -75,6 +77,7 @@ Homelabomban egy **pfSense alapú tűzfalat és routert** használok.
 
 ---
 
+<a name="vpn"></a>
 ## 1.3 VPN használat a homelabhoz
 
 - **OpenVPN** és **WireGuard** VPN szervereket használok, de kipróbáltam a **Tailscale**-t és a **NordVPN Meshnet** rendszerét is.
@@ -83,11 +86,12 @@ Homelabomban egy **pfSense alapú tűzfalat és routert** használok.
 - A **full tunnel** mód beállításával a telefon a **AdGuard Home forwarder DNS-t** használja reklámblokkolásra.
 ---
 
+<a name="apt"></a>
 ## 1.4 APT Cache NG
 
 ---
 
-# Miért használom?
+### 1.4.1 Miért használom?
 
 - Hajnali 3-ra időzített **Ansible** által vezényelt VM és LXC frissítésekhez használom.  
 - Cél: ne kelljen minden VM/LXC-re külön letölteni a csomagokat, felesleges adatforgalmat generálva.  
@@ -100,7 +104,8 @@ Látható, hogy volt olyan nap, amikor a találati arány 88,26% volt: a 34,05 M
 
 ---
 
-# 1.5 VLAN kialakítása és hálózati szegmentáció
+<a name="vlan"></a>
+## 1.5 VLAN kialakítása és hálózati szegmentáció
 
 - **Proxmox alatt VLAN interface létrehozása** (`vmbr0.30`), amely a `vmbr0` bridge-hez tartozik VLAN tag 30-cal.
 - A `vmbr0` bridge-en **VLAN-aware** mód engedélyezése, hogy a VLAN tagek kezelése ne dobódjon el.
@@ -277,6 +282,7 @@ Segítségével gyorsan lehet diagnosztizálni hálózati problémákat és meg�
 
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
