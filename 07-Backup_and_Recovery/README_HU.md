@@ -10,17 +10,17 @@
 
 ## 1.1 📚 Tartalomjegyzék
 
-- [Clonezilla](./Clonezilla/)
-- [Macrium Reflect](./Macrium_Reflect/)
-- [Nextcloud](./Nextcloud/)
-- [Proxmox Backup Server](./Proxmox_Backup_Server/)
-- [Rclone](./Rclone/)
-- [Restic](./Restic/)
-- [Veeam Backup & Replication](./Veeam_Backup_Replication/)
+- [1.2 Clonezilla](#clonezilla)
+- [1.3 Macrium Reflect](./Macrium_Reflect/)
+- [1.4 Nextcloud](#nextcloud)
+- [1.5 Proxmox Backup Server](./Proxmox_Backup_Server/)
+- [1.6 Rclone](./Rclone/)
+- [1.7 Restic](./Restic/)
+- [1.8 Veeam Backup & Replication](./Veeam_Backup_Replication/)
 
 ---
 
-## 1.2 Alkalmazott mentési stratégiám
+### 1.1.2 Alkalmazott mentési stratégiám
  
 - Teljes Proxmox host image Clonezillával (**blokkszintű mentés**)
 - VM és LXC mentések Proxmox Backup Serverre (**blokkszintű inkrementális mentés**)
@@ -32,7 +32,7 @@
 
 ---
 
-## 1.3 Veeam vagy Macrium dualbootos gép mentéséhez?
+## 1.1.3 Veeam vagy Macrium dualbootos gép mentéséhez?
 
 Veeam B&R-t használok hogy Linuxot vagy Windowst mentsek vele agenttel. Azonban dualbootos rendszernél nem használom, mert:
 
@@ -51,6 +51,44 @@ A Macrium teljes disk image-et csinál:
 
 ---
 
+<a name="clonezila"></a>
+Clonezilla
+
+---
+
+<a name="nextcloud"></a>
+# Nextcloud
+
+---
+
+<img width="2542" height="656" alt="kép" src="https://github.com/user-attachments/assets/ed38c604-a50b-4b80-a4b4-331a7696582a" />
+
+---
+
+## Nextcloud előnye
+
+- Self-hosted fájl- és képkezelés  
+- Nem szükséges Google Drive / más felhő, Nextcloud a saját Google Drive-om
+- Teljes kontroll és biztonság  
+
+---
+## Hibák
+### Hibák - Trusted Domains / Whitelist
+
+Nextcloud csak azokat a címeket engedi, amelyek szerepelnek a `config.php` fájlban a `trusted_domains` listában.
+
+- Ha **NGINX reverse proxy-n** keresztül (pl. `nextcloud.trkrolf.com`) érem el, a **DNS nevet hozzá kell adni** a whitelisthez.
+- Ha **lokális DNS névvel** (pl. `nextcloud.otthoni.local`) vagy **IP címmel** szeretném elérni, azokat is külön fel kell venni.
+- **Tailscale használatakor** a szerver **Tailscale IP-jét** szintén hozzá kell adni, különben nem érhető el távolról.
+
+📌 Ha egy cím nincs whitelistelve:
+- IP-n működhet, DNS néven nem (vagy fordítva)
+- Nextcloud „untrusted domain” hibát ad
+
+---
+---
+
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
