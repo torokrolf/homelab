@@ -6,7 +6,7 @@
 
 # 📚 Tartalomjegyzék
 
-- [Clonezilla](./Clonezilla/README_HU.md)
+- [Clonezilla](./Clonezilla/)
 - [Macrium Reflect](./Macrium_Reflect/README_HU.md)
 - [Nextcloud](./Nextcloud/README_HU.md)
 - [Proxmox Backup Server](./Proxmox_Backup_Server/README_HU.md)
@@ -33,6 +33,7 @@
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
