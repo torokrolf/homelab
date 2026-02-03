@@ -6,13 +6,13 @@
 
 # 📚 Table of Contents
 
-- [Clonezilla](./Clonezilla/README.md)
-- [Macrium Reflect](./Macrium_Reflect/README.md)
-- [Nextcloud](./Nextcloud/README.md)
-- [Proxmox Backup Server](./Proxmox_Backup_Server/README.md)
-- [Rclone](./Rclone/README.md)
-- [Restic](./Restic/README.md)
-- [Veeam Backup & Replication](./Veeam_Backup_Replication/README.md)
+- [Clonezilla](./Clonezilla/)
+- [Macrium Reflect](./Macrium_Reflect/)
+- [Nextcloud](./Nextcloud/)
+- [Proxmox Backup Server](./Proxmox_Backup_Server/)
+- [Rclone](./Rclone/)
+- [Restic](./Restic/)
+- [Veeam Backup & Replication](./Veeam_Backup_Replication/)
 
 ---
 
@@ -35,6 +35,7 @@
 ---
 
 ← [Back to Homelab Home](../README.md)
+
 
 
 
