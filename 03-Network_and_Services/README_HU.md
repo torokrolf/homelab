@@ -22,7 +22,7 @@
 | [1.9 PXE Boot](#pxe)                        | iVentoy                                                         |
 | [1.10 DNS](#dns)                            | BIND9 + Namecheap + Cloudflare, Windows Server 2019 DNS szerver |
 | [1.11 Hálózati hibakeresés](#hibakereses)   | Wireshark                                                       |
-| [1.12 DHCP](#dhcp)                          | ISC-KEA, Windows Server 2019 DHCP szerver                       |
+| [1.12 DHCP](#dhcp2)                          | ISC-KEA, Windows Server 2019 DHCP szerver                       |
 
 ---
 
@@ -40,7 +40,8 @@ Homelabomban egy **pfSense alapú tűzfalat és routert** használok.
 
 ---
 
-### 1.2.2 DHCP szerver konfigurálása és üzemeltetése <a name="dhcp"></a>
+<a name="dhcp"></a>
+### 1.2.2 DHCP szerver konfigurálása és üzemeltetése 
 - IP tartományok kezelése
 - Statikus DHCP lease-ek
 - Gateway és DNS kiosztás
@@ -272,11 +273,13 @@ Segítségével gyorsan lehet diagnosztizálni hálózati problémákat és meg�
 
 ---
 
-<a name="dhcp"></a>
+<a name="dhcp2"></a>
 ## 1.12 DHCP
 
+[LSD pfSense](#dhcp2)  
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
