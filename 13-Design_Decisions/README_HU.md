@@ -1,4 +1,4 @@
-## 🖥️ Infrastructure Topology (Non-Cluster)
+## 🖥️ Infrastructure Topology (Non-Cluster, simplified)
 
 ```mermaid
 flowchart TB
@@ -10,21 +10,18 @@ flowchart TB
         PVE2["Proxmox2"]
     end
 
-    %% Passthrough disks on PVE2
-    SSD_TRUENAS["SSD Passthrough → TrueNAS"]
-    SSD_PBS["Disk Passthrough → PBS"]
-
-    TRUENAS_VM["TrueNAS VM (Proxmox2)"]
-    PBS_VM["PBS VM (Proxmox2)"]
+    %% Passthrough disks going directly to VMs
+    SSD_TRUENAS["SSD Passthrough → TrueNAS (VM)"]
+    SSD_PBS["Disk Passthrough → PBS (VM)"]
 
     %% Passthrough connections
-    PVE2 --> SSD_TRUENAS --> TRUENAS_VM
-    PVE2 --> SSD_PBS --> PBS_VM
+    PVE2 --> SSD_TRUENAS
+    PVE2 --> SSD_PBS
 
     %% TrueNAS storage exports
-    TRUENAS_VM --> NFS["NFS Share: torrent"]
-    TRUENAS_VM --> SMB1["SMB Share: backup"]
-    TRUENAS_VM --> SMB2["SMB Share: pxeiso"]
+    SSD_TRUENAS --> NFS["NFS Share: torrent"]
+    SSD_TRUENAS --> SMB1["SMB Share: backup"]
+    SSD_TRUENAS --> SMB2["SMB Share: pxeiso"]
 
     %% Both Proxmox nodes mount the shares
     PVE1 --> NFS
@@ -46,6 +43,7 @@ flowchart TB
     SMB1 --> RESTIC
     SMB2 --> PXEVM
 ```
+
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
 
