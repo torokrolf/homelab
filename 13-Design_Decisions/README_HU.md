@@ -43,22 +43,63 @@ A fő cél, hogy **minden szolgáltatás külön LXC-ben fusson**, így izolált
 - **Gyorsabb deployment**: új konténerek percek alatt létrehozhatók
 - **Skálázhatóság**: több konténer fér el egy hoston, mint VM
 - **Izoláció**: hibás vagy leállt szolgáltatás nem állítja le a többit
+
 ---
+
 ## Mountolási stratégiám
+
+- Proxmox1 node-on nincsen disk passthrough
+- Proxmox2 node-on fut van 2 disk passthrough (TrueNAS-nak és Proxmox Backup Servernek)
+- Proxmox hosthoz csatolom a TrueNAS megosztásokat, hogy továbbadja az unprivileged LXC-nek.
+- VM esetében az fstab segítségével mountolom a VM-hez közvetlenül a TrueNAS megosztásokat.
+
+```mermaid
+flowchart TB
+
+    TRUENAS["TRUENAS (Storage Server)\nDatasets: torrent, backup, pxeiso"]
+
+    PVE["PROXMOX HOST (PVE1)\nAutoFS mounts"]
+    SSD["Dedicated SSD (870 EVO)\nPassthrough"]
+
+    TRUENAS --> PVE
+    TRUENAS --> SSD
+
+    TORRENT["/mnt/pve/torrent (NFS)"]
+    BACKUP["/mnt/pve/backup (SMB)"]
+    PXEISO["/mnt/pve/pxeiso (SMB)"]
+
+    PVE --> TORRENT
+    PVE --> BACKUP
+    PVE --> PXEISO
+
+    JELLY["LXC 1010 (Jellyfin)\nbind mount"]
+    SERVARR["LXC 1011 (Servarr)\nbind mount"]
+    RESTIC["LXC 1008 (Restic)\nbind mount"]
+
+    TORRENT --> JELLY
+    TORRENT --> SERVARR
+    BACKUP --> RESTIC
+
+    PXEVM["VM 209 (PXEBoot)\n/etc/fstab mount"]
+    PXEISO --> PXEVM
+
+    VMS["VM 501 / 502\nPBS / TrueNAS\nFull control"]
+    SSD --> VMS
+```
 
 **Hálózati megosztások (NFS/SMB) és LXC**
 
-**Probléma**: Mivel sok unprivileged LXC-t használok a nagyobb biztonság érdekében, így szembesültem azzal, hogy nem tudok közvetlen mountolni unprivileged LXC-hez NFS vagy SMB megosztást úgy, mint a VM-hez. 
+**Probléma:** 
+Mivel sok unprivileged LXC-t használok, szembesültem azzal, hogy nem tudok közvetlen mountolni unprivileged LXC-hez NFS vagy SMB megosztást úgy, mint a VM-hez. 
 
-Helyszín: Proxmox Host Módszer: AutoFS 
+**Megoldás:**
+
+A Proxmox hosthoz próbáltam fstab-al csatolni, systemd szolgáltatásként csatolni, azonban amennyiben nem elérhető a megosztás, a hoston kiadott df parancs fagy. Megoldásként nekem az autofs-el történő mountolás vált be, ekkor is fagyhat a df parancs, de csak 1 percig és nem a végtelenségig. 
 
     Miért? Ha a tároló (pl. TrueNAS) leáll, az AutoFS nem fagyasztja le a host operációs rendszert. A --ghost opcióval a mappa látható marad, de csak akkor csatolódik, ha valódi igény van rá.
 
     LXC továbbítás: A hoston felcsatolt könyvtárat mp0 (mount point) segítségével adjuk át a konténernek.
 
-        Példa: pct set 1008 -mp0 /mnt/pve/backup,mp=/mnt/backup
-
-    Előny: Unprivileged konténerek használhatók, nincs szükség bonyolult jogosultságkezelésre a konténeren belül.
 
 2. Virtuális Gépek (VM)
 
@@ -66,7 +107,7 @@ Helyszín: Guest OS belül Módszer: Standard /etc/fstab
 
     Miért? A VM teljesen izolált kernel szinten. Nem tud "osztozni" a host mountjain, ezért úgy kezeljük, mint egy fizikai gépet.
 
-    Módszer: Közvetlenül a VM-en belül konfiguráljuk az NFS vagy SMB csatlakozást.
+    
 
 3. Dedikált Hardver (Disk Passthrough)
 
