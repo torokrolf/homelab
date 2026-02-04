@@ -91,7 +91,7 @@ Legjobb megoldásnak azt találtam, ha leállítom ekkor az LXC és VM gépeket,
 
 Lenti képen látható, TrueNAS-t leállítottam akkor leáll a másik Proxmoxon node-on lévő érintett VM/LXC gépek. Ha elindíntanám újra a TrueNAS-t akkor elindulnak ezek a gépek is.
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/042abb72-ea53-4769-b017-237a0f493dbe" alt="TrueNAS stopped" width="300">
+  <img src="https://github.com/user-attachments/assets/042abb72-ea53-4769-b017-237a0f493dbe" alt="TrueNAS stopped" width="400">
 </p>
 
 ---
