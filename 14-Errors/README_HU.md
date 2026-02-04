@@ -78,9 +78,15 @@
 
 **Megoldás**:
 - Legjobb megoldásnak azt találtam, ha leállítom ekkor az LXC és VM gépeket, úgyis az ahány szolgáltatás annyi VM/LXC elvet követem, így ez nem befolyásolja más szolgáltatás futását.
+- Leellenőrzöm scripttel 30 másodpercenként, hogy elérhető-e a megosztás.
+- Ha elérhető a megosztás, megnézi hogy fut-e a VM/LXC, ha nem fut, elindítja.
+- Ha nem elérhető a megosztás, akkor leállítja a VM/LXC-t ha fut.
+- 
 
 ❗ Script: [/11-Scripts/Android/proxmox-mount-monitor.sh](/11-Scripts/proxmox/proxmox-mount-monitor.sh)
+
 ❗ Script: [/11-Scripts/Android/proxmox-mount-monitor.service](/11-Scripts/proxmox/proxmox-mount-monitor.service)
+
 ❗ Script: [/11-Scripts/Android/proxmox-mount-monitor.timer](/11-Scripts/proxmox/proxmox-mount-monitor.timer)
 
 ---
