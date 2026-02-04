@@ -19,13 +19,6 @@
 
 ---
 
-## Proxmox
-
-- **[smb-vm-mount.sh](./proxmox/smb-vm-mount.sh)** – Régebben a Proxmox hoston ezzel mountoltam egy SMB megosztást, amit egy ugyanazon hoston futó VM szolgáltatott. Versenyhelyzet miatt előfordult, hogy a Proxmox megpróbálta mountolni, mielőtt a VM felállt, ezért a script hibát adhatott. Ma már nem használatos, mert a TrueNAS külön Proxmox hoston szolgáltatja a megosztást a VM-eknek.  
-- **[smb-vm-mount.service](./proxmox/smb-vm-mount.service)** – systemd service, amely egyszeri futtatással indítja el a **smb-vm-mount.sh** scriptet a boot után.
-
----
-
 ## qBittorrent + NFS (TrueNAS)
 
 - **[nfs_qbittorrent.sh](./qBittorrent/nfs_qbittorrent.sh)** – Script, ami folyamatosan ellenőrzi, hogy a TrueNAS NFS megosztás elérhető-e. Ha igen, mountolja a megosztást és elindítja a **qbittorrent-nox** szolgáltatást; ha a megosztás eltűnik, leállítja a qBittorrentet és unmountolja a megosztást.  
