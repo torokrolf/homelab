@@ -77,9 +77,8 @@
 - Several VMs and LXCs on the Proxmox1 node rely on TrueNAS shares. If a share becomes unavailable, applications like qBittorrent might start downloading to the VM's local storage instead, which is undesirable.
 
 **Solution**:
-- The best approach was to stop the affected LXC/VM units. Since I follow the "one service per VM/LXC" principle, this does not affect other services.
-- If the share becomes available again, the script restarts the VM/LXC.
-- Every share is mounted to Proxmox via AutoFS so the host is aware of them.
+The best approach was to stop the affected LXC/VM units. Since I follow the "one service per VM/LXC" principle, this does not affect other services. If the share becomes available again, the script restarts the VM/LXC.
+- All shares are mounted on Proxmox using autofs, so it can check them and pass them through to the LXC
 - A script checks the availability of the mount every 30 seconds.
 - If the share is available: It ensures the VM/LXC is running; if not, it starts it.
 - If the share is unavailable: It stops the VM/LXC if it is currently running.
