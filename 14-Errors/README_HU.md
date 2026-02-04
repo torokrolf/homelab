@@ -89,14 +89,9 @@ Legjobb megoldásnak azt találtam, ha leállítom ekkor az LXC és VM gépeket,
 
 ❗ Script: [/11-Scripts/Android/proxmox-mount-monitor.timer](/11-Scripts/proxmox/proxmox-mount-monitor.timer)
 
-Lenti képen látható, TrueNAS-t leállítottam.
+Lenti képen látható, TrueNAS-t leállítottam akkor leáll a másik Proxmoxon node-on lévő érintett VM/LXC gépek. Ha elindíntanám újra a TrueNAS-t akkor elindulnak ezek a gépek is.
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/c06fd588-4cde-48af-a4af-bfef33c89914" alt="TrueNAS stopped" width="300">
-</p>
-
-Lenti képen látható, a TrueNAS leállásakor ezek a VM-ek és LXC-k leállnak.
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/23e62678-e4b9-4764-be8f-ed881317c7a0" alt="VMs/LXC stopped" width="300">
+  <img src="https://github.com/user-attachments/assets/042abb72-ea53-4769-b017-237a0f493dbe" alt="TrueNAS stopped" width="300">
 </p>
 
 ---
