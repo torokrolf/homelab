@@ -10,8 +10,8 @@
 
 ## 1.1 Network and Services Overview
 
-| Service / Area                         | Tools / Software |
-|---------------------------------------|------------------|
+| Service / Area                         | Tools / Software 
+|---------------------------------------|------------------
 | [1.2 Firewall / Router](#pfsense)            | pfSense                                                 
 | [1.3 VPN](#vpn)                              | Tailscale, WireGuard, OpenVPN, NordVPN                  
 | [1.4 APT cache proxy](#apt)                  | APT-Cache-NG                                            
@@ -191,6 +191,7 @@ Used to study DNS, DHCP, ARP, TCP handshakes in practice.
 ---
 
 ← [Back to Homelab Home](../README.md)
+
 
 
 
