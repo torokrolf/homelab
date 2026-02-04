@@ -1,53 +1,3 @@
-## 🖥️ Infrastructure Topology (Non-Cluster, tidy, corrected, PBS mount only PVE2)
-
-```mermaid
-flowchart TB
-    %% Smooth lines
-    linkStyle default interpolate basis
-
-    %% Top row: Proxmox nodes side by side
-    subgraph PROXMOX["Proxmox Nodes"]
-        direction LR
-        PVE1["Proxmox1"]
-        PVE2["Proxmox2"]
-    end
-
-    %% Passthrough disks going directly to VMs (middle layer)
-    SSD_TRUENAS["SSD Passthrough → TrueNAS (VM)"]
-    SSD_PBS["Disk Passthrough → PBS (VM)"]
-
-    %% Passthrough connections (PVE2 only)
-    PVE2 --> SSD_TRUENAS
-    PVE2 --> SSD_PBS
-
-    %% TrueNAS storage exports
-    SSD_TRUENAS --> NFS["NFS Share: torrent"]
-    SSD_TRUENAS --> SMB1["SMB Share: backup"]
-    SSD_TRUENAS --> SMB2["SMB Share: pxeiso"]
-
-    %% Proxmox1 mounts the shares
-    PVE1 --> NFS
-    PVE1 --> SMB1
-    PVE1 --> SMB2
-
-    %% Consumers (bottom row)
-    subgraph CONSUMERS["VM/LXC Consumers"]
-        direction LR
-        JELLY["LXC 1010 Jellyfin\nProxmox-mounted"]
-        SERVARR["LXC 1011 Servarr\nProxmox-mounted"]
-        RESTIC["LXC 1008 Restic\nProxmox-mounted"]
-        PXEVM["VM 209 PXEBoot\nfstab mount"]
-    end
-
-    %% Storage → Consumers connections
-    NFS --> JELLY
-    NFS --> SERVARR
-    SMB1 --> RESTIC
-    SMB2 --> PXEVM
-```
-
-
-
 ← [Vissza a Homelab főoldalra](../README_HU.md)
 
 [🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
@@ -101,50 +51,48 @@ A fő cél, hogy **minden szolgáltatás külön LXC-ben fusson**, így izolált
 - Proxmox1 node-on nincsen disk passthrough
 - Proxmox2 node-on fut van 2 disk passthrough (TrueNAS-nak és Proxmox Backup Servernek)
 - Proxmox hosthoz csatolom a TrueNAS megosztásokat, hogy továbbadja az unprivileged LXC-nek.
-- VM esetében az fstab segítségével mountolom a VM-hez közvetlenül a TrueNAS megosztásokat.
-
-
-## 🖥️ Infrastructure Topology (Non-Cluster)
+- VM esetében az fstab segítségével mountolom a VM-hez közvetlenül a TrueNAS megosztásokat és nem a Proxmox adja tovább.
 
 ```mermaid
 flowchart TB
+    %% Smooth lines
+    linkStyle default interpolate basis
 
     %% Top row: Proxmox nodes side by side
-    subgraph PROXMOX["Proxmox Nodes (standalone)"]
+    subgraph PROXMOX["Proxmox Nodes"]
         direction LR
         PVE1["Proxmox1"]
         PVE2["Proxmox2"]
     end
 
-    %% Passthrough disks on PVE2
-    SSD_TRUENAS["SSD Passthrough → TrueNAS"]
+    %% Passthrough disks going directly to VMs (middle layer)
+    SSD_TRUENAS["SSD Passthrough → TrueNAS (VM)"]
     SSD_PBS["Disk Passthrough → PBS (VM)"]
 
-    TRUENAS_VM["TrueNAS VM (Proxmox2)"]
-
-    %% Passthrough connections
-    PVE2 --> SSD_TRUENAS --> TRUENAS_VM
+    %% Passthrough connections (PVE2 only)
+    PVE2 --> SSD_TRUENAS
+    PVE2 --> SSD_PBS
 
     %% TrueNAS storage exports
-    TRUENAS_VM --> NFS["NFS Share: torrent"]
-    TRUENAS_VM --> SMB1["SMB Share: backup"]
-    TRUENAS_VM --> SMB2["SMB Share: pxeiso"]
+    SSD_TRUENAS --> NFS["NFS Share: torrent"]
+    SSD_TRUENAS --> SMB1["SMB Share: backup"]
+    SSD_TRUENAS --> SMB2["SMB Share: pxeiso"]
 
-    %% Both Proxmox nodes mount the shares
+    %% Proxmox1 mounts the shares
     PVE1 --> NFS
     PVE1 --> SMB1
     PVE1 --> SMB2
 
-    PVE2 --> NFS
-    PVE2 --> SMB1
-    PVE2 --> SMB2
+    %% Consumers (bottom row)
+    subgraph CONSUMERS["VM/LXC Consumers"]
+        direction LR
+        JELLY["LXC 1010 Jellyfin\nProxmox-mounted"]
+        SERVARR["LXC 1011 Servarr\nProxmox-mounted"]
+        RESTIC["LXC 1008 Restic\nProxmox-mounted"]
+        PXEVM["VM 209 PXEBoot\nfstab mount"]
+    end
 
-    %% Consumers
-    JELLY["LXC 1010 Jellyfin\nbind mount"]
-    SERVARR["LXC 1011 Servarr\nbind mount"]
-    RESTIC["LXC 1008 Restic\nbind mount"]
-    PXEVM["VM 209 PXEBoot\nfstab mount"]
-
+    %% Storage → Consumers connections
     NFS --> JELLY
     NFS --> SERVARR
     SMB1 --> RESTIC
