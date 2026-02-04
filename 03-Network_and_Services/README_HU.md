@@ -10,19 +10,21 @@
 
 ## 1.1 Network and Services áttekintés
 
-| Szolgáltatás / Terület                 | Eszközök / Szoftverek                                     |
-|----------------------------------------|----------------------------------------------------------|
-| [1.2 Tűzfal / Router](#pfsense)        | pfSense                                                  |
-| [1.3 VPN](#vpn)                        | Tailscale, WireGuard, OpenVPN, NordVPN                   |
-| [1.4 APT cache proxy](#apt)            | APT-Cache-NG                                             |
-| [1.5 VLAN](#vlan)                      | TP-LINK SG108E switch                                    |
-| [1.6 Reverse Proxy](#reverseproxy)     | Nginx Proxy Manager (lecserélve), Traefik (jelenlegi)    |
-| [1.7 Radius / LDAP](#radiusldap)       | FreeRADIUS, FreeIPA                                      |
-| [1.8 Reklámszűrés](#reklamszures)      | Pi-hole                                                  |
-| [1.9 PXE Boot](#pxe)                   | iVentoy                                                  |
-| [1.10 DNS](#dns)                       | BIND9, Namecheap, Cloudflare, Windows Server 2019 DNS    |
-| [1.11 Hálózati hibakeresés](#debug)    | Wireshark                                                |
-| [1.12 DHCP](#dhcp2)                    | ISC-KEA, Windows Server 2019 DHCP                        |
+| Szolgáltatás / Terület                 | Eszközök / Szoftverek                                     
+|----------------------------------------|----------------------------------------------------------
+| [1.2 Tűzfal / Router](#pfsense)        | pfSense                                                  
+| [1.3 VPN](#vpn)                        | Tailscale, WireGuard, OpenVPN, NordVPN                   
+| [1.4 APT cache proxy](#apt)            | APT-Cache-NG                                             
+| [1.5 VLAN](#vlan)                      | TP-LINK SG108E switch                                    
+| [1.6 Reverse Proxy](#reverseproxy)     | Nginx Proxy Manager (lecserélve), Traefik (jelenlegi)    
+| [1.7 Radius / LDAP](#radiusldap)       | FreeRADIUS, FreeIPA                                      
+| [1.8 Reklámszűrés](#reklamszures)      | Pi-hole                                                  
+| [1.9 PXE Boot](#pxe)                   | iVentoy                                                  
+| [1.10 DNS](#dns)                       | BIND9, Namecheap, Cloudflare, Windows Server 2019 DNS    
+| [1.11 Hálózati hibakeresés](#debug)    | Wireshark                                                
+| [1.12 DHCP](#dhcp2)                    | ISC-KEA, Windows Server 2019 DHCP                        
+| [1.13 Notifications](#notifications)   | Gotify 
+
 
 ---
 
@@ -178,5 +180,10 @@ Mélyreható csomagelemzés a következők tanulmányozására:
 A részletes DHCP konfiguráció a [pfSense DHCP fejezetben](#dhcp) található.
 
 ---
+<a name="notification"></a>
+## 1.2  Notification
+
+---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
