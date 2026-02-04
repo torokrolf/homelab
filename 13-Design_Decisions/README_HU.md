@@ -68,10 +68,9 @@ flowchart TB
 
     %% Passthrough disks on PVE2
     SSD_TRUENAS["SSD Passthrough → TrueNAS"]
-    SSD_PBS["Disk Passthrough → PBS"]
+    SSD_PBS["Disk Passthrough → PBS (VM)"]
 
     TRUENAS_VM["TrueNAS VM (Proxmox2)"]
-    PBS_VM["PBS VM (Proxmox2)"]
 
     %% Passthrough connections
     PVE2 --> SSD_TRUENAS --> TRUENAS_VM
