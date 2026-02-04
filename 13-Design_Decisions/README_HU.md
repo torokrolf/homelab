@@ -48,7 +48,7 @@ A fő cél, hogy **minden szolgáltatás külön LXC-ben fusson**, így izolált
 
 **Hálózati megosztások (NFS/SMB) és LXC**
 
-Mivel sok unprivileged LXC-t használok a nagyobb biztonság érdekében, így szembesültem azzal, hogy nem tudok közvetlen mountolni unprivileged LXC-hez NFS vagy SMB megosztást úgy, mint a VM-hez. M
+**Probléma**: Mivel sok unprivileged LXC-t használok a nagyobb biztonság érdekében, így szembesültem azzal, hogy nem tudok közvetlen mountolni unprivileged LXC-hez NFS vagy SMB megosztást úgy, mint a VM-hez. 
 
 Helyszín: Proxmox Host Módszer: AutoFS 
 
