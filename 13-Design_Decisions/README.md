@@ -62,6 +62,7 @@ The primary goal is to run **each service in its own LXC container** to ensure i
 - **LXC Mounts**: Network shares are mounted on the Proxmox host first, then passed to unprivileged LXC containers via bind mounts for security.
 - **VM Mounts**: VMs mount TrueNAS shares directly via `/etc/fstab`, as they do not share the host kernel like LXC containers do.
 
+
 ```mermaid
 flowchart TB
     %% Smooth lines
@@ -106,6 +107,8 @@ flowchart TB
     NFS --> SERVARR
     SMB1 --> RESTIC
     SMB2 --> PXEVM
+```
+
 
 ---
 
