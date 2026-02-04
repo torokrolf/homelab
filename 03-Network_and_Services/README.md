@@ -1,6 +1,6 @@
 ← [Back to Homelab Home](../README.md)
 
-[🇬🇧 English](README.md) | [🇭🇭 Magyar](README_HU.md)
+[🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
 
 ---
 
@@ -185,3 +185,4 @@ Used to study DNS, DHCP, ARP, TCP handshakes in practice.
 ---
 
 ← [Back to Homelab Home](../README.md)
+
