@@ -78,7 +78,7 @@
 
 **Megoldás**:
 Legjobb megoldásnak azt találtam, ha leállítom ekkor az LXC és VM gépeket, úgyis az ahány szolgáltatás annyi VM/LXC elvet követem, így ez nem befolyásolja más szolgáltatás futását. Amennyiben elérhető a megosztás, akkor elindítom a VM/LXC-t.
-- Proxmoxhoz autofs-el minden megosztás mountolva van, hogy tudjon róla.
+- Proxmoxhoz autofs-el minden megosztás mountolva van, hogy tudja ellenőrizni és továbbosztani LXC-nek.
 - Leellenőrzöm scripttel 30 másodpercenként, hogy elérhető-e a megosztás.
 - Ha elérhető a megosztás, megnézi hogy fut-e a VM/LXC, ha nem fut, elindítja.
 - Ha nem elérhető a megosztás, akkor leállítja a VM/LXC-t ha fut.
