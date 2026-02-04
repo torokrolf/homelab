@@ -193,17 +193,18 @@ A részletes DHCP konfiguráció a [pfSense DHCP fejezetben](#dhcp) található.
 - **Valós idejű értesítések:** Push értesítések mobilra azonnal.
 
 **Hol használom?**  
-- Proxmox ha elveszíti a TrueNAS mountolásokat, erről értesítést kapok. ❗ Script: [/11-Scripts/Android/proxmox-mount-monitor.sh](/11-Scripts/proxmox/mount-monitor)
-- Proxmox-ról értesítést kapok warnings/errors témákban, például ha kevés a lemezhely.
-- S.m.a.r.t. hibákról kapok értesítést.
-- Radarr/Sonarr ha végez a film/sorozat letöltésével, értesítést kapok erről.
-- Ansible update playbookom, ami updateli a klienseket, ha lefut, akkor ennek eredményéről értesítést kapok, hogy sikeresen vagy sikertelenül futott-e le.
+- Proxmox ha elveszíti a TrueNAS mountolásokat, erről értesítést kapok. ❗ Script: [/11-Scripts/proxmox/mount-monitor](/11-Scripts/proxmox/mount-monitor)
+- Proxmox-ról értesítést kapok warnings/errors témákban, például ha kevés a lemezhely. Promox GUI-ban beállítható.
+- S.m.a.r.t. hibákról kapok értesítést. ❗ Script: [/11-Scripts/proxmox/S.M.A.R.T.](/11-Scripts/proxmox/S.M.A.R.T.)
+- Radarr/Sonarr ha végez a film/sorozat letöltésével, értesítést kapok erről. Radarr/Sonarr GUI-ja támogatja natívan, GUI-ból.
+- Ansible update playbookom, ami updateli a klienseket, ha lefut, akkor ennek eredményéről értesítést kapok, hogy sikeresen vagy sikertelenül futott-e le.❗ Script: [/06-Automation/Ansible_Semaphore/Playbooks/upgrade-system.yaml](/06-Automation/Ansible_Semaphore/Playbooks/upgrade-system.yaml)
 - Proxmox Backup Server-re törtétnő VM/LXC mentés után az eredményről értesítést kapok.
 - Proxmox Backup Serveren a backupok verifikálásának eredményéről.
 
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
