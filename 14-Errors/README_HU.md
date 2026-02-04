@@ -8,18 +8,19 @@
 
 ## 📚 Tartalomjegyzék
 
-- [1.1 DNS – Publikus domain névfeloldás internet nélkül](#dns-offline)
-- [1.2 DNS – Pi-hole blokkolja a Google képtalálatokat](#dns-pihole)
-- [1.3 SSH – SSH belépés LXC / Ubuntu esetén](#ssh-lxc)
-- [1.4 Megosztás – SMB/NFS elérés LXC-ből](#mount-lxc)
-- [1.5 Hardver – Külső SSD stabilitása USB-n](#hw-ssd)
-- [1.6 Hardver – M70q hálózati adapter instabilitás](#hw-m70q)
-- [1.7 Hardver – Lokális és publikus DNS problémák (Wi-Fi)](#hw-wifi)
-- [1.8 DDNS – Cloudflare frissítés pfSense mögött](#ddns-pfsense)
+- [DNS – Publikus domain névfeloldás internet nélkül](#dns-offline)
+- [DNS – Pi-hole blokkolja a Google képtalálatokat](#dns-pihole)
+- [SSH – SSH belépés LXC / Ubuntu esetén](#ssh-lxc)
+- [Megosztás – SMB/NFS elérés LXC-ből](#mount-lxc)
+- [Megosztás – ha nem elérhető a Truenas megosztás](#nemelerheto)
+- [Hardver – Külső SSD stabilitása USB-n](#hw-ssd)
+- [Hardver – M70q hálózati adapter instabilitás](#hw-m70q)
+- [Hardver – Lokális és publikus DNS problémák (Wi-Fi)](#hw-wifi)
+- [DDNS – Cloudflare frissítés pfSense mögött](#ddns-pfsense)
 
 ---
 
-## 1.1 DNS – Publikus domain névfeloldás internet nélkül
+## DNS – Publikus domain névfeloldás internet nélkül
 <a name="dns-offline"></a>
 
 **Probléma**:
@@ -30,7 +31,7 @@
 
 ---
 
-## 1.2 DNS – Pi-hole blokkolja a Google képtalálatokat mobilon
+## DNS – Pi-hole blokkolja a Google képtalálatokat mobilon
 <a name="dns-pihole"></a>
 
 **Probléma**:
@@ -46,7 +47,7 @@
 
 ---
 
-## 1.3 SSH – SSH belépés LXC / Ubuntu esetén
+## SSH – SSH belépés LXC / Ubuntu esetén
 <a name="ssh-lxc"></a>
 
 **Probléma**:
@@ -57,7 +58,7 @@
 
 ---
 
-## 1.4 Megosztás – SMB/NFS elérés LXC-ből
+## Megosztás – SMB/NFS elérés LXC-ből
 <a name="mount-lxc"></a>
 
 **Probléma**:
@@ -69,7 +70,22 @@
 
 ---
 
-## 1.5 Hardver – Külső SSD stabilitása USB-n
+## Megosztás – ha nem elérhető a Truenas megosztás]
+<a name="nemelerheto"></a>
+
+**Probléma**:
+- Mivel nekem a Proxmox1-es node-on fut több VM és LXC ami használja a TrueNAS megosztást, így problémás lehet, hogy mi van akkor, amennyiben nem elérhető a megosztás. Például a qBittorrent a megosztás amennyiben nem volt elérhető, a VM lokális terhelyére folytatta a letöltést, ami probléma. 
+
+**Megoldás**:
+- Legjobb megoldásnak azt találtam, ha leállítom ekkor az LXC és VM gépeket, úgyis az ahány szolgáltatás annyi VM/LXC elvet követem, így ez nem befolyásolja más szolgáltatás futását.
+
+❗ Script: [/11-Scripts/Android/proxmox-mount-monitor.sh](/11-Scripts/proxmox/proxmox-mount-monitor.sh)
+❗ Script: [/11-Scripts/Android/proxmox-mount-monitor.service](/11-Scripts/proxmox/proxmox-mount-monitor.service)
+❗ Script: [/11-Scripts/Android/proxmox-mount-monitor.timer](/11-Scripts/proxmox/proxmox-mount-monitor.timer)
+
+---
+
+## Hardver – Külső SSD stabilitása USB-n
 <a name="hw-ssd"></a>
 
 **Probléma**:
@@ -80,7 +96,7 @@
 
 ---
 
-## 1.6 Hardver – M70q hálózati adapter instabilitása
+## Hardver – M70q hálózati adapter instabilitása
 <a name="hw-m70q"></a>
 
 **Probléma**:
@@ -91,7 +107,7 @@
 
 ---
 
-## 1.7 Hardver – Lokális és publikus DNS problémák Wi-Fi adapter miatt
+## Hardver – Lokális és publikus DNS problémák Wi-Fi adapter miatt
 <a name="hw-wifi"></a>
 
 **Probléma**:
@@ -102,7 +118,7 @@
 
 ---
 
-## 1.8 DDNS – DDNS nem frissül Cloudflare-en pfSense mögött
+## DDNS – DDNS nem frissül Cloudflare-en pfSense mögött
 <a name="ddns-pfsense"></a>
 
 **Probléma**:
