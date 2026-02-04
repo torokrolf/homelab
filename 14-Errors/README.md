@@ -84,11 +84,13 @@
 - If the share is available: It ensures the VM/LXC is running; if not, it starts it.
 - If the share is unavailable: It stops the VM/LXC if it is currently running.
 
-❗ Script: [/11-Scripts/proxmox/proxmox-mount-monitor.sh](/11-Scripts/proxmox/proxmox-mount-monitor.sh)
+❗ Script: [/11-Scripts/Android/proxmox-mount-monitor.sh](/11-Scripts/proxmox/proxmox-mount-monitor.sh)
 
-❗ Service: [/11-Scripts/proxmox/proxmox-mount-monitor.service](/11-Scripts/proxmox/proxmox-mount-monitor.service)
+❗ Script: [/11-Scripts/Android/proxmox-mount-monitor.service](/11-Scripts/proxmox/proxmox-mount-monitor.service)
 
-❗ Timer: [/11-Scripts/proxmox/proxmox-mount-monitor.timer](/11-Scripts/proxmox/proxmox-mount-monitor.timer)
+❗ Script: [/11-Scripts/Android/proxmox-mount-monitor.timer](/11-Scripts/proxmox/proxmox-mount-monitor.timer)
+
+❗ Script: [/11-Scripts/Android/send-gotify.sh](/11-Scripts/proxmox/send-gotify.sh)
 
 The image below shows that when TrueNAS is stopped, the affected VM/LXC machines on the other Proxmox node are also shut down. When TrueNAS is restarted, these machines will start up as well.
 
