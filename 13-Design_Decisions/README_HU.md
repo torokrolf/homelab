@@ -1,7 +1,9 @@
-## 🖥️ Infrastructure Topology (Non-Cluster, simplified)
+## 🖥️ Infrastructure Topology (Non-Cluster, simplified, improved)
 
 ```mermaid
-flowchart TB
+flowchart LR
+    %% Smooth lines
+    linkStyle default interpolate basis
 
     %% Top row: Proxmox nodes side by side
     subgraph PROXMOX["Proxmox Nodes (standalone)"]
@@ -43,6 +45,7 @@ flowchart TB
     SMB1 --> RESTIC
     SMB2 --> PXEVM
 ```
+
 
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
