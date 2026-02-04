@@ -22,7 +22,9 @@
 | [1.9 PXE Boot](#pxe)                   | iVentoy                                         
 | [1.10 DNS](#dns)                       | BIND9 + Namecheap + Cloudflare, Windows Server 2019 DNS server 
 | [1.11 Network Troubleshooting](#hibakereses) | Wireshark                                                
-| [1.12 DHCP](#dhcp2)                    | ISC-KEA, Windows Server 2019 DHCP server                       
+| [1.12 DHCP](#dhcp2)                    | ISC-KEA, Windows Server 2019 DHCP server     
+| [1.13 Notificatios](#notification)     | Gotify 
+
 
 ---
 
@@ -275,7 +277,14 @@ Used to quickly diagnose network problems and understand the operation of basic 
 <a name="dhcp2"></a>
 ## 1.12 DHCP
 
+---
+
+## 1.2 Notification 
+<a name="notification"></a>
+---
+
 [See pfSense DHCP](#dhcp)  
 
 ← [Back to Homelab Main Page](../README.md)
+
 
