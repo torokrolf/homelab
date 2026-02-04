@@ -200,6 +200,12 @@ Detailed configuration is covered in the [pfSense DHCP section](#dhcp).
 - **Automation Results:** My Ansible update playbook sends a status report (success/failure) after updating clients. ❗ Script: [/06-Automation/Ansible_Semaphore/Playbooks/upgrade-system.yaml](/06-Automation/Ansible_Semaphore/Playbooks/upgrade-system.yaml)
 - **Backups:** Notifications regarding Proxmox Backup Server (PBS) backup task results and verification status (configured via PBS GUI).
 
+As shown in the image below, the NAS was unavailable for 2 hours and I received a notification about it.
+ <p align="center">
+<img src="https://github.com/user-attachments/assets/1d20223d-ad7e-4579-a75d-40b5fbe3fe66" alt="Description" width="500">
+</p> 
+
 ---
 
 ← [Back to Homelab Home](../README.md)
+
