@@ -1,3 +1,4 @@
+```mermaid
 flowchart TB
     %% Orthogonal lines style
     linkStyle default interpolate step
@@ -38,8 +39,7 @@ flowchart TB
     NFS --> SERVARR
     SMB1 --> RESTIC
     SMB2 --> PXEVM
-
-
+```
 
 
 
