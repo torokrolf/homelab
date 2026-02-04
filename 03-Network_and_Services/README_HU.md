@@ -201,7 +201,7 @@ A részletes DHCP konfiguráció a [pfSense DHCP fejezetben](#dhcp) található.
 - Proxmox Backup Server-re törtétnő VM/LXC mentés után az eredményről értesítést kapok. PBS GUI-ban beállítható.
 - Proxmox Backup Serveren a backupok verifikálásának eredményéről. PBS GUI-ban beállítható.
 
-Lenti képen láthatom, 2 órán át nem volt elérhető a NAS és erről kaptam értesítést.
+Lenti képen látható, 2 órán át nem volt elérhető a NAS és erről kaptam értesítést.
 <p align="center">
   <img src="https://github.com/user-attachments/assets/1d20223d-ad7e-4579-a75d-40b5fbe3fe66" alt="Description" width="500">
 </p>
@@ -209,6 +209,7 @@ Lenti képen láthatom, 2 órán át nem volt elérhető a NAS és erről kaptam
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
