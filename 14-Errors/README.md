@@ -27,7 +27,7 @@
 - Access to the `*.trkrolf.com` public domain failed when the internet connection was down.
 
 **Solution**:
-- Implemented a local BIND9 DNS with a DNS override, ensuring the domain always resolves to the internal IP (192.168.2.202).
+- Implemented a local BIND9 DNS with a DNS override, ensuring the domain always resolves to the internal IP (192.168.2.202) even without an external connection.
 
 ---
 
@@ -78,6 +78,8 @@
 
 **Solution**:
 - The best approach was to stop the affected LXC/VM units. Since I follow the "one service per VM/LXC" principle, this does not affect other services.
+- If the share becomes available again, the script restarts the VM/LXC.
+- Every share is mounted to Proxmox via AutoFS so the host is aware of them.
 - A script checks the availability of the mount every 30 seconds.
 - If the share is available: It ensures the VM/LXC is running; if not, it starts it.
 - If the share is unavailable: It stops the VM/LXC if it is currently running.
@@ -87,6 +89,12 @@
 ❗ Service: [/11-Scripts/proxmox/proxmox-mount-monitor.service](/11-Scripts/proxmox/proxmox-mount-monitor.service)
 
 ❗ Timer: [/11-Scripts/proxmox/proxmox-mount-monitor.timer](/11-Scripts/proxmox/proxmox-mount-monitor.timer)
+
+The image below shows that when TrueNAS is stopped, the affected VM/LXC machines on the other Proxmox node are also shut down. When TrueNAS is restarted, these machines will start up as well.
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/042abb72-ea53-4769-b017-237a0f493dbe" alt="TrueNAS stopped" width="400">
+</p>
 
 ---
 
