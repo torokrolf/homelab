@@ -23,7 +23,7 @@
 | [1.10 DNS](#dns)                             | BIND9 + Namecheap + Cloudflare, Windows Server 2019 DNS 
 | [1.11 Network troubleshooting](#hibakereses) | Wireshark                                               
 | [1.12 DHCP](#dhcp2)                          | ISC-KEA, Windows Server 2019 DHCP                       
-| [1.13 Notifications](#notifications)         | Gotify                                         
+| [1.13 Notifications](#notification)         | Gotify                                         
 
 ---
 
@@ -191,5 +191,6 @@ Used to study DNS, DHCP, ARP, TCP handshakes in practice.
 ---
 
 ← [Back to Homelab Home](../README.md)
+
 
 
