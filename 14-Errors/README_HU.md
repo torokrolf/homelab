@@ -77,7 +77,7 @@
 - Mivel nekem a Proxmox1-es node-on fut több VM és LXC ami használja a TrueNAS megosztást, így problémás lehet, hogy mi van akkor, amennyiben nem elérhető a megosztás. Például a qBittorrent a megosztás amennyiben nem volt elérhető, a VM lokális terhelyére folytatta a letöltést, ami probléma. 
 
 **Megoldás**:
-Legjobb megoldásnak azt találtam, ha leállítom ekkor az LXC és VM gépeket, úgyis az ahány szolgáltatás annyi VM/LXC elvet követem, így ez nem befolyásolja más szolgáltatás futását.
+Legjobb megoldásnak azt találtam, ha leállítom ekkor az LXC és VM gépeket, úgyis az ahány szolgáltatás annyi VM/LXC elvet követem, így ez nem befolyásolja más szolgáltatás futását. Amennyiben elérhető a megosztás, akkor elindítom a VM/LXC-t.
 - Proxmoxhoz autofs-el minden megosztás mountolva van, hogy tudjon róla.
 - Leellenőrzöm scripttel 30 másodpercenként, hogy elérhető-e a megosztás.
 - Ha elérhető a megosztás, megnézi hogy fut-e a VM/LXC, ha nem fut, elindítja.
