@@ -8,17 +8,14 @@
 
 ## 📚 Tartalomjegyzék
 
-- [DNS – Publikus domain névfeloldás internet nélkül](#dns---publikus-domain-névfeloldás-internet-nélkül)
-- [DNS – Pi-hole blokkolja a Google képtalálatokat mobilon](#dns---pi-hole-blokkolja-a-google-képtalálatokat-mobilon)
-- [SSH – SSH belépés LXC / Ubuntu esetén](#ssh---ssh-belépés-lxc--ubuntu-esetén)
-- [Megosztás – SMB/NFS elérés LXC-ből](#megosztas---smb-nfs-eleres-lxc-bol)
-
-- [Race condition – SMB mount sorrendiség](#race-condition--smb-mount-sorrendiseg)
-- [Megosztás – Dinamikus NFS mount qBittorrenthez + race condition kezelés](#megosztás---dinamikus-nfs-mount-qbittorrentet-futtató-vm-hez-race-condition-kezeléssel-és-qbittorrent-leállítása-ha-a-megosztás-eltűnik)
-- [Hardver – Külső SSD stabilitása USB-n](#hardver---külső-ssd-stabilitása-usb-n--tp-link-ue330-on-keresztül-vs-direkt-usb-n-csatlakozás)
-- [Hardver – M70q hálózati adapter instabilitás](#hardver---m70q-belső-hálózati-adapter-stabilitási-problémája---megoldás-külső-usb-adapterrel-tp-link-ue330)
-- [Hardver – Lokális és publikus DNS problémák Wi-Fi adapter miatt](#hardver---lokális-és-publikus-dns-problémák-laptopom-wi-fi-adaptere-miatt)
-- [DDNS – DDNS nem frissül Cloudflare-en pfSense mögött](#ddns---ddns-nem-frissül-cloudflare-en-pfsense-wan-interfészen-lévő-privát-ip-használata-miatt)
+- [DNS – Publikus domain névfeloldás internet nélkül](#dns--publikus-domain-nevfeloldas-internet-nelkul)
+- [DNS – Pi-hole blokkolja a Google képtalálatokat mobilon](#dns--pi-hole-blokkolja-a-google-keptalalatokat-mobilon)
+- [SSH – SSH belépés LXC / Ubuntu esetén](#ssh--ssh-belepes-lxc--ubuntu-eseten)
+- [Megosztás – SMB/NFS elérés LXC-ből](#megosztas--smbnfs-eleres-lxc-bol)
+- [Hardver – Külső SSD stabilitása USB-n](#hardver--kulso-ssd-stabilitasa-usb-n--tp-link-ue330-on-keresztul-vs-direkt-usb-n-csatlakozas)
+- [Hardver – M70q hálózati adapter instabilitás](#hardver--m70q-belso-halozati-adapter-stabilitasi-problemaja--megoldas-kulso-usb-adapterrel-tp-link-ue330)
+- [Hardver – Lokális és publikus DNS problémák Wi-Fi adapter miatt](#hardver--lokalis-es-publikus-dns-problemak-wi-fi-adapter-miatt)
+- [DDNS – DDNS nem frissül Cloudflare-en pfSense mögött](#ddns--ddns-nem-frissul-cloudflare-en-pfsense-wan-interfeszen-levo-privat-ip-hasznalata-miatt)
 
 ---
 
