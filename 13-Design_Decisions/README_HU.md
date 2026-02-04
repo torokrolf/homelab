@@ -1,3 +1,52 @@
+## 🖥️ Infrastructure Topology (Non-Cluster)
+
+```mermaid
+flowchart TB
+
+    %% Top row: Proxmox nodes side by side
+    subgraph PROXMOX["Proxmox Nodes (standalone)"]
+        direction LR
+        PVE1["Proxmox1"]
+        PVE2["Proxmox2"]
+    end
+
+    %% Passthrough disks on PVE2
+    SSD_TRUENAS["SSD Passthrough → TrueNAS"]
+    SSD_PBS["Disk Passthrough → PBS"]
+
+    TRUENAS_VM["TrueNAS VM (Proxmox2)"]
+    PBS_VM["PBS VM (Proxmox2)"]
+
+    %% Passthrough connections
+    PVE2 --> SSD_TRUENAS --> TRUENAS_VM
+    PVE2 --> SSD_PBS --> PBS_VM
+
+    %% TrueNAS storage exports
+    TRUENAS_VM --> NFS["NFS Share: torrent"]
+    TRUENAS_VM --> SMB1["SMB Share: backup"]
+    TRUENAS_VM --> SMB2["SMB Share: pxeiso"]
+
+    %% Both Proxmox nodes mount the shares
+    PVE1 --> NFS
+    PVE1 --> SMB1
+    PVE1 --> SMB2
+
+    PVE2 --> NFS
+    PVE2 --> SMB1
+    PVE2 --> SMB2
+
+    %% Consumers
+    JELLY["LXC 1010 Jellyfin\nbind mount"]
+    SERVARR["LXC 1011 Servarr\nbind mount"]
+    RESTIC["LXC 1008 Restic\nbind mount"]
+    PXEVM["VM 209 PXEBoot\nfstab mount"]
+
+    NFS --> JELLY
+    NFS --> SERVARR
+    SMB1 --> RESTIC
+    SMB2 --> PXEVM
+```
+
 ← [Vissza a Homelab főoldalra](../README_HU.md)
 
 [🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
