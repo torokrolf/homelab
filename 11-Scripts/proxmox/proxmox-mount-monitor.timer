@@ -1,0 +1,11 @@
+[Unit]
+Description=Run Mount Watchdog every 30s
+
+[Timer]
+OnBootSec=30
+OnUnitActiveSec=30
+Unit=proxmox-mount-monitor.service
+AccuracySec=1s
+
+[Install]
+WantedBy=timers.target
