@@ -33,9 +33,9 @@ flowchart TB
     %% Consumers (bottom row)
     subgraph CONSUMERS["VM/LXC Consumers"]
         direction LR
-        JELLY["LXC 1010 Jellyfin\from proxmox"]
-        SERVARR["LXC 1011 Servarr\from mount"]
-        RESTIC["LXC 1008 Restic\from mount"]
+        JELLY["LXC 1010 Jellyfin\Proxmox-mounted"]
+        SERVARR["LXC 1011 Servarr\Proxmox-mounted"]
+        RESTIC["LXC 1008 Restic\Proxmox-mounted"]
         PXEVM["VM 209 PXEBoot\fstab mount"]
     end
 
