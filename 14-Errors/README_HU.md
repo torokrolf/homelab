@@ -89,6 +89,11 @@ Legjobb megoldásnak azt találtam, ha leállítom ekkor az LXC és VM gépeket,
 
 ❗ Script: [/11-Scripts/Android/proxmox-mount-monitor.timer](/11-Scripts/proxmox/proxmox-mount-monitor.timer)
 
+Lenti képen látható, TrueNAS-t leállítottam.
+<img width="549" height="513" alt="kép" src="https://github.com/user-attachments/assets/c06fd588-4cde-48af-a4af-bfef33c89914" />
+Lenti képen látható, a TrueNAS leállásakor ezek a VM-ek és LXC-k leállnak.
+<img width="464" height="468" alt="kép" src="https://github.com/user-attachments/assets/23e62678-e4b9-4764-be8f-ed881317c7a0" />
+
 ---
 
 ## Hardver – Külső SSD stabilitása USB-n
