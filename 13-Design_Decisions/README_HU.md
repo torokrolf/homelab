@@ -74,7 +74,6 @@ flowchart TB
 
     %% Passthrough connections
     PVE2 --> SSD_TRUENAS --> TRUENAS_VM
-    PVE2 --> SSD_PBS --> PBS_VM
 
     %% TrueNAS storage exports
     TRUENAS_VM --> NFS["NFS Share: torrent"]
