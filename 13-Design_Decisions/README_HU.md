@@ -1,4 +1,4 @@
-## 🖥️ Infrastructure Topology (Non-Cluster, tidy, corrected, PBS mount both nodes)
+## 🖥️ Infrastructure Topology (Non-Cluster, tidy, corrected, PBS mount only PVE2)
 
 ```mermaid
 flowchart TB
@@ -30,10 +30,6 @@ flowchart TB
     PVE1 --> SMB1
     PVE1 --> SMB2
 
-    %% PBS VM is mounted from both Proxmox nodes
-    PVE1 --> SSD_PBS
-    PVE2 --> SSD_PBS
-
     %% Consumers (bottom row)
     subgraph CONSUMERS["VM/LXC Consumers"]
         direction LR
@@ -49,6 +45,7 @@ flowchart TB
     SMB1 --> RESTIC
     SMB2 --> PXEVM
 ```
+
 
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
