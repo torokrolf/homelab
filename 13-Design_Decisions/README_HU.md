@@ -99,52 +99,6 @@ flowchart TB
     SMB2 --> PXEVM
 ```
 
-
-
-
-
-**Hálózati megosztások (NFS/SMB) és LXC**
-
-**Probléma:** 
-Mivel sok unprivileged LXC-t használok, szembesültem azzal, hogy nem tudok közvetlen mountolni unprivileged LXC-hez NFS vagy SMB megosztást úgy, mint a VM-hez. 
-
-**Megoldás:**
-
-A Proxmox hosthoz próbáltam fstab-al csatolni, systemd szolgáltatásként csatolni, azonban amennyiben nem elérhető a megosztás, a hoston kiadott df parancs fagy. Megoldásként nekem az autofs-el történő mountolás vált be, ekkor is fagyhat a df parancs, de csak 1 percig és nem a végtelenségig. 
-
-    Miért? Ha a tároló (pl. TrueNAS) leáll, az AutoFS nem fagyasztja le a host operációs rendszert. A --ghost opcióval a mappa látható marad, de csak akkor csatolódik, ha valódi igény van rá.
-
-    LXC továbbítás: A hoston felcsatolt könyvtárat mp0 (mount point) segítségével adjuk át a konténernek.
-
-
-2. Virtuális Gépek (VM)
-
-Helyszín: Guest OS belül Módszer: Standard /etc/fstab
-
-    Miért? A VM teljesen izolált kernel szinten. Nem tud "osztozni" a host mountjain, ezért úgy kezeljük, mint egy fizikai gépet.
-
-    
-
-3. Dedikált Hardver (Disk Passthrough)
-
-Helyszín: Proxmox CLI Módszer: qm set (by-id alapján)
-
-    Alkalmazás: Ha egy VM-nek (pl. TrueNAS vagy PBS) saját SSD-re van szüksége a maximális teljesítmény és SMART adatok elérése érdekében.
-
-    Logika: A host "elengedi" a lemezt, és teljes kontrollt ad a VM-nek.
-
-        Példa: /sbin/qm set [VMID] -virtio2 /dev/disk/by-id/[ID]
-
-💡 Best Practices (Arany szabályok)
-
-    GUI Preferencia: Ha lehet, a tárolót a Proxmox GUI-ban add hozzá, hogy látható legyen az oldalsávban (monitorozás, mentés).
-
-    Biztonság: Mindig Unprivileged LXC-t használj. A bind mount (host -> LXC) a legbiztonságosabb módja az adatok megosztásának.
-
-    Stabilitás: Hálózati mountnál a hoston mindig használj soft és timeo paramétereket, hogy elkerüld a rendszer beragadását hálózati hiba esetén.
-
-    AutoFS Ghosting: Mindig kapcsold be a ghost módot, hogy a szoftverek (pl. Jellyfin, Arr-alkalmazások) ne "tévedjenek el" az üres könyvtárakban.
-
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
