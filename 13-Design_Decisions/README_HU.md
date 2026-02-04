@@ -102,3 +102,5 @@ flowchart TB
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
+← [Vissza a Homelab főoldalra](../README_HU.md)
