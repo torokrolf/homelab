@@ -193,7 +193,7 @@ A részletes DHCP konfiguráció a [pfSense DHCP fejezetben](#dhcp) található.
 - **Valós idejű értesítések:** Push értesítések mobilra azonnal.
 
 **Hol használom?**  
-- Proxmox ha elveszíti a TrueNAS mountolásokat, erről értesítést kapok.
+- Proxmox ha elveszíti a TrueNAS mountolásokat, erről értesítést kapok. ❗ Script: [/11-Scripts/Android/proxmox-mount-monitor.sh](/11-Scripts/proxmox/mount-monitor)
 - Proxmox-ról értesítést kapok warnings/errors témákban, például ha kevés a lemezhely.
 - S.m.a.r.t. hibákról kapok értesítést.
 - Radarr/Sonarr ha végez a film/sorozat letöltésével, értesítést kapok erről.
@@ -204,6 +204,7 @@ A részletes DHCP konfiguráció a [pfSense DHCP fejezetben](#dhcp) található.
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
