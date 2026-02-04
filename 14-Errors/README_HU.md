@@ -83,13 +83,7 @@ Legjobb megoldásnak azt találtam, ha leállítom ekkor az LXC és VM gépeket,
 - Ha elérhető a megosztás, megnézi hogy fut-e a VM/LXC, ha nem fut, elindítja.
 - Ha nem elérhető a megosztás, akkor leállítja a VM/LXC-t ha fut.
 
-❗ Script: [/11-Scripts/Android/proxmox-mount-monitor.sh](/11-Scripts/proxmox/proxmox-mount-monitor.sh)
-
-❗ Script: [/11-Scripts/Android/proxmox-mount-monitor.service](/11-Scripts/proxmox/proxmox-mount-monitor.service)
-
-❗ Script: [/11-Scripts/Android/proxmox-mount-monitor.timer](/11-Scripts/proxmox/proxmox-mount-monitor.timer)
-
-❗ Script: [/11-Scripts/Android/send-gotify.sh](/11-Scripts/proxmox/send-gotify.sh)
+❗ Script: [/11-Scripts/Android/proxmox-mount-monitor.sh](/11-Scripts/proxmox/mount-monitor)
 
 Lenti képen látható, TrueNAS-t leállítottam akkor leáll a másik Proxmoxon node-on lévő érintett VM/LXC gépek. Ha elindíntanám újra a TrueNAS-t akkor elindulnak ezek a gépek is.
 <p align="center">
