@@ -24,7 +24,6 @@
 
 **Probléma**:
 - A `*.trkrolf.com` publikus domain elérése sikertelen volt internetkapcsolat nélkül.
-
 **Megoldás**:
 - Lokális BIND9 DNS használata DNS override-al, így a név mindig a belső IP-re (192.168.2.202) oldódik fel.
 
@@ -35,10 +34,8 @@
 
 **Probléma**:
 - Mobilon a Google képtalálatok nem nyílnak meg a Pi-hole blokkolási listái miatt.
-
 **Ok**:
 - A Google tracking domaineket használ (pl. `googleadservices.com`), amik a tiltólistákon szerepelnek.
-
 **Megoldás**:
 - Ideiglenes Pi-hole kikapcsolás SSH script segítségével.
 
