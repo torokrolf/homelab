@@ -82,75 +82,19 @@
 
 ---
 
-## Megosztás – SMB elérés LXC-ből
+## Megosztás – SMB/NFS elérés LXC-ből
 
 **Probléma:** 
-- Unprivileged LXC konténer nem képes közvetlenül SMB/CIFS megosztást mountolni
+- Unprivileged LXC konténer nem képes közvetlenül megosztást mountolni
 
 **Megoldás:**  
-- SMB/CIFS megosztás mountolása a Proxmox hoston
+- Megosztás mountolása a Proxmox hoston. Próbáltam systemd-vel, fstab-al, de mindegyiknél fagyott a df a hoston, hiszen nem találta a megosztást. Nálam az autofs ezt megoldotta, így ezzel csatolom Proxmox hosthoz a megosztásokat, ekkor is fagyhat, de 1 perc után rájön, hogy nem találja a megosztást, és utána normálisan működik a df.
 - A mountolt könyvtár továbbadása az LXC konténernek bind mounttal (`mp0:`)
 - Ügyelni a jogosultságokra (uid/gid, file_mode/dir_mode), hogy a konténerben is írható legyen  
 
 **Biztonság**
 - Privileged LXC esetén tudok mountolni SMB megosztást, de ekkor a konténer root-ja és a Proxmox host root-ja ugyanaz → **biztonsági kockázat**  
 - Unprivileged LXC + host mount → biztonságos és működőképes megoldás, hiszen a Proxmox root-ja és a konténer root-ja két külön root, és az konténer root-ja alacsonyabb jogokkal rendelkezik, így a Proxmox hoston nem csinálhat veszélyesműveleteket.
-
----
-
-## Race condition – SMB mount sorrendiség
-
-**Probléma:**  
-- A Proxmox boot során megpróbálta mountolni egy rajta futó VM SMB megosztását  
-- A VM ekkor még nem futott, így a mount race condition miatt meghiúsult  
-
-**Miért jobb systemd szolgáltatásként csatolni és nem fstab-al:**  
-- Hálózati megosztásoknál (pl. NFS vagy CIFS/Samba) előfordulhat versenyhelyzet: a mount nem sikerül, ha a hálózat még nem állt fel.  
-- Ha fstab-bal próbáljuk mountolni a hálózati megosztást bootkor, és nincs hálózat, a mount nem jön létre. A legtöbb disztribúciónál a boot nem áll le, de nem ideális, ha emiatt a rendszer később problémás.  
-- Külső SSD/HDD esetén fstab tökéletes, mert ott nincs race condition: a mount vagy sikerül, vagy nem.  
-- Hálózati megosztásoknál viszont a **systemd a megfelelő megoldás**, mert megvárhatja, hogy a hálózat és a megosztás elérhető legyen, majd egyszeri próbálkozással mountolhatja.  
-
-**Helyes sorrend:**  
-1. Proxmox host feláll  
-2. systemd service aktiválódik  
-3. Service pingeli a VM-et (ExecStartPre)  
-4. Ha a VM pingelhető → fut a mount script (ExecStart)  
-5. Script ellenőrzi az SMB portot (445), és csak amikor elérhető → mountol  
-6. Mount sikeres → LXC konténer hozzáférhet a megosztáshoz  
-
-**Megoldás:**  
-- A systemd service csak a VM elérhetőségét pingeli, nem ellenőrzi az SMB portot  
-- A mount script ellenőrzi az SMB portot, majd mountol, egyszeri próbálkozással  
-- Így a race condition megszűnik: a mount csak akkor történik meg, amikor a VM elindult és a port elérhető
-
-❗Script megvalósítás: [scripts/smb-vm-mount.sh](/11-Scripts/proxmox/smb-vm-mount.sh)  
-❗Systemd szolgáltatás: [scripts/smb-vm-mount.service](/11-Scripts/proxmox/smb-vm-mount.service)
-
----
-
-## Megosztás - Dinamikus NFS mount qBittorrentet futtató VM-hez race condition kezeléssel és qBittorrent leállítása ha a megosztás eltűnik
-
-**Fontos: Eredetileg SMB megosztást használtam. A TrueNAS megléte esetén a qBittorrent elindult, de ha ezután leállítottam a TrueNAS-t, a qBittorrent nem állt le, mert az SMB nem kezeli jól a váratlan leválasztást, és ilyenkor a df parancs is fagyott. Linuxos környezetben ezért érdemes inkább a natív NFS-t használni. NFS-re váltás után a probléma teljesen megszűnt.**  
-
-**Probléma:** 
-- Amikor a kliens gép (Ubuntu/Proxmox) elindul, a systemd megpróbálja elindítani a szolgáltatásokat.  
-- Ha a qBittorrent hamarabb indul el, mint ahogy a TrueNAS SMB megosztása felcsatolódna, a torrent kliens hibát dob, vagy rosszabb esetben a helyi meghajtóra kezd el tölteni a hálózati megosztás helyett.  
-- Hasonló hiba lép fel, ha a TrueNAS váratlanul leáll vagy újraindul.
-
-**Megoldás:**  
-- Egy háttérben futó (daemon) szkript folyamatosan (30 másodpercenként) ellenőrzi a tároló elérhetőségét:
-- Ha a NAS elérhető: Automatikusan felcsatolja a meghajtót, és csak a sikeres csatolás után indítja el a qBittorrentet.  
-- Ha a NAS leáll: Azonnal leállítja a qBittorrentet (hogy elkerülje a hibát vagy hogy a helyi meghajtóra kezdjen el letölteni) és tisztán lecsatolja (umount) a könyvtárat.
-
-**Implementáció:**
-- Végtelen ciklusos script ellenőrzi, hogy a NAS elérhető-e
-- Ha elérhető:
-  - Mountolja az NFS megosztást 
-  - Elindítja a qBittorrent szolgáltatást, ha még nem fut
-- Ha a NAS nem elérhető:
-  - Leállítja a qBittorrentet
-  - Unmountolja a megosztást
-- Systemd szolgáltatás biztosítja a script automatikus indítását és újraindítását
 
 ---
 
