@@ -23,7 +23,7 @@
 | [1.10 DNS](#dns)                       | BIND9, Namecheap, Cloudflare, Windows Server 2019 DNS    
 | [1.11 Hálózati hibakeresés](#debug)    | Wireshark                                                
 | [1.12 DHCP](#dhcp2)                    | ISC-KEA, Windows Server 2019 DHCP                        
-| [1.13 Notifications](#notifications)   | Gotify 
+| [1.13 Notification](#notification)   | Gotify 
 
 
 ---
@@ -198,12 +198,13 @@ A részletes DHCP konfiguráció a [pfSense DHCP fejezetben](#dhcp) található.
 - S.m.a.r.t. hibákról kapok értesítést. ❗ Script: [/11-Scripts/proxmox/S.M.A.R.T.](/11-Scripts/proxmox/S.M.A.R.T.)
 - Radarr/Sonarr ha végez a film/sorozat letöltésével, értesítést kapok erről. Radarr/Sonarr GUI-ja támogatja natívan, GUI-ból.
 - Ansible update playbookom, ami updateli a klienseket, ha lefut, akkor ennek eredményéről értesítést kapok, hogy sikeresen vagy sikertelenül futott-e le.❗ Script: [/06-Automation/Ansible_Semaphore/Playbooks/upgrade-system.yaml](/06-Automation/Ansible_Semaphore/Playbooks/upgrade-system.yaml)
-- Proxmox Backup Server-re törtétnő VM/LXC mentés után az eredményről értesítést kapok.
-- Proxmox Backup Serveren a backupok verifikálásának eredményéről.
+- Proxmox Backup Server-re törtétnő VM/LXC mentés után az eredményről értesítést kapok. PBS GUI-ban beállítható.
+- Proxmox Backup Serveren a backupok verifikálásának eredményéről. PBS GUI-ban beállítható.
 
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
