@@ -59,9 +59,12 @@ A fő cél, hogy **minden szolgáltatás külön LXC-ben fusson**, így izolált
 ```mermaid
 flowchart TB
 
-    %% Top row: standalone Proxmox nodes
-    PVE1["Proxmox1 (standalone)"]
-    PVE2["Proxmox2 (standalone)"]
+    %% Top row: Proxmox nodes side by side
+    subgraph PROXMOX["Proxmox Nodes (standalone)"]
+        direction LR
+        PVE1["Proxmox1"]
+        PVE2["Proxmox2"]
+    end
 
     %% Passthrough disks on PVE2
     SSD_TRUENAS["SSD Passthrough → TrueNAS"]
