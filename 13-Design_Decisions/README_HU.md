@@ -53,39 +53,46 @@ A fő cél, hogy **minden szolgáltatás külön LXC-ben fusson**, így izolált
 - Proxmox hosthoz csatolom a TrueNAS megosztásokat, hogy továbbadja az unprivileged LXC-nek.
 - VM esetében az fstab segítségével mountolom a VM-hez közvetlenül a TrueNAS megosztásokat.
 
+## 🖥️ Infrastructure Topology
+
 ```mermaid
 flowchart TB
 
-    TRUENAS["TRUENAS (Storage Server)\nDatasets: torrent, backup, pxeiso"]
+    subgraph CLUSTER["Proxmox Cluster"]
+        PVE1["PVE1"]
+        PVE2["PVE2"]
+    end
 
-    PVE["PROXMOX HOST (PVE1)\nAutoFS mounts"]
+    TRUENAS["TrueNAS\nNFS / SMB Shares"]
     SSD["Dedicated SSD (870 EVO)\nPassthrough"]
 
-    TRUENAS --> PVE
-    TRUENAS --> SSD
+    PVE1 --> TRUENAS
+    PVE2 --> TRUENAS
+
+    PVE1 --> SSD
 
     TORRENT["/mnt/pve/torrent (NFS)"]
     BACKUP["/mnt/pve/backup (SMB)"]
     PXEISO["/mnt/pve/pxeiso (SMB)"]
 
-    PVE --> TORRENT
-    PVE --> BACKUP
-    PVE --> PXEISO
+    TRUENAS --> TORRENT
+    TRUENAS --> BACKUP
+    TRUENAS --> PXEISO
 
-    JELLY["LXC 1010 (Jellyfin)\nbind mount"]
-    SERVARR["LXC 1011 (Servarr)\nbind mount"]
-    RESTIC["LXC 1008 (Restic)\nbind mount"]
+    JELLY["LXC 1010 Jellyfin\nbind mount"]
+    SERVARR["LXC 1011 Servarr\nbind mount"]
+    RESTIC["LXC 1008 Restic\nbind mount"]
+    PXEVM["VM 209 PXEBoot\nfstab mount"]
 
     TORRENT --> JELLY
     TORRENT --> SERVARR
     BACKUP --> RESTIC
-
-    PXEVM["VM 209 (PXEBoot)\n/etc/fstab mount"]
     PXEISO --> PXEVM
 
-    VMS["VM 501 / 502\nPBS / TrueNAS\nFull control"]
-    SSD --> VMS
+    PBS["VM 501/502\nPBS / TrueNAS control"]
+    SSD --> PBS
 ```
+
 
 **Hálózati megosztások (NFS/SMB) és LXC**
 
