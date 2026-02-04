@@ -1,4 +1,4 @@
-## 🖥️ Infrastructure Topology (Non-Cluster, tidy, corrected)
+## 🖥️ Infrastructure Topology (Non-Cluster, tidy, corrected, PBS mount both nodes)
 
 ```mermaid
 flowchart TB
@@ -25,18 +25,22 @@ flowchart TB
     SSD_TRUENAS --> SMB1["SMB Share: backup"]
     SSD_TRUENAS --> SMB2["SMB Share: pxeiso"]
 
-    %% Only Proxmox1 mounts the shares
+    %% Proxmox1 mounts the shares
     PVE1 --> NFS
     PVE1 --> SMB1
     PVE1 --> SMB2
 
+    %% PBS VM is mounted from both Proxmox nodes
+    PVE1 --> SSD_PBS
+    PVE2 --> SSD_PBS
+
     %% Consumers (bottom row)
     subgraph CONSUMERS["VM/LXC Consumers"]
         direction LR
-        JELLY["LXC 1010 Jellyfin\Proxmox-mounted"]
-        SERVARR["LXC 1011 Servarr\Proxmox-mounted"]
-        RESTIC["LXC 1008 Restic\Proxmox-mounted"]
-        PXEVM["VM 209 PXEBoot\fstab mount"]
+        JELLY["LXC 1010 Jellyfin\nProxmox-mounted"]
+        SERVARR["LXC 1011 Servarr\nProxmox-mounted"]
+        RESTIC["LXC 1008 Restic\nProxmox-mounted"]
+        PXEVM["VM 209 PXEBoot\nfstab mount"]
     end
 
     %% Storage → Consumers connections
