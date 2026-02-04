@@ -203,12 +203,13 @@ A részletes DHCP konfiguráció a [pfSense DHCP fejezetben](#dhcp) található.
 
 Lenti képen láthatom, 2 órán át nem volt elérhető a NAS és erről kaptam értesítést.
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/1d20223d-ad7e-4579-a75d-40b5fbe3fe66" alt="Description" width="400">
+  <img src="https://github.com/user-attachments/assets/1d20223d-ad7e-4579-a75d-40b5fbe3fe66" alt="Description" width="500">
 </p>
 
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
