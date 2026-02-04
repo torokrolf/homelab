@@ -54,31 +54,30 @@ A fő cél, hogy **minden szolgáltatás külön LXC-ben fusson**, így izolált
 - VM esetében az fstab segítségével mountolom a VM-hez közvetlenül a TrueNAS megosztásokat.
 
 
+## 🖥️ Infrastructure Topology (Non-Cluster)
 
 ```mermaid
 flowchart TB
 
-    subgraph CLUSTER["Proxmox Cluster"]
-        PVE1["Proxmox1"]
-        PVE2["Proxmox2"]
-    end
+    PVE1["Proxmox1 (standalone)"]
+    PVE2["Proxmox2 (standalone)"]
 
-    TRUENAS_VM["TrueNAS VM (on Proxmox2)"]
-    PBS_VM["PBS VM (on Proxmox2)"]
+    TRUENAS_VM["TrueNAS VM (Proxmox2)"]
+    PBS_VM["PBS VM (Proxmox2)"]
 
     SSD_TRUENAS["SSD Passthrough → TrueNAS"]
-    SSD_PBS["HDD/SSD Passthrough → PBS"]
+    SSD_PBS["Disk Passthrough → PBS"]
 
-    %% Passthrough kapcsolatok
+    %% Passthrough only on Proxmox2
     PVE2 --> SSD_TRUENAS --> TRUENAS_VM
     PVE2 --> SSD_PBS --> PBS_VM
 
-    %% Storage export
+    %% Storage export from TrueNAS
     TRUENAS_VM --> NFS["NFS Share: torrent"]
     TRUENAS_VM --> SMB1["SMB Share: backup"]
     TRUENAS_VM --> SMB2["SMB Share: pxeiso"]
 
-    %% Proxmox mountok
+    %% Both nodes mount the shares
     PVE1 --> NFS
     PVE1 --> SMB1
     PVE1 --> SMB2
@@ -87,7 +86,7 @@ flowchart TB
     PVE2 --> SMB1
     PVE2 --> SMB2
 
-    %% Fogyasztók
+    %% Consumers
     JELLY["LXC 1010 Jellyfin\nbind mount"]
     SERVARR["LXC 1011 Servarr\nbind mount"]
     RESTIC["LXC 1008 Restic\nbind mount"]
@@ -98,6 +97,7 @@ flowchart TB
     SMB1 --> RESTIC
     SMB2 --> PXEVM
 ```
+
 
 
 
