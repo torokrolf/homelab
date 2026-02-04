@@ -12,17 +12,18 @@
 
 | Service / Area                         | Tools / Software |
 |---------------------------------------|------------------|
-| [1.2 Firewall / Router](#pfsense)            | pfSense                                                 |
-| [1.3 VPN](#vpn)                              | Tailscale, WireGuard, OpenVPN, NordVPN                  |
-| [1.4 APT cache proxy](#apt)                  | APT-Cache-NG                                            |
-| [1.5 VLAN](#vlan)                            | TP-LINK SG108E switch                                   |
-| [1.6 Reverse Proxy](#reverseproxy)           | Nginx Proxy Manager (replaced), Traefik (currently used)|
-| [1.7 Radius / LDAP](#radiusldap)             | FreeRADIUS, FreeIPA                                     |
-| [1.8 Ad blocking](#reklamszures)             | Pi-hole                                                 |
-| [1.9 PXE Boot](#pxe)                         | iVentoy                                                 |
-| [1.10 DNS](#dns)                             | BIND9 + Namecheap + Cloudflare, Windows Server 2019 DNS |
-| [1.11 Network troubleshooting](#hibakereses) | Wireshark                                               |
-| [1.12 DHCP](#dhcp2)                          | ISC-KEA, Windows Server 2019 DHCP                       |
+| [1.2 Firewall / Router](#pfsense)            | pfSense                                                 
+| [1.3 VPN](#vpn)                              | Tailscale, WireGuard, OpenVPN, NordVPN                  
+| [1.4 APT cache proxy](#apt)                  | APT-Cache-NG                                            
+| [1.5 VLAN](#vlan)                            | TP-LINK SG108E switch                                   
+| [1.6 Reverse Proxy](#reverseproxy)           | Nginx Proxy Manager (replaced), Traefik (currently used)
+| [1.7 Radius / LDAP](#radiusldap)             | FreeRADIUS, FreeIPA                                     
+| [1.8 Ad blocking](#reklamszures)             | Pi-hole                                                 
+| [1.9 PXE Boot](#pxe)                         | iVentoy                                                 
+| [1.10 DNS](#dns)                             | BIND9 + Namecheap + Cloudflare, Windows Server 2019 DNS 
+| [1.11 Network troubleshooting](#hibakereses) | Wireshark                                               
+| [1.12 DHCP](#dhcp2)                          | ISC-KEA, Windows Server 2019 DHCP                       
+| [1.13 Notifications](#notifications)         | Gotify                                         
 
 ---
 
@@ -184,5 +185,11 @@ Used to study DNS, DHCP, ARP, TCP handshakes in practice.
 
 ---
 
+<a name="notification"></a>
+## 1.2  Notification
+
+---
+
 ← [Back to Homelab Home](../README.md)
+
 
