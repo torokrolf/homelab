@@ -1,33 +1,23 @@
-## 🖥️ Infrastructure Topology (Non-Cluster, simplified, improved)
-
-## 🖥️ Infrastructure Topology (Non-Cluster, tidy)
-
-```mermaid
 flowchart TB
-    %% Smooth lines
-    linkStyle default interpolate basis
+    %% Orthogonal lines style
+    linkStyle default interpolate step
 
-    %% Top row: Proxmox nodes side by side
     subgraph PROXMOX["Proxmox Nodes (standalone)"]
         direction LR
         PVE1["Proxmox1"]
         PVE2["Proxmox2"]
     end
 
-    %% Passthrough disks going directly to VMs (middle layer)
     SSD_TRUENAS["SSD Passthrough → TrueNAS (VM)"]
     SSD_PBS["Disk Passthrough → PBS (VM)"]
 
-    %% Passthrough connections (PVE2 only)
     PVE2 --> SSD_TRUENAS
     PVE2 --> SSD_PBS
 
-    %% TrueNAS storage exports
     SSD_TRUENAS --> NFS["NFS Share: torrent"]
     SSD_TRUENAS --> SMB1["SMB Share: backup"]
     SSD_TRUENAS --> SMB2["SMB Share: pxeiso"]
 
-    %% Both Proxmox nodes mount the shares
     PVE1 --> NFS
     PVE1 --> SMB1
     PVE1 --> SMB2
@@ -36,7 +26,6 @@ flowchart TB
     PVE2 --> SMB1
     PVE2 --> SMB2
 
-    %% Consumers (bottom row)
     subgraph CONSUMERS["VM/LXC Consumers"]
         direction LR
         JELLY["LXC 1010 Jellyfin\nbind mount"]
@@ -45,12 +34,11 @@ flowchart TB
         PXEVM["VM 209 PXEBoot\nfstab mount"]
     end
 
-    %% Storage → Consumers connections
     NFS --> JELLY
     NFS --> SERVARR
     SMB1 --> RESTIC
     SMB2 --> PXEVM
-```
+
 
 
 
