@@ -1,4 +1,4 @@
-## 🖥️ Infrastructure Topology (Non-Cluster, tidy)
+## 🖥️ Infrastructure Topology (Non-Cluster, tidy, corrected)
 
 ```mermaid
 flowchart TB
@@ -25,22 +25,18 @@ flowchart TB
     SSD_TRUENAS --> SMB1["SMB Share: backup"]
     SSD_TRUENAS --> SMB2["SMB Share: pxeiso"]
 
-    %% Both Proxmox nodes mount the shares
+    %% Only Proxmox1 mounts the shares
     PVE1 --> NFS
     PVE1 --> SMB1
     PVE1 --> SMB2
 
-    PVE2 --> NFS
-    PVE2 --> SMB1
-    PVE2 --> SMB2
-
     %% Consumers (bottom row)
     subgraph CONSUMERS["VM/LXC Consumers"]
         direction LR
-        JELLY["LXC 1010 Jellyfin\bind mount"]
-        SERVARR["LXC 1011 Servarr\bind mount"]
-        RESTIC["LXC 1008 Restic\bind mount"]
-        PXEVM["VM 209 PXEBoot\fstab mount"]
+        JELLY["LXC 1010 Jellyfin\nbind mount"]
+        SERVARR["LXC 1011 Servarr\nbind mount"]
+        RESTIC["LXC 1008 Restic\nbind mount"]
+        PXEVM["VM 209 PXEBoot\nfstab mount"]
     end
 
     %% Storage → Consumers connections
@@ -49,8 +45,6 @@ flowchart TB
     SMB1 --> RESTIC
     SMB2 --> PXEVM
 ```
-
-
 
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
