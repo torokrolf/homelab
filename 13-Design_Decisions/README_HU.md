@@ -6,7 +6,7 @@ flowchart TB
     linkStyle default interpolate basis
 
     %% Top row: Proxmox nodes side by side
-    subgraph PROXMOX["Proxmox Nodes (standalone)"]
+    subgraph PROXMOX["Proxmox Nodes"]
         direction LR
         PVE1["Proxmox1"]
         PVE2["Proxmox2"]
@@ -37,10 +37,10 @@ flowchart TB
     %% Consumers (bottom row)
     subgraph CONSUMERS["VM/LXC Consumers"]
         direction LR
-        JELLY["LXC 1010 Jellyfin\nbind mount"]
-        SERVARR["LXC 1011 Servarr\nbind mount"]
-        RESTIC["LXC 1008 Restic\nbind mount"]
-        PXEVM["VM 209 PXEBoot\nfstab mount"]
+        JELLY["LXC 1010 Jellyfin\bind mount"]
+        SERVARR["LXC 1011 Servarr\bind mount"]
+        RESTIC["LXC 1008 Restic\bind mount"]
+        PXEVM["VM 209 PXEBoot\fstab mount"]
     end
 
     %% Storage → Consumers connections
