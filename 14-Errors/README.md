@@ -1,222 +1,144 @@
-← [Back to Homelab main page](../README_HU.md)
+← [Back to Homelab Main Page](../README.md)
 
 [🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
 
 ---
 
-# Errors
+# Errors & Troubleshooting
 
 ## 📚 Table of Contents
 
-- [DNS – Public domain name resolution without internet](#dns--public-domain-name-resolution-without-internet)
-- [DNS – Pi-hole blocks Google image results on mobile](#dns--pi-hole-blocks-google-image-results-on-mobile)
-- [SSH – SSH login in LXC / Ubuntu](#ssh--ssh-login-in-lxc--ubuntu)
-- [Sharing – SMB access from LXC](#sharing--smb-access-from-lxc)
-- [Race condition – SMB mount ordering](#race-condition--smb-mount-ordering)
-- [Sharing – Dynamic NFS mount for qBittorrent VM with race condition handling](#sharing--dynamic-nfs-mount-for-qbittorrent-vm-with-race-condition-handling-and-qbittorrent-shutdown-on-share-loss)
-- [Hardware – External SSD stability over USB](#hardware--external-ssd-stability-over-usb--via-tp-link-ue330-vs-direct-usb-connection)
-- [Hardware – M70q network adapter instability](#hardware--m70q-internal-network-adapter-instability---solution-with-external-usb-adapter-tp-link-ue330)
-- [Hardware – Local and public DNS issues caused by Wi-Fi adapter](#hardware--local-and-public-dns-issues-caused-by-laptops-wi-fi-adapter)
-- [DDNS – DDNS not updating on Cloudflare behind pfSense](#ddns--ddns-not-updating-on-cloudflare-due-to-private-ip-on-pfsense-wan-interface)
+- [DNS – Public domain resolution without internet](#dns--public-domain-resolution-without-internet)
+- [DNS – Pi-hole blocking Google Image search results on mobile](#dns--pi-hole-blocking-google-image-search-results-on-mobile)
+- [SSH – SSH login for LXC / Ubuntu](#ssh--ssh-login-for-lxc--ubuntu)
+- [Sharing – SMB/NFS access from LXC](#sharing--smbnfs-access-from-lxc)
+- [Hardware – External SSD stability over USB](#hardware--external-ssd-stability-over-usb--via-tp-link-ue330-vs-direct-connection)
+- [Hardware – M70q internal network adapter instability](#hardware--m70q-internal-network-adapter-instability--solution-with-external-usb-adapter)
+- [Hardware – Local and public DNS issues due to laptop Wi-Fi adapter](#hardware--local-and-public-dns-issues-due-to-laptop-wi-fi-adapter)
+- [DDNS – DDNS not updating on Cloudflare behind pfSense](#ddns--ddns-not-updating-on-cloudflare-behind-pfsense)
 
 ---
 
-## DNS – Public domain name resolution without internet
+## DNS - Public domain resolution without internet
 
-**Problem:**
-- The `*.trkrolf.com` domain (e.g. `zabbix.trkrolf.com`) is a public domain pointing to Cloudflare nameservers, which returned the **192.168.2.202 Nginx IP**.
-- If the homelab had **no internet connection**, the domain could not be resolved because public DNS servers were unreachable.
+**Problem**:
+- The `*.trkrolf.com` (e.g., `zabbix.trkrolf.com`) is a public domain pointed to Cloudflare nameservers, which returned the local Nginx IP (192.168.2.202).
+- If the homelab **lost internet connection**, the name would not resolve because the public DNS was unreachable.
 
-**Solution:**
-- **DNS override / local BIND9 DNS**: all `*.trkrolf.com` queries are handled by the local DNS server.
-- This ensures that even without internet access, the domain always resolves to **192.168.2.202 (Nginx)**.
-
----
-
-## DNS – Pi-hole blocks Google image results on mobile
-
-**Problem**
-- On mobile phones, when using Google search and clicking **image results**:
-  - the target page often does not open
-  - or the image does not redirect to the source website
-- On desktop, this issue occurs rarely or not at all
-
-**Cause**
-- On mobile, Google image results **do not link directly to image files**, but go through:
-  - advertising
-  - tracking
-  - redirect domains
-- These domains are commonly included in **Pi-hole blocklists**, such as:
-  - `googleadservices.com`
-  - `googletagservices.com`
-  - `doubleclick.net`
-- When clicking an image, Google redirects through a tracking URL, which Pi-hole blocks at the DNS level
-- Some image/CDN domains (e.g. certain `gstatic.com` subdomains) may also be blocked
-
-**Note**
-- This behavior is **not a Pi-hole bug**, but a natural consequence of ad and tracker blocking
-- These domains are **intentionally blocked** by many default and community-maintained blocklists
-
-**Solution I use**
-- Temporarily disabling Pi-hole (e.g. via SSH from mobile using a script)
-
-**Alternative solution (not recommended by me)**
-- Selective whitelisting of domains (can reintroduce ads and tracking)
-
-❗ Script implementation:  
-[scripts/smb-vm-mount.sh](/11-Scripts/Android/toggle_pihole_ssh.sh)
+**Solution**:
+- **DNS override / Local BIND9 DNS**: Queries for `*.trkrolf.com` are handled by the local DNS server.
+- This ensures the domain always resolves to the **local Nginx IP (192.168.2.202)** even without an active internet connection.
 
 ---
 
-## SSH – SSH login in LXC / Ubuntu
+## DNS - Pi-hole blocking Google Image search results on mobile
 
-**Problem:**
-- In LXC containers, only the root user exists by default, and root SSH login is disabled
+**Problem**:
+- When clicking on **Google Image search results** on mobile devices:
+  - The page often fails to open.
+  - Or the image does not redirect to the source website.
+- This issue occurs rarely or not at all on desktop computers.
 
-**Recommended solution:**
-- Create a regular user
-- Allow SSH login using password or SSH keys
+**Root Cause**:
+- On mobile, Google Image results do not point directly to image files, but instead route through:
+  - Advertising domains
+  - Tracking domains
+  - Redirect domains
+- These domains (e.g., `googleadservices.com`, `googletagservices.com`, `doubleclick.net`) are frequently included in **Pi-hole blocklists**.
+- Some image delivery/CDN domains (like subdomains of `gstatic.com`) might also be blocked.
 
-**Not recommended:**
-- Enabling root SSH login (`PermitRootLogin yes`)
-- Allowing direct root login via password or key
+**Note**:
+- This behavior is **not a Pi-hole bug**, but a natural consequence of aggressive ad and tracker blocking.
 
----
+**My Solution**:
+- Temporarily disable Pi-hole when needed (e.g., via a script triggered from mobile over SSH).
 
-## Sharing – SMB access from LXC
+**Alternative Solution (Not recommended)**:
+- Targeted whitelisting (not recommended for everyone as ads will reappear).
 
-**Problem:**  
-- An unprivileged LXC container cannot mount SMB/CIFS shares directly
-
-**Solution:**  
-- Mount the SMB/CIFS share on the Proxmox host
-- Pass the mounted directory into the LXC container using a bind mount (`mp0:`)
-- Ensure correct permissions (uid/gid, file_mode/dir_mode) so the share is writable inside the container
-
-**Security**
-- Privileged LXC containers *can* mount SMB shares, but the container root equals the Proxmox host root → **security risk**
-- Unprivileged LXC + host-side mount is safe and functional: the container root has lower privileges and cannot perform dangerous operations on the host
+❗ Script implementation: [scripts/smb-vm-mount.sh](/11-Scripts/Android/toggle_pihole_ssh.sh)
 
 ---
 
-## Race condition – SMB mount ordering
+## SSH - SSH login for LXC / Ubuntu
 
-**Problem:**  
-- During Proxmox boot, it attempted to mount an SMB share provided by a VM running on the same host
-- The VM was not running yet, so the mount failed due to a race condition
+**Problem**:
+- LXC containers often only have a root user, and SSH login for root is disabled by default.
 
-**Why systemd is better than fstab for network mounts:**  
-- Network mounts (NFS, CIFS/Samba) may fail if the network or remote service is not ready
-- With `fstab`, the mount may fail silently at boot
-- Local disks work well with `fstab` because no race condition exists
-- For network shares, **systemd services are the correct solution**, as they can wait for prerequisites
+**Recommended Solution**:
+- Create a regular user.
+- Enable SSH login using a password or (preferably) an SSH key.
 
-**Correct order:**  
-1. Proxmox host boots
-2. systemd service starts
-3. Service pings the VM (ExecStartPre)
-4. If the VM responds → mount script runs
-5. Script checks SMB port (445) and mounts only when available
-6. Successful mount → LXC containers can access the share
-
-**Solution:**  
-- systemd service checks VM availability
-- Mount script checks SMB port availability
-- Single mount attempt when conditions are met
-- Race condition is eliminated
-
-❗ Script:  
-[scripts/smb-vm-mount.sh](/11-Scripts/proxmox/smb-vm-mount.sh)  
-❗ systemd service:  
-[scripts/smb-vm-mount.service](/11-Scripts/proxmox/smb-vm-mount.service)
+**Non-recommended Solution**:
+- Enabling root SSH login (`PermitRootLogin yes`) in the SSH configuration.
 
 ---
 
-## Sharing – Dynamic NFS mount for qBittorrent VM with race condition handling and qBittorrent shutdown on share loss
+## Sharing – SMB/NFS access from LXC
 
-**Important:**  
-Originally I used SMB. When TrueNAS was running, qBittorrent started correctly, but if TrueNAS was stopped afterward, qBittorrent kept running. SMB does not handle unexpected disconnects well, and even the `df` command could freeze.  
-After switching to **native NFS**, the issue was completely resolved.
+**Problem**:
+- Unprivileged LXC containers cannot mount network shares directly.
 
-**Problem:**  
-- On boot, systemd starts services
-- qBittorrent may start before the TrueNAS share is mounted
-- This can cause errors or downloads to be written to the local disk
-- Similar issues occur if TrueNAS is unexpectedly shut down
+**Solution**:
+- Mount the share on the **Proxmox host**. I tried systemd and fstab, but both caused the `df` command to hang on the host if the share was unavailable. **AutoFS** solved this; while it may still hang briefly, it times out after 1 minute and allows `df` to function normally.
+- Pass the mounted directory to the LXC container using a **bind mount** (`mp0:`).
+- Ensure correct permissions (uid/gid mapping, file_mode/dir_mode) so the share remains writable inside the container.
 
-**Solution:**  
-- A daemon script checks storage availability every 30 seconds
-- If NAS is available:
-  - Mounts the NFS share
-  - Starts qBittorrent only after a successful mount
-- If NAS goes offline:
-  - Immediately stops qBittorrent
-  - Cleanly unmounts the share
-
-**Implementation:**
-- Infinite loop script
-- Mounts/unmounts based on NAS availability
-- Managed by systemd for auto-start and restart
+**Security**:
+- While Privileged LXC containers can mount SMB shares directly, the container's root is identical to the Proxmox host's root → **Security Risk**.
+- **Unprivileged LXC + Host Mount** is the secure and functional solution, as the container's root is mapped to a non-privileged user on the host.
 
 ---
 
-## Hardware – External SSD stability over USB (TP-Link UE330 vs direct USB)
+## Hardware - External SSD stability over USB — via TP-Link UE330 vs. Direct connection
 
-**Problem:**  
-- A **Samsung 870 EVO** external SSD occasionally disconnected when plugged directly into USB
+**Problem**:
+- A **Samsung 870 EVO** external SSD occasionally **disconnected** when plugged directly into the host's USB port.
 
-**Solution:**  
-- Connecting the SSD through a **TP-Link UE330 USB hub**
-- Stable operation for over 6 months
-- Likely due to more stable power delivery
-
----
-
-## Hardware – M70q internal network adapter instability  
-### Solution: external USB adapter (TP-Link UE330)
-
-**Problem**
-- The internal NIC on an M70q occasionally drops the connection
-- Remote access (SSH) becomes impossible until manual intervention
-
-**Possible solution**
-- Script to ping a device (e.g. router) and restart the adapter on failure
-
-**Chosen solution**
-- Using a **TP-Link UE330 USB network adapter**
-- Stable operation for over 6 months
+**Solution**:
+- Connecting the SSD through a **TP-Link USB hub (UE330)** resulted in **stable operation** for over 6 months.
+- This is likely due to the more stable power delivery provided by the TP-Link UE330.
 
 ---
 
-## Hardware – Local and public DNS issues caused by laptop Wi-Fi adapter
+## Hardware - M70q internal network adapter instability — Solution with external USB adapter (TP-Link UE330)
+
+**Problem**:
+- The internal network adapter on the M70q occasionally loses connection, requiring physical access to the machine to reset the interface.
+
+**Potential Solution**:
+- A watchdog script that pings the router and restarts the network interface if the ping fails.
+
+**Chosen Solution**:
+- Using a **TP-Link UE330 USB network adapter**: It has proven to be perfectly stable, with over 6 months of uninterrupted uptime.
+
+---
+
+## Hardware - Local and public DNS issues due to laptop Wi-Fi adapter
 
 ### Problem
-- Local DNS sometimes failed to resolve internal hosts
-- Occasionally even public domains (e.g. google.com) failed
-- MediaTek 7921 Wi-Fi adapter caused instability on Linux
+- Local DNS occasionally failed to resolve local hostnames or even public ones (e.g., google.com).
+- The network adapter was a **MediaTek 7921**, which is known for unstable DNS handling under Linux.
 
 ### Solution
-- Replaced MediaTek 7921 with **Intel AX210**
-- DNS resolution is now stable for both local and public domains
+- Replaced the MediaTek 7921 with an **Intel AX210** adapter.
+- DNS resolution is now stable for both local and public queries.
 
 ---
 
-## DDNS – DDNS not updating on Cloudflare due to private IP on pfSense WAN interface
+## DDNS - DDNS not updating on Cloudflare behind pfSense (Private WAN IP issue)
 
 ### Problem
-- When the public IP changes, the Cloudflare DNS record does not update
-- pfSense DDNS status turns red instead of green
-- pfSense WAN interface uses a **private IP**, so changes do not trigger DDNS updates
-- Result: occasional loss of remote access
+- When the public IP changes, the Cloudflare record does not update automatically.
+- The pfSense DDNS status turned red (error) instead of the green checkmark.
+- This happened because the pfSense WAN interface is behind another router (CGNAT/Double NAT) and has a **private IP**, so pfSense doesn't "see" the public IP change to trigger the update.
 
 ### Solution
-- Custom script to detect public IP changes
-- Updates Cloudflare DNS record when a change is detected
-- Works independently of pfSense WAN IP changes
+- Created a custom script that checks the actual public IP and forces a Cloudflare update upon detecting a change.
+- This ensures the record is updated based on the actual public IP rather than the local WAN interface IP.
 
-❗ Script:  
-[scripts/smb-vm-mount.sh](11-Scripts/pfsense/ddns-force-update.sh)
+❗ Script implementation: [11-Scripts/pfsense/ddns-force-update.sh](11-Scripts/pfsense/ddns-force-update.sh)
 
 ---
 
-← [Back to Homelab main page](../README_HU.md)
+← [Back to Homelab Main Page](../README.md)
