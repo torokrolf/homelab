@@ -48,7 +48,6 @@
 
 **Probléma**:
 - Az LXC konténerekben alapértelmezetten tiltott a root SSH login.
-
 **Megoldás**:
 - Regular user létrehozása és SSH kulcs alapú hitelesítés beállítása.
 
@@ -59,7 +58,6 @@
 
 **Probléma**:
 - Unprivileged LXC konténerek nem tudnak közvetlenül hálózati megosztást mountolni.
-
 **Megoldás**:
 - A Proxmox hoston **AutoFS**-el csatolt megosztás továbbadása bind mount (`mp0`) segítségével.
 - Ez kiküszöböli a `df` parancs fagyását, ha a tároló nem elérhető.
@@ -71,7 +69,6 @@
 
 **Probléma**:
 - A Samsung 870 EVO SSD közvetlen USB csatlakozás mellett instabil volt.
-
 **Megoldás**:
 - TP-Link UE330 USB hub használata, amely stabilabb áramellátást biztosít.
 
@@ -82,7 +79,6 @@
 
 **Probléma**:
 - Az M70q belső hálózati kártyája véletlenszerűen megszakította a kapcsolatot.
-
 **Megoldás**:
 - TP-Link UE330 külső USB adapter használata a stabil hálózati eléréshez.
 
@@ -93,7 +89,6 @@
 
 **Probléma**:
 - A MediaTek 7921 Wi-Fi kártya instabil DNS feloldást produkált Linux környezetben.
-
 **Megoldás**:
 - Az adapter cseréje Intel AX210-re.
 
@@ -104,7 +99,6 @@
 
 **Probléma**:
 - A pfSense privát WAN IP-je miatt a DDNS nem érzékelte a publikus IP változását.
-
 **Megoldás**:
 - Egyedi script használata, amely külsőleg ellenőrzi a publikus IP-t és frissíti a Cloudflare rekordot.
 
