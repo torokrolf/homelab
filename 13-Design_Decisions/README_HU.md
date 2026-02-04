@@ -59,25 +59,27 @@ A fő cél, hogy **minden szolgáltatás külön LXC-ben fusson**, így izolált
 ```mermaid
 flowchart TB
 
+    %% Top row: standalone Proxmox nodes
     PVE1["Proxmox1 (standalone)"]
     PVE2["Proxmox2 (standalone)"]
+
+    %% Passthrough disks on PVE2
+    SSD_TRUENAS["SSD Passthrough → TrueNAS"]
+    SSD_PBS["Disk Passthrough → PBS"]
 
     TRUENAS_VM["TrueNAS VM (Proxmox2)"]
     PBS_VM["PBS VM (Proxmox2)"]
 
-    SSD_TRUENAS["SSD Passthrough → TrueNAS"]
-    SSD_PBS["Disk Passthrough → PBS"]
-
-    %% Passthrough only on Proxmox2
+    %% Passthrough connections
     PVE2 --> SSD_TRUENAS --> TRUENAS_VM
     PVE2 --> SSD_PBS --> PBS_VM
 
-    %% Storage export from TrueNAS
+    %% TrueNAS storage exports
     TRUENAS_VM --> NFS["NFS Share: torrent"]
     TRUENAS_VM --> SMB1["SMB Share: backup"]
     TRUENAS_VM --> SMB2["SMB Share: pxeiso"]
 
-    %% Both nodes mount the shares
+    %% Both Proxmox nodes mount the shares
     PVE1 --> NFS
     PVE1 --> SMB1
     PVE1 --> SMB2
@@ -97,6 +99,7 @@ flowchart TB
     SMB1 --> RESTIC
     SMB2 --> PXEVM
 ```
+
 
 
 
