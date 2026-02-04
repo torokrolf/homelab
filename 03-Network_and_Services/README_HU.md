@@ -181,9 +181,9 @@ A részletes DHCP konfiguráció a [pfSense DHCP fejezetben](#dhcp) található.
 
 ---
 <a name="notification"></a>
-## 1.2  Notification
+## 1.13  Notification
 
-### 1.2.1 Gotify
+### 1.13.1 Gotify
 
 **Gotify** egy könnyű, saját hosztolt szerver valós idejű értesítések küldésére, hogy gyorsan értesüljek hibákról, állapotokról.  
 
@@ -204,5 +204,6 @@ A részletes DHCP konfiguráció a [pfSense DHCP fejezetben](#dhcp) található.
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
