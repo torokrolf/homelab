@@ -23,7 +23,7 @@
 | [1.10 DNS](#dns)                       | BIND9 + Namecheap + Cloudflare, Windows Server 2019 DNS server 
 | [1.11 Network Troubleshooting](#hibakereses) | Wireshark                                                
 | [1.12 DHCP](#dhcp2)                    | ISC-KEA, Windows Server 2019 DHCP server     
-| [1.13 Notificatios](#notification)     | Gotify 
+| [1.13 Notification](#notification)     | Gotify 
 
 
 ---
@@ -287,6 +287,7 @@ Used to quickly diagnose network problems and understand the operation of basic 
 [See pfSense DHCP](#dhcp)  
 
 ← [Back to Homelab Main Page](../README.md)
+
 
 
 
