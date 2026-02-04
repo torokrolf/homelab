@@ -279,12 +279,14 @@ Used to quickly diagnose network problems and understand the operation of basic 
 
 ---
 
-## 1.2 Notification 
 <a name="notification"></a>
+## 1.13 Notification 
+
 ---
 
 [See pfSense DHCP](#dhcp)  
 
 ← [Back to Homelab Main Page](../README.md)
+
 
 
