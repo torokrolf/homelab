@@ -1,0 +1,7 @@
+[Unit]
+Description=Mount Watchdog (LXC + VM)
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/proxmox-mount-monitor.sh
