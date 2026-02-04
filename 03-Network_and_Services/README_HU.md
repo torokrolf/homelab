@@ -183,7 +183,26 @@ A részletes DHCP konfiguráció a [pfSense DHCP fejezetben](#dhcp) található.
 <a name="notification"></a>
 ## 1.2  Notification
 
+### 1.2.1 Gotify
+
+**Gotify** egy könnyű, saját hosztolt szerver valós idejű értesítések küldésére, hogy gyorsan értesüljek hibákról, állapotokról.  
+
+**Előnyök:**
+- **Saját hosztolt:** Teljes kontroll, nincs harmadik fél függés.
+- **Egyszerű API:** Könnyen integrálható scriptekkel, **webhookkal**.
+- **Valós idejű értesítések:** Push értesítések mobilra azonnal.
+
+**Hol használom?**  
+- Proxmox ha elveszíti a TrueNAS mountolásokat, erről értesítést kapok.
+- Proxmox-ról értesítést kapok warnings/errors témákban, például ha kevés a lemezhely.
+- S.m.a.r.t. hibákról kapok értesítést.
+- Radarr/Sonarr ha végez a film/sorozat letöltésével, értesítést kapok erről.
+- Ansible update playbookom, ami updateli a klienseket, ha lefut, akkor ennek eredményéről értesítést kapok, hogy sikeresen vagy sikertelenül futott-e le.
+- Proxmox Backup Server-re törtétnő VM/LXC mentés után az eredményről értesítést kapok.
+- Proxmox Backup Serveren a backupok verifikálásának eredményéről.
+
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
