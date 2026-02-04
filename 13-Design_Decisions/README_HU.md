@@ -53,45 +53,52 @@ A fő cél, hogy **minden szolgáltatás külön LXC-ben fusson**, így izolált
 - Proxmox hosthoz csatolom a TrueNAS megosztásokat, hogy továbbadja az unprivileged LXC-nek.
 - VM esetében az fstab segítségével mountolom a VM-hez közvetlenül a TrueNAS megosztásokat.
 
-## 🖥️ Infrastructure Topology
+
 
 ```mermaid
 flowchart TB
 
     subgraph CLUSTER["Proxmox Cluster"]
-        PVE1["PVE1"]
-        PVE2["PVE2"]
+        PVE1["Proxmox1"]
+        PVE2["Proxmox2"]
     end
 
-    TRUENAS["TrueNAS\nNFS / SMB Shares"]
-    SSD["Dedicated SSD (870 EVO)\nPassthrough"]
+    TRUENAS_VM["TrueNAS VM (on Proxmox2)"]
+    PBS_VM["PBS VM (on Proxmox2)"]
 
-    PVE1 --> TRUENAS
-    PVE2 --> TRUENAS
+    SSD_TRUENAS["SSD Passthrough → TrueNAS"]
+    SSD_PBS["HDD/SSD Passthrough → PBS"]
 
-    PVE1 --> SSD
+    %% Passthrough kapcsolatok
+    PVE2 --> SSD_TRUENAS --> TRUENAS_VM
+    PVE2 --> SSD_PBS --> PBS_VM
 
-    TORRENT["/mnt/pve/torrent (NFS)"]
-    BACKUP["/mnt/pve/backup (SMB)"]
-    PXEISO["/mnt/pve/pxeiso (SMB)"]
+    %% Storage export
+    TRUENAS_VM --> NFS["NFS Share: torrent"]
+    TRUENAS_VM --> SMB1["SMB Share: backup"]
+    TRUENAS_VM --> SMB2["SMB Share: pxeiso"]
 
-    TRUENAS --> TORRENT
-    TRUENAS --> BACKUP
-    TRUENAS --> PXEISO
+    %% Proxmox mountok
+    PVE1 --> NFS
+    PVE1 --> SMB1
+    PVE1 --> SMB2
 
+    PVE2 --> NFS
+    PVE2 --> SMB1
+    PVE2 --> SMB2
+
+    %% Fogyasztók
     JELLY["LXC 1010 Jellyfin\nbind mount"]
     SERVARR["LXC 1011 Servarr\nbind mount"]
     RESTIC["LXC 1008 Restic\nbind mount"]
     PXEVM["VM 209 PXEBoot\nfstab mount"]
 
-    TORRENT --> JELLY
-    TORRENT --> SERVARR
-    BACKUP --> RESTIC
-    PXEISO --> PXEVM
-
-    PBS["VM 501/502\nPBS / TrueNAS control"]
-    SSD --> PBS
+    NFS --> JELLY
+    NFS --> SERVARR
+    SMB1 --> RESTIC
+    SMB2 --> PXEVM
 ```
+
 
 
 **Hálózati megosztások (NFS/SMB) és LXC**
