@@ -91,12 +91,12 @@ Legjobb megoldásnak azt találtam, ha leállítom ekkor az LXC és VM gépeket,
 
 Lenti képen látható, TrueNAS-t leállítottam.
 <p align="center">
-  <img src="[path/to/image.png](https://github.com/user-attachments/assets/c06fd588-4cde-48af-a4af-bfef33c89914)" alt="Description" width="300">
+  <img src="https://github.com/user-attachments/assets/c06fd588-4cde-48af-a4af-bfef33c89914" alt="TrueNAS stopped" width="300">
 </p>
 
 Lenti képen látható, a TrueNAS leállásakor ezek a VM-ek és LXC-k leállnak.
 <p align="center">
-  <img src="[path/to/image.png](https://github.com/user-attachments/assets/23e62678-e4b9-4764-be8f-ed881317c7a0)" alt="Description" width="300">
+  <img src="https://github.com/user-attachments/assets/23e62678-e4b9-4764-be8f-ed881317c7a0" alt="VMs/LXC stopped" width="300">
 </p>
 
 ---
