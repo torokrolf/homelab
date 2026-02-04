@@ -11,7 +11,7 @@
 - [DNS – Publikus domain névfeloldás internet nélkül](#dns---publikus-domain-névfeloldás-internet-nélkül)
 - [DNS – Pi-hole blokkolja a Google képtalálatokat mobilon](#dns---pi-hole-blokkolja-a-google-képtalálatokat-mobilon)
 - [SSH – SSH belépés LXC / Ubuntu esetén](#ssh---ssh-belépés-lxc--ubuntu-esetén)
-- [Megosztás – SMB elérés LXC-ből](#Megosztás-–-SMB/NFS-elérés-LXC-ből)
+- [Megosztás – SMB elérés LXC-ből](#Megosztás – SMB/NFS elérés LXC-ből)
 - [Race condition – SMB mount sorrendiség](#race-condition--smb-mount-sorrendiség)
 - [Megosztás – Dinamikus NFS mount qBittorrenthez + race condition kezelés](#megosztás---dinamikus-nfs-mount-qbittorrentet-futtató-vm-hez-race-condition-kezeléssel-és-qbittorrent-leállítása-ha-a-megosztás-eltűnik)
 - [Hardver – Külső SSD stabilitása USB-n](#hardver---külső-ssd-stabilitása-usb-n--tp-link-ue330-on-keresztül-vs-direkt-usb-n-csatlakozás)
@@ -82,6 +82,7 @@
 
 ---
 
+<a name="Megosztás – SMB/NFS elérés LXC-ből"></a>
 ## Megosztás – SMB/NFS elérés LXC-ből
 
 **Probléma:** 
