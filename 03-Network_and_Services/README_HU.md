@@ -144,7 +144,7 @@ Soha nem használok fix IP-ket a proxy konfigokban — kizárólag DNS neveket.
 
 Lenti ábrán láthatom a **conditional forwarding** szabályaimat.
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/5bc5cc50-6947-431d-8b6c-1161a748a0d1" alt="Description" width="300">
+  <img src="https://github.com/user-attachments/assets/5bc5cc50-6947-431d-8b6c-1161a748a0d1" alt="Description" width="600">
 </p>
 
 ---
@@ -233,6 +233,7 @@ Lenti képen látható, 2 órán át nem volt elérhető a NAS és erről kaptam
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
