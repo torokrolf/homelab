@@ -1,55 +1,74 @@
-← [Back to the Homelab main page](../README_HU.md)
+← [Back to Homelab Main Page](../README.md)
 
 [🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
 
 ---
 
-# Errors
+# Errors & Troubleshooting
 
 ## 📚 Table of Contents
 
-- [DNS – Public domain resolution without internet access](#dns-offline)
-- [DNS – Pi-hole blocks Google image results on mobile](#dns-pihole)
-- [DNS – AdGuard DNS rate limitből adótó ARP starving ](#ratelimit)
-- [SSH – SSH login for LXC / Ubuntu](#ssh-lxc)
-- [Mount – SMB/NFS access from LXC](#mount-lxc)
-- [Mount – When the TrueNAS share is not reachable](#notreachable)
+- [DNS – Public domain resolution without internet](#dns-offline)
+- [DNS – Pi-hole blocking Google Image search results](#dns-pihole)
+- [DNS – ARP starving caused by AdGuard DNS rate limit](#ratelimit)
+- [SSH – SSH login issues with LXC / Ubuntu](#ssh-lxc)
+- [Sharing – SMB/NFS access from LXC](#mount-lxc)
+- [Sharing – Handling TrueNAS share unavailability](#unavailable)
 - [Hardware – External SSD stability over USB](#hw-ssd)
 - [Hardware – M70q network adapter instability](#hw-m70q)
-- [Hardware – Local and public DNS issues caused by Wi-Fi](#hw-wifi)
+- [Hardware – Local and public DNS issues (Wi-Fi)](#hw-wifi)
 - [DDNS – Cloudflare update behind pfSense](#ddns-pfsense)
 
 ---
 
-## DNS – Public domain resolution without internet access
+## DNS – Public domain resolution without internet
 <a name="dns-offline"></a>
 
 **Problem**:
-- Accessing the public `*.trkrolf.com` domain failed when there was no internet connection.
+- Accessing the `*.trkrolf.com` public domain failed when the internet connection was down.
 
 **Solution**:
-- **DNS override / split-horizon DNS**: Wildcard `trkrolf.com` (`*.trkrolf.com`) records resolve directly to the internal Traefik IP inside the local network, bypassing any external DNS queries.
+- **DNS override**: Implemented a wildcard DNS override for `*.trkrolf.com` in the local resolver. This ensures requests resolve directly to the local Traefik IP, bypassing external lookups.
 
 ---
 
-## DNS – Pi-hole blocks Google image results on mobile
+## DNS – Pi-hole blocking Google Image search results on mobile
 <a name="dns-pihole"></a>
 
 **Problem**:
-- Google image results would not open on mobile devices due to Pi-hole blocklists.
+- Google Image search results fail to open on mobile devices due to Pi-hole blocking lists.
 
 **Cause**:
-- Google uses tracking domains (e.g. `googleadservices.com`) which are present on blocklists.
+- Google uses tracking domains (e.g., `googleadservices.com`) for certain results, which are present on standard blocklists.
 
 **Solution**:
-- Temporarily disabling Pi-hole using an SSH script.
+- Created an SSH script to temporarily disable Pi-hole when needed.
 
 ❗ Script: [/11-Scripts/Android/toggle_pihole_ssh.sh](/11-Scripts/Android/toggle_pihole_ssh.sh)
 
 ---
 
-## DNS – AdGuard DNS rate limitből adótó ARP starving
+## DNS – ARP starving caused by AdGuard DNS rate limit
 <a name="ratelimit"></a>
+
+**Problem Description**:
+After migrating from Pi-hole to AdGuard Home (AGH), Proxmox hosts (`192.168.2.198`, `192.168.2.199`) became unreachable from the `192.168.1.0/24` network. Interestingly, the VMs and LXC containers running on these hosts remained pingable, but the physical nodes themselves did not respond.
+
+**Cause**:
+- **DNS Rate Limit:** The AdGuard Home default rate limit (**20 queries/sec**) was too low. Clients exceeded this limit, causing AGH to drop requests.
+- **DNS Flood:** Clients responded to failed resolutions with aggressive retries. This created an "auto-generating" flood that overwhelmed the Proxmox network interface.
+- **Missing Records:** Since the Proxmox nodes had static IPs (non-DHCP), there were no static ARP entries for them in pfSense. Due to the network noise, dynamic ARP resolution failed, leading to **ARP starving**.
+- **ARP Starving:** The high volume of dropped packets and queuing prevented the Proxmox interface from answering pfSense's ARP requests (required for ICMP/Ping). VMs and LXCs remained reachable because they received IPs via pfSense DHCP, which automatically created **Static ARP** entries for them, making their MAC addresses known to the router.
+
+
+
+**Solution**:
+1. **Static ARP Binding:**
+   - Added Proxmox hosts to the **DHCP Static Mappings** in pfSense.
+   - Enabled the **Static ARP** option for these mappings. This ensures the router has a hardcoded MAC-IP pairing and doesn't need to broadcast ARP requests.
+2. **Remove AdGuard Rate Limit:**
+   - Navigation: `Settings` -> `DNS settings` -> `Rate limit`.
+   - Set the value to **0** (disabled) or a significantly higher threshold.
 
 ---
 
@@ -60,41 +79,38 @@
 - Root SSH login is disabled by default in LXC containers.
 
 **Solution**:
-- Creating a regular user and configuring SSH key-based authentication.
+- Create a regular user and configure SSH key-based authentication.
 
 ---
 
-## Mount – SMB/NFS access from LXC
+## Sharing – SMB/NFS access from LXC
 <a name="mount-lxc"></a>
 
 **Problem**:
-- Unprivileged LXC containers cannot directly mount network shares.
+- Unprivileged LXC containers cannot mount network shares directly.
 
 **Solution**:
-- Mounting the shares on the Proxmox host using **AutoFS**, then passing them to the container via bind mount (`mp0`).
-- This also prevents the `df` command from hanging if the storage becomes unavailable.
+- Use **AutoFS** on the Proxmox host to mount the shares, then pass them to the LXC using a bind mount (`mp0`).
+- This prevents the `df` command from hanging if the storage goes offline.
 
 ---
 
-## Mount – When the TrueNAS share is not reachable
-<a name="notreachable"></a>
+## Sharing – Handling TrueNAS share unavailability
+<a name="unavailable"></a>
 
 **Problem**:
-- Several VMs and LXCs on Proxmox1 rely on TrueNAS shares. If the share becomes unavailable, services like qBittorrent continue downloading to the VM’s local disk, which causes issues.
+- Several VMs and LXCs on the Proxmox1 node depend on TrueNAS shares. If the share becomes unavailable, services like qBittorrent might continue downloading to the VM's local storage, filling up the disk.
 
 **Solution**:
-- The most reliable approach I found is to stop the affected VMs/LXCs when the share is unavailable. Since I follow the “one service per VM/LXC” principle, this does not impact other services.
-- When the share becomes available again, the VMs/LXCs are automatically started.
-
-Workflow:
-- All shares are mounted on Proxmox using AutoFS so their availability can be checked.
-- A script checks every 30 seconds whether the share is reachable.
-- If the share is reachable, it checks whether the VM/LXC is running; if not, it starts it.
-- If the share is not reachable, it stops the VM/LXC if it is running.
+- Adopted a "shutdown on failure" policy. Since I follow the "one service per VM/LXC" principle, stopping affected machines doesn't impact other services.
+- Proxmox uses **autofs** to mount and monitor shares.
+- A script runs every 30 seconds to check share availability.
+- If the share is online: The script starts the VM/LXC if it isn't running.
+- If the share is offline: The script shuts down the affected VM/LXC immediately.
 
 ❗ Script: [/11-Scripts/proxmox/mount-monitor](/11-Scripts/proxmox/mount-monitor)
 
-In the image below, when TrueNAS is stopped, the affected VMs/LXCs on the other Proxmox node are also stopped. When TrueNAS starts again, these machines automatically start as well.
+The image below shows that when TrueNAS is stopped, the dependent VMs/LXCs on the other Proxmox node shut down automatically. They restart once TrueNAS is back online.
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/042abb72-ea53-4769-b017-237a0f493dbe" alt="TrueNAS stopped" width="400">
@@ -106,10 +122,10 @@ In the image below, when TrueNAS is stopped, the affected VMs/LXCs on the other 
 <a name="hw-ssd"></a>
 
 **Problem**:
-- The Samsung 870 EVO SSD was unstable when connected directly over USB.
+- Samsung 870 EVO SSD was unstable when connected directly via USB.
 
 **Solution**:
-- Using a TP-Link UE330 USB hub, which provides more stable power delivery.
+- Using a powered TP-Link UE330 USB hub to provide stable power delivery.
 
 ---
 
@@ -117,35 +133,35 @@ In the image below, when TrueNAS is stopped, the affected VMs/LXCs on the other 
 <a name="hw-m70q"></a>
 
 **Problem**:
-- The internal network adapter of the M70q randomly dropped connections.
+- The internal network card of the M70q randomly dropped the connection.
 
 **Solution**:
-- Using a TP-Link UE330 external USB network adapter for stable connectivity.
+- Using a TP-Link UE330 external USB-to-Ethernet adapter for stable connectivity.
 
 ---
 
-## Hardware – Local and public DNS issues caused by Wi-Fi
+## Hardware – Local and public DNS issues due to Wi-Fi adapter
 <a name="hw-wifi"></a>
 
 **Problem**:
-- The MediaTek 7921 Wi-Fi card caused unstable DNS resolution under Linux.
+- The MediaTek 7921 Wi-Fi card produced unstable DNS resolution in Linux environments.
 
 **Solution**:
-- Replacing the adapter with an Intel AX210.
+- Replaced the adapter with an Intel AX210.
 
 ---
 
-## DDNS – Cloudflare update behind pfSense
+## DDNS – Cloudflare not updating behind pfSense
 <a name="ddns-pfsense"></a>
 
 **Problem**:
-- Because pfSense had a private WAN IP, DDNS could not detect public IP changes.
+- Due to the private WAN IP (Double NAT), pfSense could not detect public IP changes for DDNS.
 
 **Solution**:
-- A custom script that checks the public IP externally and updates the Cloudflare record.
+- Used a custom script that checks the public IP externally and forces the Cloudflare record update.
 
 ❗ Script: [/11-Scripts/pfsense/ddns-force-update.sh](/11-Scripts/pfsense/ddns-force-update.sh)
 
 ---
 
-← [Back to the Homelab main page](../README_HU.md)
+← [Back to Homelab Main Page](../README.md)
