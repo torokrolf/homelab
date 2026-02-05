@@ -27,7 +27,7 @@
 - A `*.trkrolf.com` publikus domain elérése sikertelen volt internetkapcsolat nélkül.
 
 **Megoldás**:
-- Lokális BIND9 DNS használata DNS override-al, így a név mindig a belső IP-re (192.168.2.202) oldódik fel.
+- **DNS override**: A wildcardolt trkrolf.com (*.trkrolf.com) rekordok belső hálózaton közvetlenül a Traefik helyi IP-re oldódik fel, kikerülve a külső lekérdezést.
 
 ---
 
