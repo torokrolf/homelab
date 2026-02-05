@@ -110,7 +110,7 @@ flowchart TB
 - A **1-hour (3600s) TTL** in the zone files provides an ideal balance between stability and flexibility for testing and updates.
 
 **Unbound (Recursive Resolver):**
-- **TTL Capping (0-3600s)**: Unbound respects the original TTL but caps it at 1 hour. This protects against stale records while allowing CDNs to offer closer or faster servers via short TTLs (e.g., 10s).
+- **TTL Capping (0-3600s)**: Unbound respects the original TTL but caps it at 1 hour. This protects against stale records while allowing **CDN** to offer closer or faster servers via short TTLs (e.g., 10s).
 - **Optimistic Caching**: Using the `serve-expired` feature, expired records are retained for an additional hour. If the upstream server is unavailable or slow, Unbound responds instantly from the cache, making network errors or latency invisible to clients.
 
 **AdGuard Home (Client-side Filter):**
