@@ -156,8 +156,10 @@ Soha nem használok fix IP-ket a proxy konfigokban — kizárólag DNS neveket.
 <a name="dns"></a>
 ## 1.10 DNS architektúra
 •	<p align="center">
-  <img src="https://github.com/user-attachments/assets/d7df5a3b-3652-4984-b256-d4d889afc2eb" alt="Description" width="300">
+  <img src="https://github.com/user-attachments/assets/f206bb3b-717e-4261-9a22-ffe9b7f50997" alt="Description" width="500">
 </p>
+
+
 
 ### Publikus domain
 - Namecheap regisztrátor + Cloudflare DNS menedzsment.
@@ -212,6 +214,7 @@ Lenti képen látható, 2 órán át nem volt elérhető a NAS és erről kaptam
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
