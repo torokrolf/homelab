@@ -10,6 +10,7 @@
 
 - [DNS – Public domain resolution without internet access](#dns-offline)
 - [DNS – Pi-hole blocks Google image results on mobile](#dns-pihole)
+- [DNS – AdGuard DNS rate limitből adótó ARP starving ](#ratelimit)
 - [SSH – SSH login for LXC / Ubuntu](#ssh-lxc)
 - [Mount – SMB/NFS access from LXC](#mount-lxc)
 - [Mount – When the TrueNAS share is not reachable](#notreachable)
@@ -44,6 +45,11 @@
 - Temporarily disabling Pi-hole using an SSH script.
 
 ❗ Script: [/11-Scripts/Android/toggle_pihole_ssh.sh](/11-Scripts/Android/toggle_pihole_ssh.sh)
+
+---
+
+## DNS – AdGuard DNS rate limitből adótó ARP starving
+<a name="ratelimit"></a>
 
 ---
 
