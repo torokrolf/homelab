@@ -168,17 +168,17 @@ Soha nem használok fix IP-ket a proxy konfigokban — kizárólag DNS neveket.
 
 ### 1.10.3 Bind9 + AdGuard Home + Unbound + Traefik működési logikája
 
-Amennyiben lokális domainre vonatkozó lekérdezés történik, az AdGuard Home-ban conditional forwarding-ban megadott szabály alapján, az otthoni.local alapján a Bind9 szerverre továbbítja, a Bind9 válaszol.  
+Amennyiben lokális domainre vonatkozó lekérdezés történik, az AdGuard Home-ban **conditional forwarding**-ban megadott szabály alapján, az otthoni.local alapján a Bind9 szerverre továbbítja, a Bind9 válaszol.  
 <p align="center">
   <img src="https://github.com/user-attachments/assets/f206bb3b-717e-4261-9a22-ffe9b7f50997" alt="Description" width="500">
 </p>
 
-Ha a saját publikus domainemre vonatkozó lekérdezés történik, az AdGuard Home-ban conditional forwarding-ban megadott szabály alapján, a trkrolf.com noha publikus domain, mégis akár az otthoni.local-t, a Bind9 szerverre továbbítja, a Bind9 válaszol, mivel overrideolva van, mégpedig a Traefik IP címét adja vissza.   
+Ha a saját publikus domainemre vonatkozó lekérdezés történik, az AdGuard Home-ban **conditional forwarding**-ban megadott szabály alapján, a trkrolf.com noha publikus domain, mégis akár az otthoni.local-t, a Bind9 szerverre továbbítja, a Bind9 válaszol, mivel **overrideolva** van, mégpedig a Traefik IP címét adja vissza.   
 <p align="center">
   <img src="https://github.com/user-attachments/assets/0ca53c15-93eb-46f0-9ee7-a7ca9cb68917" alt="Description" width="500">
 </p>
 
-Ha egy publikus domainre vonatkozó lekérdezés történik, az AdGuard Home-ban conditional forwarding-ban megadott szabály alapján, mivel ez nem az otthoni.local vagy a trkrolf.com domain, így az Unbound szerverre továbbítja, ami  felkeresi a szervereket.   
+Ha egy publikus domainre vonatkozó lekérdezés történik, az AdGuard Home-ban **conditional forwarding**-ban megadott szabály alapján, mivel ez nem az otthoni.local vagy a trkrolf.com domain, így az Unbound szerverre továbbítja, ami  felkeresi a szervereket.   
 <p align="center">
   <img src="https://github.com/user-attachments/assets/f99e3d13-de1e-4dbc-bb03-467948f9d915" alt="Description" width="500">
 </p>
@@ -229,6 +229,7 @@ Lenti képen látható, 2 órán át nem volt elérhető a NAS és erről kaptam
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
