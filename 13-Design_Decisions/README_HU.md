@@ -103,23 +103,23 @@ flowchart TB
 
 ## Bind9, AdGuard Home, Unbound cache és TTL stratégiája
 
-### Felépítés és döntési érvek:
-
 **BIND9 (Lokális autoritatív forrás):**
 - Mivel a pfSense statikus IP-ket oszt, a belső szolgáltatások címei állandóak, a név-IP párosítás nem változik.
 - A zónafájlokban rögzített **1 órás (3600s) TTL** ideális egyensúlyt teremt a stabilitás és a tesztelés alatti rugalmasság között.
 
 **Unbound (Rekurzív feloldó):**
-- **TTL Capping (0-3600s):** Az Unbound tiszteletben tartja az eredeti TTL-t, de 1 órában maximalizálja azt. Ez megvéd az elavult (stale) rekordoktól, miközben engedi a CDN-eknek, hogy a rövid TTL-lel (pl. 10s) mindig a legközelebbi/leggyorsabb szervert ajánlják fel.
-- **Optimistic Caching:** A `serve-expired` funkcióval a lejárt rekordokat további 1 óráig megőrzi. Ha az upstream szerver nem elérhető vagy lassú, a cache-ből azonnal válaszol, így a hálózati hiba vagy késleltetés észrevétlen marad a kliensek számára.
+- **TTL Capping (0-3600s):** Az Unbound tiszteletben tartja az eredeti TTL-t, de 1 órában maximalizálja azt. Ez megvéd az elavult rekordoktól, miközben engedi a CDN-eknek, hogy a rövid TTL-lel (pl. 10s) mindig a legközelebbi/leggyorsabb szervert ajánlják fel.
+- **Optimistic Caching:** A serve-expired funkcióval a lejárt rekordokat további 1 óráig megőrzi. Ha az upstream szerver nem elérhető vagy lassú, a cache-ből azonnal válaszol, így a hálózati hiba vagy késleltetés észrevétlen marad a kliensek számára.
 
 **AdGuard Home (Kliens oldali szűrő):**
 - **TTL tartomány (0-86400s):** Itt a maximum limit 1 napra van emelve.
-- **Rendelkezésre állás:** Az AdGuard szintén használ **optimistic caching**-et. Ha a BIND9 konténer vagy az Unbound ideiglenesen leállna, az AdGuard akár 24 órán át képes kiszolgálni a már ismert belső neveket a cache-ből, biztosítva a homelab szolgáltatások folyamatos elérését.
+- **Optimistic caching** Az AdGuard szintén használ -et. Ha a BIND9 konténer vagy az Unbound ideiglenesen leállna, az AdGuard akár 24 órán át képes kiszolgálni a már ismert belső neveket a cache-ből, biztosítva a homelab szolgáltatások folyamatos elérését.
 
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/95209285-b7c9-4d17-a877-ea49134880ce" alt="DNS Cache Stratégia" width="800">
-</p>
+Layer / Server                 | Cache Size                          | Minimum TTL | Maximum TTL
+-------------------------------|-------------------------------------|-------------|-------------
+AdGuard Home (for clients)     | 128 MB                              | 0           | 86400 (1 day)
+BIND9 (local zones)            | default                             | 3600        | 3600
+Unbound (public DNS)           | msg-cache 64 MB, rrset-cache 128 MB | 0           | 3600 (1 hour)
  
 ---
 
