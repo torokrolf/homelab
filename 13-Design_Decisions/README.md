@@ -103,4 +103,26 @@ flowchart TB
 
 ---
 
+## Bind9, AdGuard Home, and Unbound Cache/TTL Strategy
+
+**BIND9 (Local Authoritative Source):**
+- Since pfSense assigns static IPs, the IP addresses of my private domains remain constant; services are always mapped to the same IP.
+- A **1-hour (3600s) TTL** in the zone files provides an ideal balance between stability and flexibility for testing and updates.
+
+**Unbound (Recursive Resolver):**
+- **TTL Capping (0-3600s)**: Unbound respects the original TTL but caps it at 1 hour. This protects against stale records while allowing CDNs to offer closer or faster servers via short TTLs (e.g., 10s).
+- **Optimistic Caching**: Using the `serve-expired` feature, expired records are retained for an additional hour. If the upstream server is unavailable or slow, Unbound responds instantly from the cache, making network errors or latency invisible to clients.
+
+**AdGuard Home (Client-side Filter):**
+- **TTL Range (0-86400s)**: The maximum limit is raised to 1 day.
+- **Optimistic Caching**: AdGuard also utilizes this feature. If the BIND9 container or Unbound were to go down temporarily, AdGuard can serve known internal names from its cache for up to 24 hours, ensuring continuous access to homelab services.
+
+Layer / Server                 | Cache Size                          | Minimum TTL | Maximum TTL
+-------------------------------|-------------------------------------|-------------|-------------
+AdGuard Home (for clients)     | 128 MB                              | 0           | 86400 (1 day)
+BIND9 (local zones)            | default                             | 3600        | 3600
+Unbound (public DNS)           | msg-cache 64 MB, rrset-cache 128 MB | 0           | 3600 (1 hour)
+
+---
+
 ← [Back to the Homelab main page](../README.md)
