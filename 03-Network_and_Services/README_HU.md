@@ -149,6 +149,11 @@ Lenti ábrán láthatom a **conditional forwarding** szabályaimat.
   <img src="https://github.com/user-attachments/assets/5bc5cc50-6947-431d-8b6c-1161a748a0d1" alt="Description" width="1000">
 </p>
 
+Lenti ábrán láthatom a felhasznált blokklistát.
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/50c1749c-4005-4c74-a390-d18acc6c9442" alt="Description" width="1000">
+</p>
+
 ---
 
 <a name="pxe"></a>
@@ -235,6 +240,7 @@ Lenti képen látható, 2 órán át nem volt elérhető a NAS és erről kaptam
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
