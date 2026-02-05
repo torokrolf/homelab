@@ -118,7 +118,7 @@ flowchart TB
 - **Rendelkezésre állás:** Az AdGuard szintén használ **optimistic caching**-et. Ha a BIND9 konténer vagy az Unbound ideiglenesen leállna, az AdGuard akár 24 órán át képes kiszolgálni a már ismert belső neveket a cache-ből, biztosítva a homelab szolgáltatások folyamatos elérését.
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/95209285-b7c9-4d17-a877-ea49134880ce" alt="DNS Cache Stratégia" width="400">
+  <img src="https://github.com/user-attachments/assets/95209285-b7c9-4d17-a877-ea49134880ce" alt="DNS Cache Stratégia" width="800">
 </p>
  
 ---
