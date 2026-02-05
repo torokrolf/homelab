@@ -22,13 +22,13 @@ Itt bemutatom, hogy miért esett a döntésem bizonyos technológiákra és arch
     - **Verziózás**: akár korábbi állapotok is visszaállíthatók.
     - **Hatékony**: tömörít, gyors, FreeFileSync sokkal lassabban ellenőrizte le a változásokat és lassabban másolta  a megváltozott fájlokat.
 ---
-## Nextcloud
+## Miért Nextcloud?
 
 - Self-hosted fájl- és képkezelés  
 - Nem szükséges Google Drive / más felhő, Nextcloud a saját Google Drive-om
 - Teljes kontroll és biztonság  
 ---
-## Vaultwarden
+## Miért Vaultwarden?
 
 - Self-hosted jelszókezelés  
 - Jelszavak nem kerülnek ki az internetre  
@@ -103,4 +103,3 @@ flowchart TB
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
 
-← [Vissza a Homelab főoldalra](../README_HU.md)
