@@ -4,7 +4,7 @@
 
 ---
 
-# Errors & Troubleshooting
+# Errors
 
 ## 📚 Table of Contents
 
@@ -55,12 +55,10 @@
 After migrating from Pi-hole to AdGuard Home (AGH), Proxmox hosts (`192.168.2.198`, `192.168.2.199`) became unreachable from the `192.168.1.0/24` network. Interestingly, the VMs and LXC containers running on these hosts remained pingable, but the physical nodes themselves did not respond.
 
 **Cause**:
-- **DNS Rate Limit:** The AdGuard Home default rate limit (**20 queries/sec**) was too low. Clients exceeded this limit, causing AGH to drop requests.
-- **DNS Flood:** Clients responded to failed resolutions with aggressive retries. This created an "auto-generating" flood that overwhelmed the Proxmox network interface.
-- **Missing Records:** Since the Proxmox nodes had static IPs (non-DHCP), there were no static ARP entries for them in pfSense. Due to the network noise, dynamic ARP resolution failed, leading to **ARP starving**.
-- **ARP Starving:** The high volume of dropped packets and queuing prevented the Proxmox interface from answering pfSense's ARP requests (required for ICMP/Ping). VMs and LXCs remained reachable because they received IPs via pfSense DHCP, which automatically created **Static ARP** entries for them, making their MAC addresses known to the router.
-
-
+- **DNS rate limit:** AdGuard Home's default rate limit (**20 queries/sec**) was too low. Clients exceeded this limit, causing AdGuard Home to drop requests.
+- **DNS Flood:** Due to failed resolutions, clients initiated aggressive DNS retries. This created a self-reinforcing loop that saturated the Proxmox network interface.
+- **Missing records:** Since the Proxmox nodes had fixed IPs (configured on the host, not by pfSense DHCP), **Static ARP** was not enabled for them in pfSense. Due to network noise, they could not be added to the ARP table, resulting in **ARP starvation**.
+- **ARP starvation:** Due to the high volume of dropped packets and queuing, the Proxmox interface could not respond to pfSense's ARP requests (required for PING) in time. The VMs and LXCs on the Proxmox node remained pingable from `1.0` because they received their IPs from the pfSense DHCP server, where Static ARP was already configured and enabled. Thus, their IP + MAC address pairs were already known.
 
 **Solution**:
 1. **Static ARP Binding:**
