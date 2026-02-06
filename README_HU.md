@@ -1,4 +1,4 @@
-graph TD
+```mermaid graph TD
     %% Fizikai réteg és Átjáró
     Internet((Internet)) --- Asus[ASUS Router 1.0 hálózat]
     Asus --- pfSense[pfSense Firewall / Gateway]
@@ -24,6 +24,8 @@ graph TD
     %% Stílusok
     style pfSense fill:#f96,stroke:#333,stroke-width:2px
     style Proxmox_Node fill:#f5f5f5,stroke:#666,stroke-dasharray: 5 5
+```
+    
 ← [Vissza a Homelab főoldalra](../README_HU.md)
 
 [🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
