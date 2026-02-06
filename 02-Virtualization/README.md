@@ -18,8 +18,6 @@
 
 ## 1.2 Proxmox 1 VMs and LXCs
 
-Detailed list of resources running on the primary compute node.
-
 **LXC Core Infrastructure (ID 100-499)**
 | ID | Name | Type | IP Address | Status/Role |
 | :--- | :--- | :--- | :--- | :--- |
@@ -77,3 +75,4 @@ Detailed list of resources running on the primary compute node.
 | 1400 | mainwindows11-213 | VM | 192.168.3.213 | Primary Workstation |
 | 1401 | win11kliens1-231 | VM | 192.168.3.231 | Client 1 |
 | 1402 | win11kliens2-232 | VM | 192.168.3.232 | Client 2 |
+
