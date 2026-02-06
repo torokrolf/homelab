@@ -76,3 +76,17 @@
 | 1401 | win11kliens1-231 | VM | 192.168.3.231 | Client 1 |
 | 1402 | win11kliens2-232 | VM | 192.168.3.232 | Client 2 |
 
+---
+
+## 1.2 Proxmox 2 VMs and LXCs
+
+**VM Core Infrastructure (ID 500-999)**
+| ID | Name | Type | IP Address | Status/Role |
+| :--- | :--- | :--- | :--- | :--- |
+| 500 | pfsense | VM | DHCP/Static | Firewall & Router |
+| 501 | pbs | VM | DHCP/Static | Proxmox Backup Server |
+| 502 | truenas-220 | VM | 192.168.2.220 | Network Attached Storage (NAS) |
+
+---
+
+← [Back to Homelab Home](../README.md)
