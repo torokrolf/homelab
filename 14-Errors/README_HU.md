@@ -58,7 +58,7 @@ A Pi-hole-ról AdGuard Home-ra való átállás után a 192.168.1.0/24 hálózat
 
 - **DNS rate limit:** Az AdGuard Home alapértelmezett rate limit-e (**20 lekérdezés/mp**) túl alacsony volt. A kliensek túllépték ezt, az AdGuard Home pedig eldobta a kéréseket.
 - **DNS Flood:** A kliensek a sikertelen feloldások miatt agresszív újrapróbálkozásokba kezdtek, egyre sűrűbben, ami túlterhelte a Proxmox hálózati interfészét, ez egy öngerjesztő folyamat.
-  **Hiányzó rekordok:** Mivel a Proxmox node-ok fix IP-vel rendelkeztek (nem DHCP), nem volt hozzájuk statikus ARP bejegyzés a pfSense-ben. A hálózati zaj miatt nem tudtak bekerülni a táblába így, aminek eredménye az **ARP starving**.
+  **Hiányzó rekordok:** Mivel a Proxmox node-ok fix IP-vel rendelkeztek (nem Pfsense DHCP által), nem volt hozzájuk a statikus ARP bejegyzés bekapcsolva a pfSense-ben. A hálózati zaj miatt nem tudtak bekerülni az ARP táblába így, aminek eredménye az **ARP starving**.
 - **ARP starving:** A nagy mennyiségű eldobott csomag és a sorban állás miatt a Proxmox interfésze nem tudta időben megválaszolni a pfSense ARP kéréseit, ami a PING-hez kellene. A Proxmox node-on lévő VM-eket és LXC-ket azért tudtam pingelni 1.0-ról, mert ők a pfSense DHCP szervertől kapták az IP-t és ott a statikus ARP-ot is megkapták, ugyanis beállítottam. Így az ő IP címük + MAC címük ismert volt. 
 
 
