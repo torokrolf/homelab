@@ -1,3 +1,4 @@
+```mermadi
 graph TD
     %% Külső világ
     Internet((Internet)) --- Asus[ASUS Router]
@@ -65,3 +66,4 @@ graph TD
     style pfS fill:#f96,stroke:#333,stroke-width:2px
     style Home_Net fill:#fffbe6,stroke:#d4a017,stroke-dasharray: 5 5
     style Switch fill:#eef,stroke:#00d
+```
