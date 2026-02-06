@@ -16,7 +16,7 @@
 
 ---
 
-## 1.2 Proxmox 1 VMs and LXCs
+## 1.2 Proxmox 1 VM-ek and LXC-k
 
 **LXC Core Infrastructure (ID 100-499)**
 | ID | Name | Type | IP Address | Status/Role |
@@ -75,6 +75,21 @@
 | 1400 | mainwindows11-213 | VM | 192.168.3.213 | Primary Workstation |
 | 1401 | win11kliens1-231 | VM | 192.168.3.231 | Client 1 |
 | 1402 | win11kliens2-232 | VM | 192.168.3.232 | Client 2 |
+
+---
+
+## 1.3 Proxmox 2 VM-ek and LXC-k
+
+**VM Core Infrastructure (ID 500-999)**
+| ID | Name | Type | IP Address | Status/Role |
+| :--- | :--- | :--- | :--- | :--- |
+| 500 | pfsense | VM | DHCP/Static | Firewall & Router |
+| 501 | pbs | VM | DHCP/Static | Proxmox Backup Server |
+| 502 | truenas-220 | VM | 192.168.2.220 | Network Attached Storage (NAS) |
+
+---
+
+← [Vissza a Homelab főoldalra](../README_HU.md)
 
 
 
