@@ -1,4 +1,4 @@
-```mermadi
+```mermaid
 graph TD
     %% Külső világ
     Internet((Internet)) --- Asus[ASUS Router]
