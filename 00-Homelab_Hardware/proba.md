@@ -1,20 +1,24 @@
 ```mermaid
-graph LR
-    %% Külső világ központi helyen
+graph TD
+    %% Külső világ legfelül
     Internet((Internet)) --- Asus[ASUS Router]
 
-    %% Bal oldali ág: Otthoni cuccok
-    subgraph Home_Net [Otthoni Hálózat - 192.168.1.0/24]
+    %% Az ASUS-ból két külön út indul lefelé
+    Asus --- Home_Net_Box
+    Asus --- Entry_IP
+
+    %% Első megálló: Otthoni hálózat (Külön dobozban, hogy ne takarja az IP-t)
+    subgraph Home_Net_Box [Otthoni Hálózat - 192.168.1.0/24]
         Devices[TV, Telefonok, stb.]
     end
-    Asus --- Home_Net
 
-    %% Jobb oldali ág: A Homelab belépés
-    Asus --- Entry[192.168.1.196]
+    %% Második megálló: A Homelab dedikált IP címe
+    Entry_IP[192.168.1.196]
 
     subgraph Homelab_System [HOMELAB RENDSZER]
         direction TB
         
+        %% Proxmox 2 (A tűzfalad)
         subgraph Node2 [Proxmox 2 - M920q]
             VMBR0_P2[vmbr0 - WAN Bridge]
             pfS{pfSense VM}
@@ -24,14 +28,17 @@ graph LR
             pfS -- "enp1s0f1" --- VMBR1_P2
         end
 
-        Entry --- VMBR0_P2
+        %% Az IP doboz csatlakozása a fizikai bridge-hez
+        Entry_IP --- VMBR0_P2
 
+        %% Switch
         VMBR1_P2 --- SW_P1
         
         subgraph Switch [TP-Link TL-SG108E Switch]
             SW_P1[Port 1] -- "VLAN 30 Trunk" --- SW_P8[Port 8]
         end
 
+        %% Proxmox 1 (A szervered)
         SW_P8 --- P1_NIC
         
         subgraph Node1 [Proxmox 1 - M70q]
@@ -52,9 +59,11 @@ graph LR
         end
     end
 
-    %% Stílusok a tiszta megjelenésért
+    %% Stílusok a tiszta vizualizációhoz
     style Homelab_System fill:#f8f9fa,stroke:#333,stroke-width:2px,stroke-dasharray: 8 4
-    style Entry fill:#fff3cd,stroke:#d4a017,font-weight:bold
+    style Entry_IP fill:#fff3cd,stroke:#d4a017,font-weight:bold
     style pfS fill:#f96,stroke:#333,stroke-width:2px
-    style Home_Net fill:#fffbe6,stroke:#d4a017,stroke-dasharray: 5 5
+    style Home_Net_Box fill:#fffbe6,stroke:#d4a017,stroke-dasharray: 5 5
+    style Node1 fill:#fff
+    style Node2 fill:#fff
 ```
