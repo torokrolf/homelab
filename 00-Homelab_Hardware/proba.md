@@ -1,3 +1,4 @@
+```mermaid
 graph TD
     %% Külső világ
     Internet((Internet)) --- Asus[ASUS Router]
@@ -60,3 +61,4 @@ graph TD
     style pfS fill:#f96,stroke:#333,stroke-width:2px
     style Switch fill:#fff,stroke:#00d,stroke-width:2px
     style Home_Net fill:#fffbe6,stroke:#d4a017,stroke-dasharray: 5 5
+```
