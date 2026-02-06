@@ -1,32 +1,3 @@
-```mermaid
-graph TD
-    %% Fizikai réteg és Átjáró
-    Internet((Internet)) --- Asus["ASUS Router 1.0 hálózat"]
-    Asus --- pfSense["pfSense Firewall / Gateway"]
-
-    subgraph Proxmox_Node ["M70q Gen3 - Proxmox VE"]
-        pfSense
-        Bridge["vmbr0 Bridge - VLAN Aware"]
-    end
-
-    %% VLANok és kapcsolatok
-    pfSense --- Bridge
-    
-    Bridge -- "Untagged / Native" --- LAN_2["192.168.2.0/24 Subnet"]
-    Bridge -- "VLAN 30" --- VLAN_3["192.168.3.0/24 Subnet"]
-
-    %% Eszközök
-    LAN_2 --- MainUbuntu["Main Ubuntu"]
-    LAN_2 --- Proba2["Proba 2 VM"]
-    
-    VLAN_3 --- Proba1["Proba 1 VM"]
-    VLAN_3 --- Proba2_VLAN["Proba 2 - VLAN tag-gel"]
-
-    %% Stílusok
-    style pfSense fill:#f96,stroke:#333,stroke-width:2px
-    style Proxmox_Node fill:#f5f5f5,stroke:#666,stroke-dasharray: 5 5
-```
-    
 ← [Vissza a Homelab főoldalra](../README_HU.md)
 
 [🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
