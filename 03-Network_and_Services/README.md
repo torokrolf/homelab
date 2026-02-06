@@ -25,7 +25,8 @@
 | [1.12 DHCP](#dhcp2)                    | ISC-KEA, Windows Server 2019 DHCP                        |
 | [1.13 Notifications](#notification)    | Gotify                                                   |
 
-The homelab network topology is shown in the diagram below:
+
+**The homelab network topology is shown in the diagram below:**
 ```mermaid
 graph TD
     %% Global
@@ -313,4 +314,5 @@ The image below shows a notification received when the NAS was unavailable for 2
 ---
 
 ← [Back to Homelab Main Page](../README.md)
+
 
