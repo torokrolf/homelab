@@ -9,18 +9,18 @@
 ---
 
 ## 1.1 Type 1 Hypervisor
-- **Proxmox VE 9**
+- **Proxmox VE 9.1.4**
   - LXC (Linux Containers)
   - VM (Virtual Machines)
   - Template + Cloud-Init (ID 8000)
 
 ---
 
-## 1.2 Proxmox 1 (M70q) Resource Inventory
+## 1.2 Proxmox 1 VMs and LXCs
 
-Detailed list of resources running on the primary compute node (`192.168.2.199`).
+Detailed list of resources running on the primary compute node.
 
-### 🛠 Core Infrastructure (Native VLAN 1)
+**LXC Core Infrastructure (ID 100-499)**
 | ID | Name | Type | IP Address | Status/Role |
 | :--- | :--- | :--- | :--- | :--- |
 | 100 | dns-201 | LXC | 192.168.2.201 | Primary DNS |
@@ -30,7 +30,7 @@ Detailed list of resources running on the primary compute node (`192.168.2.199`)
 | 104 | pi-hole-208 | LXC | 192.168.2.208 | DNS Sinkhole |
 | 105 | nginx-202 | LXC | 192.168.2.202 | Web Server |
 
-### 📊 Management & Apps (Native VLAN 1)
+**LXC Services (ID 1000-1099)**
 | ID | Name | Type | IP Address | Description |
 | :--- | :--- | :--- | :--- | :--- |
 | 1000 | zabbix-206 | LXC | 192.168.2.206 | Monitoring |
@@ -50,26 +50,30 @@ Detailed list of resources running on the primary compute node (`192.168.2.199`)
 | 1014 | pulse-227 | LXC | 192.168.2.227 | Monitoring Agent |
 | 1015 | changedetection-229 | LXC | 192.168.2.229 | Web Monitoring |
 
-### 🛡 Infrastructure & Security (Native VLAN 1)
+**VM Linux Servers (ID 1100-1199)**
 | ID | Name | Type | IP Address | Description |
 | :--- | :--- | :--- | :--- | :--- |
 | 1100 | crowdsec-218 | LXC | 192.168.2.218 | Security/IDS |
 | 1101 | pxeboot-209 | VM | 192.168.2.209 | Network Boot |
 | 1102 | packetfence-228 | VM | 192.168.2.228 | NAC Service |
 
-### 🐧 Linux Systems (Native VLAN 1)
+**VM Linux Clients (ID 1200-1299)**
 | ID | Name | Type | IP Address | Description |
 | :--- | :--- | :--- | :--- | :--- |
 | 1200 | mainubuntu-200 | VM | 192.168.2.200 | Main Linux Host |
 | 1201 | kali | VM | DHCP | Pentesting Lab |
 | 1202 | probaubi-205 | VM | 192.168.2.205 | Sandbox |
 
-### 🪟 Windows Systems (VLAN 30)
+**VM Windows Servers (ID 1300-1399)**
 | ID | Name | Type | IP Address | Role |
 | :--- | :--- | :--- | :--- | :--- |
 | 1300 | winszerver1-230 | VM | 192.168.3.230 | AD Domain Controller |
 | 1301 | winszerver2-234 | VM | 192.168.3.234 | Secondary DC |
 | 1302 | winszerver-core-233 | VM | 192.168.3.233 | Core Services |
-| 1400 | mainwindows11-213 | VM | 192.168.3.213 | Windows 11 Workstation |
+
+**VM Windows Clients (ID 1400-1499)**
+| ID | Name | Type | IP Address | Role |
+| :--- | :--- | :--- | :--- | :--- |
+| 1400 | mainwindows11-213 | VM | 192.168.3.213 | Primary Workstation |
 | 1401 | win11kliens1-231 | VM | 192.168.3.231 | Client 1 |
 | 1402 | win11kliens2-232 | VM | 192.168.3.232 | Client 2 |
