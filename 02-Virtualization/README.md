@@ -4,28 +4,23 @@
 
 ---
 
-# Virtualization
+# 1 Virtualization
 
 ---
 
-## Type 1 Hypervisor
+## 1.1 Type 1 Hypervisor
 - **Proxmox VE 9**
-  - LXC (Linux containers)  
-  - VM (Virtual Machines)  
-  - Template + Cloud-Init
-
-# Proxmox 1 (M70q) Resource Inventory
-
-This node serves as the primary compute resource for the homelab, hosting various LXC containers and Virtual Machines.
-
-## Network Summary
-- **Management IP:** `192.168.2.199`
-- **Bridge:** `vmbr0` (VLAN Aware)
-- **Gateway:** `192.168.2.1` (pfSense)
+  - LXC (Linux Containers)
+  - VM (Virtual Machines)
+  - Template + Cloud-Init (ID 8000)
 
 ---
 
-## 🛠 Core Services (Native VLAN 1)
+## 1.2 Proxmox 1 (M70q) Resource Inventory
+
+Detailed list of resources running on the primary compute node (`192.168.2.199`).
+
+### 🛠 Core Infrastructure (Native VLAN 1)
 | ID | Name | Type | IP Address | Status/Role |
 | :--- | :--- | :--- | :--- | :--- |
 | 100 | dns-201 | LXC | 192.168.2.201 | Primary DNS |
@@ -35,7 +30,7 @@ This node serves as the primary compute resource for the homelab, hosting variou
 | 104 | pi-hole-208 | LXC | 192.168.2.208 | DNS Sinkhole |
 | 105 | nginx-202 | LXC | 192.168.2.202 | Web Server |
 
-## 📊 Management & Apps (Native VLAN 1)
+### 📊 Management & Apps (Native VLAN 1)
 | ID | Name | Type | IP Address | Description |
 | :--- | :--- | :--- | :--- | :--- |
 | 1000 | zabbix-206 | LXC | 192.168.2.206 | Monitoring |
@@ -55,21 +50,21 @@ This node serves as the primary compute resource for the homelab, hosting variou
 | 1014 | pulse-227 | LXC | 192.168.2.227 | Monitoring Agent |
 | 1015 | changedetection-229 | LXC | 192.168.2.229 | Web Monitoring |
 
-## 🛡 Infrastructure & Security (Native VLAN 1)
+### 🛡 Infrastructure & Security (Native VLAN 1)
 | ID | Name | Type | IP Address | Description |
 | :--- | :--- | :--- | :--- | :--- |
 | 1100 | crowdsec-218 | LXC | 192.168.2.218 | Security/IDS |
 | 1101 | pxeboot-209 | VM | 192.168.2.209 | Network Boot |
 | 1102 | packetfence-228 | VM | 192.168.2.228 | NAC Service |
 
-## 🐧 Linux Systems (Native VLAN 1)
+### 🐧 Linux Systems (Native VLAN 1)
 | ID | Name | Type | IP Address | Description |
 | :--- | :--- | :--- | :--- | :--- |
 | 1200 | mainubuntu-200 | VM | 192.168.2.200 | Main Linux Host |
 | 1201 | kali | VM | DHCP | Pentesting Lab |
 | 1202 | probaubi-205 | VM | 192.168.2.205 | Sandbox |
 
-## 🪟 Windows Systems (VLAN 30)
+### 🪟 Windows Systems (VLAN 30)
 | ID | Name | Type | IP Address | Role |
 | :--- | :--- | :--- | :--- | :--- |
 | 1300 | winszerver1-230 | VM | 192.168.3.230 | AD Domain Controller |
