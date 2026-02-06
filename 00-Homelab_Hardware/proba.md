@@ -1,24 +1,24 @@
 ```mermaid
 graph TD
-    %% Külső világ legfelül
+    %% Külső világ
     Internet((Internet)) --- Asus[ASUS Router]
 
-    %% Az ASUS-ból két külön út indul lefelé
+    %% Külön ágak az ASUS-tól lefelé
     Asus --- Home_Net_Box
     Asus --- Entry_IP
 
-    %% Első megálló: Otthoni hálózat (Külön dobozban, hogy ne takarja az IP-t)
+    %% Otthoni hálózat szekció
     subgraph Home_Net_Box [Otthoni Hálózat - 192.168.1.0/24]
         Devices[TV, Telefonok, stb.]
     end
 
-    %% Második megálló: A Homelab dedikált IP címe
+    %% Homelab belépési pont
     Entry_IP[192.168.1.196]
 
     subgraph Homelab_System [HOMELAB RENDSZER]
         direction TB
         
-        %% Proxmox 2 (A tűzfalad)
+        %% Proxmox 2 - M920q
         subgraph Node2 [Proxmox 2 - M920q]
             VMBR0_P2[vmbr0 - WAN Bridge]
             pfS{pfSense VM}
@@ -28,17 +28,16 @@ graph TD
             pfS -- "enp1s0f1" --- VMBR1_P2
         end
 
-        %% Az IP doboz csatlakozása a fizikai bridge-hez
         Entry_IP --- VMBR0_P2
 
-        %% Switch
+        %% Fizikai Switch
         VMBR1_P2 --- SW_P1
         
         subgraph Switch [TP-Link TL-SG108E Switch]
             SW_P1[Port 1] -- "VLAN 30 Trunk" --- SW_P8[Port 8]
         end
 
-        %% Proxmox 1 (A szervered)
+        %% Proxmox 1 - M70q
         SW_P8 --- P1_NIC
         
         subgraph Node1 [Proxmox 1 - M70q]
@@ -52,9 +51,10 @@ graph TD
                 P1_Bridge -- "VLAN 30" --- VLAN3[192.168.3.0/24]
             end
 
+            %% Átnevezett virtuális gép csoportok
             subgraph VMs [Virtuális Gépek]
-                LAN2 --- Ubu[Main Ubuntu]
-                VLAN3 --- P1V[Proba 1 VLAN]
+                LAN2 --- Linux[Linux rendszerek]
+                VLAN3 --- Windows[Windows rendszerek]
             end
         end
     end
