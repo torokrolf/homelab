@@ -3,8 +3,7 @@ graph TD
     %% Külső világ
     Internet((Internet)) --- Asus[ASUS Router]
 
-    subgraph Home_Net [Otthoni Hálózat - 192.168.1.0/24]
-
+    subgraph Home_Net [Otthoni Hálózat-192.168.1.0/24]
         Asus --- Devices[TV, Telefonok, stb.]
     end
 
