@@ -42,13 +42,14 @@ Semaphore szerver célja: egyszerű grafikus felületen vezényelni az Ansible p
 
 - **Update task**: Operációs rendszerek és alkalmazások frissítése a Proxmox VM/LXC klienseken.  
 - **Időzónák beállítása**:  Minden kliensgépen a helyes időzóna konfigurálva van.  
-- **APT Cache NG kezelése**:  Lokális APT Cache NG-t nem egyesével állítottam be a kliensekhez, hanem Ansible-el.
+- **APT Cacher NG kezelése**:  Lokális APT Cacher NG-t nem egyesével állítottam be a kliensekhez, hanem Ansible-el.
 - **User létrehozása és jelszó beállítása**: Azonos nevű felhasználót hoztam létre minden célgépen a **sima, egyszerű vezénylés** érdekében.  
 - **SSH kulcsok megosztása**
 
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
