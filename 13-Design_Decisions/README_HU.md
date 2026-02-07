@@ -130,23 +130,27 @@ gantt
     title Optimalizált Rendszerfeladatok Ütemezése
     dateFormat  HH:mm
     axisFormat  %H:%M
+    todayMarker off
+
     section Napi Rutin
-    Prune (Metaadat írás)         :active, p1, 22:00, 45m
-    Ansible Update (VM/LXC)       :task, a1, 23:00, 60m
-    SMART Short Test              :task, s1, 02:00, 15m
+    Prune (Metaadat)             :a1, 22:00, 45m
+    Ansible Update               :a2, 23:00, 60m
+    SMART Short Test             :a3, 02:00, 15m
+
     section Mentési Ablak
-    PVE1 -> PBS Mentés            :crit, b1, 04:00, 75m
-    PVE2 -> PBS Mentés            :crit, b2, 05:30, 75m
-    section PBS Karbantartás
-    SMART Long Test (Havi 1. Szo) :done, l1, 01:00, 4h
-    Garbage Collection (Szombat)  :done, gc1, 08:00, 2h
-    Verify Jobs (Vasárnap)        :done, v1, 10:00, 3h
+    PVE1 -> PBS Mentés           :crit, b1, 04:00, 75m
+    PVE2 -> PBS Mentés           :crit, b2, 05:30, 75m
+
+    section Karbantartás
+    SMART Long (Havi)            :done, c1, 01:00, 4h
+    Garbage Collection (Szo)     :done, c2, 08:00, 2h
+    Verify Jobs (Vas)            :done, c3, 10:00, 3h
 ```
 
 | Időpont | Feladat megnevezése | Érintett eszköz | Gyakoriság |
 | :--- | :--- | :--- | :--- |
 | **22:00** | Prune (Retenció) | PBS Server | Naponta |
-| **23:00** | Ansible Update | Összes VM/LXC | Naponta |
+| **23:00** | Ansible Update | VM/LXC | Naponta |
 | **01:00** | SMART Long Test | Proxmox 1 & 2 | Havonta (1. Szo) |
 | **02:00** | SMART Short Test | Proxmox 1 & 2 | Naponta |
 | **04:00** | VM/LXC Backup | Proxmox 1 -> PBS | Hetente (Vasárnap) |
