@@ -16,15 +16,18 @@ gantt
     SMART Long Test (Hónap 1. Szo):done, sat3, 01:00, 4h
 ```
 
-Időpont,Feladat,Célpont,Gyakoriság
-01:00,SMART Long Test,Proxmox 1 & 2,Havonta (1. szombat)
-02:00,SMART Short Test,Proxmox 1 & 2,Naponta
-03:00,Ansible Update,VM & LXC,Naponta
-04:00,VM/LXC Backup,Proxmox 1 -> PBS,Hetente (Vasárnap)
-05:30,VM/LXC Backup,Proxmox 2 -> PBS,Hetente (Vasárnap)
-08:00,Garbage Collection,PBS,Hetente (Szombat)
-10:00,Backup Verify,PBS,Havonta (1. szombat)
-23:59,Prune Jobs,PBS,Naponta
+## 📅 Ütemezett feladatok (Backup & Karbantartás)
+
+| Időpont | Feladat megnevezése | Érintett eszköz | Gyakoriság |
+| :--- | :--- | :--- | :--- |
+| **01:00** | SMART Long Test | Proxmox 1 & 2 | Havonta (1. Szo) |
+| **02:00** | SMART Short Test | Proxmox 1 & 2 | Naponta |
+| **03:00** | Ansible Update | Összes VM/LXC | Naponta |
+| **04:00** | VM/LXC Backup | Proxmox 1 -> PBS | Hetente (Vasárnap) |
+| **05:30** | VM/LXC Backup | Proxmox 2 -> PBS | Hetente (Vasárnap) |
+| **08:00** | Garbage Collection | PBS Server | Hetente (Szombat) |
+| **10:00** | Backup Verify | PBS Server | Havonta (1. Szo) |
+| **23:59** | Prune (Retenció) | PBS Server | Naponta |
 ← [Vissza a Homelab főoldalra](../README_HU.md)
 
 [🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
