@@ -1,3 +1,20 @@
+```mermaid
+gantt
+    title Rendszerfeladatok Ütemezése
+    dateFormat  HH:mm
+    axisFormat  %H:%M
+    section Napi feladatok
+    SMART Short Test (PVE1/2)    :active, day1, 02:00, 15m
+    Ansible Update (VM/LXC)      :active, day2, 03:00, 30m
+    Prune (Mentések törlése)     :active, day3, 23:59, 10m
+    section Vasárnapi Mentés
+    Proxmox1 -> PBS Backup       :crit, sun1, 04:00, 60m
+    Proxmox2 -> PBS Backup       :crit, sun2, 05:30, 60m
+    section Heti/Havi PBS
+    PBS Garbage Collection (Szo) :done, sat1, 08:00, 2h
+    PBS Verify (Hónap 1. Szo)     :done, sat2, 10:00, 3h
+    SMART Long Test (Hónap 1. Szo):done, sat3, 01:00, 4h
+```
 ← [Vissza a Homelab főoldalra](../README_HU.md)
 
 [🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
