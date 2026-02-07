@@ -36,7 +36,7 @@
 | 1002 | nextcloud-204 | LXC | 192.168.2.204 | Cloud Storage |
 | 1003 | homarr-216 | LXC | 192.168.2.216 | Dashboard |
 | 1004 | guacamole-217 | LXC | 192.168.2.217 | Remote Access |
-| 1005 | apt-cache-ng-207 | LXC | 192.168.2.207 | Package Proxy |
+| 1005 | apt-cacher-ng-207 | LXC | 192.168.2.207 | Package Proxy |
 | 1006 | freeipa-210 | LXC | 192.168.2.210 | Identity Mgmt |
 | 1007 | freeradius-221 | LXC | 192.168.2.221 | Auth Server |
 | 1008 | restic-rclone-215 | LXC | 192.168.2.215 | Backup Agent |
@@ -90,3 +90,4 @@
 ---
 
 ← [Back to Homelab Home](../README.md)
+
