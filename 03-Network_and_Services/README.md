@@ -14,7 +14,7 @@
 |----------------------------------------|----------------------------------------------------------|
 | [1.2 Firewall / Router](#pfsense)      | pfSense                                                  |
 | [1.3 VPN](#vpn)                        | Tailscale, WireGuard, OpenVPN, NordVPN                   |
-| [1.4 APT cache proxy](#apt)            | APT-Cache-NG                                             |
+| [1.4 APT cacher proxy](#apt)            | APT-Cacher-NG                                             |
 | [1.5 VLAN](#vlan)                      | TP-LINK SG108E switch                                    |
 | [1.6 Reverse Proxy](#reverseproxy)     | Nginx Proxy Manager (replaced), Traefik (current)        |
 | [1.7 Radius / LDAP](#radiusldap)       | FreeRADIUS, FreeIPA                                      |
@@ -151,7 +151,7 @@ In my homelab, I use a **pfSense-based firewall and router** to manage all traff
 ---
 
 <a name="apt"></a>
-## 1.4 APT Cache NG
+## 1.4 APT Cacher NG
 
 ### 1.4.1 Why use it?
 
@@ -314,5 +314,6 @@ The image below shows a notification received when the NAS was unavailable for 2
 ---
 
 ← [Back to Homelab Main Page](../README.md)
+
 
 
