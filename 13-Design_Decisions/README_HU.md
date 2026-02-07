@@ -133,18 +133,18 @@ gantt
     todayMarker off
 
     section Napi Rutin
-    Prune (Metaadat)             :a1, 22:00, 45m
-    Ansible Update               :a2, 23:00, 60m
-    SMART Short Test             :a3, 02:00, 15m
+    Prune (Metaadat)             : 22:00, 45m
+    Ansible Update               : 23:00, 60m
+    SMART Short Test             : 02:00, 20m
 
     section Mentési Ablak
-    PVE1 -> PBS Mentés           :crit, b1, 04:00, 75m
-    PVE2 -> PBS Mentés           :crit, b2, 05:30, 75m
+    PVE1 -> PBS Mentés           :crit, 04:00, 75m
+    PVE2 -> PBS Mentés           :crit, 05:30, 75m
 
     section Karbantartás
-    SMART Long (Havi)            :done, c1, 01:00, 4h
-    Garbage Collection (Szo)     :done, c2, 08:00, 2h
-    Verify Jobs (Vas)            :done, c3, 10:00, 3h
+    SMART Long (Havi)            :done, 01:00, 4h
+    Garbage Collection (Szo)     :done, 08:00, 2h
+    Verify Jobs (Vas)            :done, 10:00, 3h
 ```
 
 | Időpont | Feladat megnevezése | Érintett eszköz | Gyakoriság |
