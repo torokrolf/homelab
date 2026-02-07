@@ -149,6 +149,7 @@ gantt
     SMART Long Test (Monthly)    :done, 01:00, 4h
     Garbage Collection (Sat)     :done, 08:00, 2h
     Verify Jobs (Sun)            :done, 10:00, 3h
+```
 
 | Time       | Task Description            | Target Device         | Frequency               |
 |------------|----------------------------|---------------------|------------------------|
