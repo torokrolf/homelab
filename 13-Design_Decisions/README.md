@@ -125,4 +125,42 @@ Unbound (public DNS)           | msg-cache 64 MB, rrset-cache 128 MB | 0        
 
 ---
 
+## Scheduled Tasks (Backup & Maintenance)
+
+This schedule is optimized to prevent IO thrashing by isolating disk-intensive operations (SMART tests, Garbage Collection, and Verify) from active backup and update windows.
+
+```mermaid
+gantt
+    title Optimized System Task Schedule
+    dateFormat  HH:mm
+    axisFormat  %H:%M
+    todayMarker off
+
+    section Daily Routine
+    Prune (Metadata)             : 22:00, 45m
+    Ansible Update               : 23:00, 60m
+    SMART Short Test             : 02:00, 20m
+
+    section Backup Window
+    PVE1 -> PBS Backup           :crit, 04:00, 75m
+    PVE2 -> PBS Backup           :crit, 05:30, 75m
+
+    section Maintenance
+    SMART Long Test (Monthly)    :done, 01:00, 4h
+    Garbage Collection (Sat)     :done, 08:00, 2h
+    Verify Jobs (Sun)            :done, 10:00, 3h
+
+| Time       | Task Description            | Target Device         | Frequency               |
+|------------|----------------------------|---------------------|------------------------|
+| 22:00      | Prune (Retention Policy)   | PBS Server           | Daily                  |
+| 23:00      | Ansible Update             | VM/LXC               | Daily                  |
+| 01:00      | SMART Long Test            | Proxmox 1 & 2        | Monthly (1st Sat)      |
+| 02:00      | SMART Short Test           | Proxmox 1 & 2        | Daily                  |
+| 04:00      | VM/LXC Backup              | Proxmox 1 -> PBS     | Weekly (Sunday)        |
+| 05:30      | VM/LXC Backup              | Proxmox 2 -> PBS     | Weekly (Sunday)        |
+| Sat 08:00  | Garbage Collection         | PBS Server           | Weekly                 |
+| Sun 10:00  | Backup Verify              | PBS Server           | Weekly/Monthly         |
+
+---
+
 ← [Back to the Homelab main page](../README.md)
