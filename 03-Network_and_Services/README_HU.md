@@ -14,7 +14,7 @@
 |----------------------------------------|----------------------------------------------------------
 | [1.2 Tűzfal / Router](#pfsense)        | pfSense                                                  
 | [1.3 VPN](#vpn)                        | Tailscale, WireGuard, OpenVPN, NordVPN                   
-| [1.4 APT cache proxy](#apt)            | APT-Cache-NG                                             
+| [1.4 APT cacher proxy](#apt)            | APT-Cacher-NG                                             
 | [1.5 VLAN](#vlan)                      | TP-LINK SG108E switch                                    
 | [1.6 Reverse Proxy](#reverseproxy)     | Nginx Proxy Manager (lecserélve), Traefik (jelenlegi)    
 | [1.7 Radius / LDAP](#radiusldap)       | FreeRADIUS, FreeIPA                                      
@@ -150,7 +150,7 @@ A homelabomban egy **pfSense alapú tűzfalat és routert** használok a forgalo
 ---
 
 <a name="apt"></a>
-## 1.4 APT Cache NG
+## 1.4 APT Cacher NG
 
 ### 1.4.1 Miért használom?
 
@@ -313,6 +313,7 @@ Lenti képen látható, 2 órán át nem volt elérhető a NAS és erről kaptam
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
