@@ -41,11 +41,12 @@ The Semaphore server allows running Ansible playbooks via a simple graphical web
 
 - **Update tasks**: Automates OS and application updates on Proxmox VM/LXC clients.  
 - **Time zone configuration**: Ensures the correct time zone is set on all client machines.  
-- **APT Cache NG management**: Configures local APT Cache NG via Ansible instead of manually on each client.  
+- **APT Cacher NG management**: Configures local APT Cacher NG via Ansible instead of manually on each client.  
 - **User creation and password setup**: Creates users with the same name on all target machines for **simple and consistent management**.  
 - **SSH key distribution**
 
 ---
 
 ← [Back to the Homelab main page](../README_HU.md)
+
 
