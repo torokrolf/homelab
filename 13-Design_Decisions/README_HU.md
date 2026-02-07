@@ -127,32 +127,32 @@ Unbound (public DNS)           | msg-cache 64 MB, rrset-cache 128 MB | 0        
 
 ```mermaid
 gantt
-    title Rendszerfeladatok Ütemezése
+    title Optimalizált Rendszerfeladatok Ütemezése
     dateFormat  HH:mm
     axisFormat  %H:%M
-    section Napi feladatok
-    SMART Short Test (PVE1/2)    :active, day1, 02:00, 15m
-    Ansible Update (VM/LXC)      :active, day2, 03:00, 30m
-    Prune (Mentések törlése)     :active, day3, 23:59, 10m
-    section Vasárnapi Mentés
-    Proxmox1 -> PBS Backup       :crit, sun1, 04:00, 60m
-    Proxmox2 -> PBS Backup       :crit, sun2, 05:30, 60m
-    section Heti/Havi PBS
-    PBS Garbage Collection (Szo) :done, sat1, 08:00, 2h
-    PBS Verify (Hónap 1. Szo)     :done, sat2, 10:00, 3h
-    SMART Long Test (Hónap 1. Szo):done, sat3, 01:00, 4h
+    section Napi Rutin
+    Prune (Metaadat írás)         :active, p1, 22:00, 45m
+    Ansible Update (VM/LXC)       :task, a1, 23:00, 60m
+    SMART Short Test              :task, s1, 02:00, 15m
+    section Mentési Ablak
+    PVE1 -> PBS Mentés            :crit, b1, 04:00, 75m
+    PVE2 -> PBS Mentés            :crit, b2, 05:30, 75m
+    section PBS Karbantartás
+    SMART Long Test (Havi 1. Szo) :done, l1, 01:00, 4h
+    Garbage Collection (Szombat)  :done, gc1, 08:00, 2h
+    Verify Jobs (Vasárnap)        :done, v1, 10:00, 3h
 ```
 
 | Időpont | Feladat megnevezése | Érintett eszköz | Gyakoriság |
 | :--- | :--- | :--- | :--- |
+| **22:00** | Prune (Retenció) | PBS Server | Naponta |
+| **23:00** | Ansible Update | Összes VM/LXC | Naponta |
 | **01:00** | SMART Long Test | Proxmox 1 & 2 | Havonta (1. Szo) |
 | **02:00** | SMART Short Test | Proxmox 1 & 2 | Naponta |
-| **03:00** | Ansible Update | Összes VM/LXC | Naponta |
 | **04:00** | VM/LXC Backup | Proxmox 1 -> PBS | Hetente (Vasárnap) |
 | **05:30** | VM/LXC Backup | Proxmox 2 -> PBS | Hetente (Vasárnap) |
-| **08:00** | Garbage Collection | PBS Server | Hetente (Szombat) |
-| **10:00** | Backup Verify | PBS Server | Havonta (1. Szo) |
-| **23:59** | Prune (Retenció) | PBS Server | Naponta |
+| **Szo 08:00** | Garbage Collection | PBS Server | Hetente |
+| **Vas 10:00** | Backup Verify | PBS Server | Hetente/Havonta |
 
 ---
 
