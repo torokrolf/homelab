@@ -188,7 +188,6 @@ During client updates via Ansible, I noticed in the Semaphore GUI that sometimes
 
 The `acngtool` maintenance command is scheduled via cron to run **daily at 22:30**. This automatically cleans and rebuilds the cache, preventing stuck updates, and runs just before the **23:00 Ansible update playbook**, avoiding the issue entirely.
 
-```bash
 30 22 * * * /usr/lib/apt-cacher-ng/acngtool maint -c /etc/apt-cacher-ng >/dev/null 2>&1
 
 ---
