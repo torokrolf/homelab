@@ -183,25 +183,20 @@ A jelenlegi rendszerem átszámozom a táblázat alapján és az új VM/LXC lét
 
 **Konkrét kiosztásom**
 
-| Core (LXC & VM) | Services (LXC) | Linux (Srv & Cli) | Windows (Srv & Cli) |
-| :--- | :--- | :--- | :--- |
-| **100-499: Core LXC** | **1000-1099: Services** | **1100-1199: Linux Srv** | **1300-1399: Win Srv** |
-| 100: dns-201 | 1000: zabbix-206 | 1100: crowdsec-218 | 1300: winszerver1-230 |
-| 101: unbound-223 | 1001: ansible-semaphore | 1101: pxeboot-209 | 1301: winszerver2-234 |
-| 102: traefik-224 | 1002: nextcloud-204 | - | 1302: winszerver-core-233 |
-| 103: adguardhome-222 | 1003: homarr-206 | **1200-1299: Linux Cli** | - |
-| 104: pi-hole-208 | 1004: guacamole-217 | 1200: mainubuntu-200 | **1400-1499: Win Cli** |
-| 105: nginx-202 | 1005: apt-cacher-ng | 1201: kali | 1400: mainwindows11-213 |
-| - | 1006: freeipa-210 | 1202: probaubi-205 | 1401: win11kliens1-231 |
-| **500-999: Core VM** | 1007: freeradius-221 | - | 1402: win11kliens2-232 |
-| 500: pfsense | 1008: restic-rclone | - | - |
-| 501: pbs | 1009: vaultwarden-212 | - | - |
-| 502: truenas-220 | 1010: jellyfin-221 | - | - |
-| - | 1011: servarr-225 | - | - |
-| - | 1012: gotify-226 | - | - |
-| - | 1013: portainer-219 | - | - |
-| - | 1014: pulse-227 | - | - |
-| - | 1015: changedetection-229 | - | - |
+**Core Infrastructure (100-999)**
+- **LXC (100-499):** `100:dns`, `101:unbound`, `102:traefik`, `103:adguard`, `104:pi-hole`, `105:nginx`
+- **VM (500-999):** `500:pfsense`, `501:pbs`, `502:truenas`
+
+**Services (LXC 1000-1099)**
+- `1000:zabbix`, `1001:ansible`, `1002:nextcloud`, `1003:homarr`, `1004:guacamole`, `1005:apt-cacher`, `1006:freeipa`, `1007:freeradius`, `1008:restic`, `1009:vaultwarden`, `1010:jellyfin`, `1011:servarr`, `1012:gotify`, `1013:portainer`, `1014:pulse`, `1015:changedetection`
+
+**Linux Systems (1100-1299)**
+- **Servers:** `1100:crowdsec`, `1101:pxeboot`
+- **Clients:** `1200:mainubuntu`, `1201:kali`, `1202:probaubi`
+
+**Windows Systems (1300-1499)**
+- **Servers:** `1300:winszerver1`, `1301:winszerver2`, `1302:winszerver-core`
+- **Clients:** `1400:mainwindows11`, `1401:win11kliens1`, `1402:win11kliens2`
 
 ---
 
