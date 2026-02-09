@@ -18,6 +18,7 @@
 - [Hardware – M70q network adapter instability](#hw-m70q)
 - [Hardware – Local and public DNS issues (Wi-Fi)](#hw-wifi)
 - [DDNS – Cloudflare update behind pfSense](#ddns-pfsense)
+- [Apt-cacher-ng csomagok beragadása](#aptcacherng)
 
 ---
 
@@ -159,6 +160,36 @@ The image below shows that when TrueNAS is stopped, the dependent VMs/LXCs on th
 - Used a custom script that checks the public IP externally and forces the Cloudflare record update.
 
 ❗ Script: [/11-Scripts/pfsense/ddns-force-update.sh](/11-Scripts/pfsense/ddns-force-update.sh)
+
+---
+
+## Apt-cacher-ng Stuck Package Issue
+<a name="aptcacherng"></a>
+
+**Problem**  
+During client updates via Ansible, I noticed in the Semaphore GUI that sometimes the update does not complete—it gets stuck and waits indefinitely. This can be seen in the figure below:
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/db0a18b6-dd7c-45b4-83cc-b9f97840c7f8" alt="Semaphore GUI" width="300">
+</p>
+
+**Cause**  
+
+- On the proxy server: `tail -f /var/log/apt-cacher-ng/apt-cacher.err` shows cache errors, as illustrated below.  
+- The client requests the package from the proxy server (`apt-cacher-ng`).  
+- The apt-cacher-ng database detects that the downloaded package size does not match the expected size in the database (`checked size beyond EOF`).  
+- The proxy tries to re-download the faulty file but cannot, because a file with the same name already exists (even if incorrect), so the client **waits for the package indefinitely**.
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/3563cca6-e744-4dbe-b23f-4ae2823db9ac" alt="Proxy errors" width="300">
+</p>
+
+**Solution**  
+
+The `acngtool` maintenance command is scheduled via cron to run **daily at 22:30**. This automatically cleans and rebuilds the cache, preventing stuck updates, and runs just before the **23:00 Ansible update playbook**, avoiding the issue entirely.
+
+```bash
+30 22 * * * /usr/lib/apt-cacher-ng/acngtool maint -c /etc/apt-cacher-ng >/dev/null 2>&1
 
 ---
 
