@@ -164,4 +164,49 @@ gantt
 
 ---
 
+## Proxmox Backup Server: Confusion caused by identical VM/LXC IDs
+
+**Problem**
+
+When using multiple Proxmox nodes, the PBS (Proxmox Backup Server) organizes backups based on VM/LXC IDs by default. If identical IDs are used (e.g., 101 on Node1 and 101 on Node2), I encountered the following issue: The PBS interface does not distinguish whether a given ID 101 VM/LXC arrived from Node1 or Node2. Consequently, it places the backups of two different VM/LXCs under the same identifier instead of keeping them separate.
+
+**Solution**
+Use Globally Unique VM/LXC IDs, which are assigned systematically based on the table below rather than randomly.
+I am renumbering my current system according to this table, and for new VM/LXC creations, I will assign IDs based on these ranges. I register every VM/LXC in a table to track which ID is assigned to whom.
+
+| ID Range | Category | Note |
+| :--- | :--- | :--- |
+| **100 - 499** | **LXC Core infrastructure** | Mandatory LXC for basic operation |
+| **500 - 999** | **VM Core infrastructure** | Mandatory Virtual Machines for basic operation |
+| **1000 - 1099** | **LXC services** | Additional services (LXC) |
+| **1100 - 1199** | **VM linux servers** | Linux-based servers |
+| **1200 - 1299** | **VM linux clients** | Linux-based clients |
+| **1300 - 1399** | **VM windows servers** | Windows-based servers |
+| **1400 - 1499** | **VM windows clients** | Windows-based clients |
+
+**My specific allocation**
+
+**LXC Core infrastructure (100-499)**
+- `100:dns`, `101:unbound`, `102:traefik`, `103:adguard`, `104:pi-hole`, `105:nginx`
+
+**VM Core infrastructure (500-999)**
+- `500:pfsense`, `501:pbs`, `502:truenas`
+
+**LXC Services (1000-1099)**
+- `1000:zabbix`, `1001:ansible`, `1002:nextcloud`, `1003:homarr`, `1004:guacamole`, `1005:apt-cacher`, `1006:freeipa`, `1007:freeradius`, `1008:restic`, `1009:vaultwarden`, `1010:jellyfin`, `1011:servarr`, `1012:gotify`, `1013:portainer`, `1014:pulse`, `1015:changedetection`
+
+**VM linux servers (1100-1199)**
+- `1100:crowdsec`, `1101:pxeboot`
+
+**VM linux clients (1200-1299)**
+- `1200:mainubuntu`, `1201:kali`, `1202:probaubi`
+
+**VM windows servers (1300-1399)**
+- `1300:winszerver1`, `1301:winszerver2`, `1302:winszerver-core`
+
+**VM windows clients (1400-1499)**
+- `1400:mainwindows11`, `1401:win11kliens1`, `1402:win11kliens2`
+
+---
+
 ← [Back to the Homelab main page](../README.md)
