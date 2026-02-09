@@ -183,20 +183,26 @@ A jelenlegi rendszerem átszámozom a táblázat alapján és az új VM/LXC lét
 
 **Konkrét kiosztásom**
 
-**Core Infrastructure (100-999)**
-- **LXC (100-499):** `100:dns`, `101:unbound`, `102:traefik`, `103:adguard`, `104:pi-hole`, `105:nginx`
-- **VM (500-999):** `500:pfsense`, `501:pbs`, `502:truenas`
+**LXC Core infrastruktúra (100-499)**
+- `100:dns`, `101:unbound`, `102:traefik`, `103:adguard`, `104:pi-hole`, `105:nginx`
 
-**Services (LXC 1000-1099)**
+**VM Core infrastruktúra (500-999)**
+- `500:pfsense`, `501:pbs`, `502:truenas`
+
+**LXC Services (1000-1099)**
 - `1000:zabbix`, `1001:ansible`, `1002:nextcloud`, `1003:homarr`, `1004:guacamole`, `1005:apt-cacher`, `1006:freeipa`, `1007:freeradius`, `1008:restic`, `1009:vaultwarden`, `1010:jellyfin`, `1011:servarr`, `1012:gotify`, `1013:portainer`, `1014:pulse`, `1015:changedetection`
 
-**Linux Systems (1100-1299)**
-- **Servers:** `1100:crowdsec`, `1101:pxeboot`
-- **Clients:** `1200:mainubuntu`, `1201:kali`, `1202:probaubi`
+**VM linux szerverek (1100-1199)**
+- `1100:crowdsec`, `1101:pxeboot`
 
-**Windows Systems (1300-1499)**
-- **Servers:** `1300:winszerver1`, `1301:winszerver2`, `1302:winszerver-core`
-- **Clients:** `1400:mainwindows11`, `1401:win11kliens1`, `1402:win11kliens2`
+**VM linux kliensek (1200-1299)**
+- `1200:mainubuntu`, `1201:kali`, `1202:probaubi`
+
+**VM windows szerverek (1300-1399)**
+- `1300:winszerver1`, `1301:winszerver2`, `1302:winszerver-core`
+
+**VM windows kliensek (1400-1499)**
+- `1400:mainwindows11`, `1401:win11kliens1`, `1402:win11kliens2`
 
 ---
 
