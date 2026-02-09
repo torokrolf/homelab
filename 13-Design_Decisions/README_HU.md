@@ -125,6 +125,16 @@ Unbound (public DNS)           | msg-cache 64 MB, rrset-cache 128 MB | 0        
 
 ## Ütemezett feladatok (Backup & Karbantartás)
 
+**Az ütemezés logikájának magyarázata:**
+- **01:00 short SMART teszt**: Így reggelre már tisztában vagyok azzal, hogy a lemezeim épek-e, és lehet-e rájuk biztonságosan dolgozni.
+- **Minden hónap első szombatján 02:00 long SMART teszt:** Így reggelre már tisztában vagyok azzal, hogy a lemezeim épek-e, és lehet-e rájuk biztonságosan dolgozni.
+- **04:00/05:30 Backup**: Azért hajnalban fut, mert ilyenkor a legkisebb a hálózati forgalom és a CPU terhelés. A két node (PVE1 és PVE2) eltolva indul, hogy ne terheljék túl egyszerre a PBS szerver írási sebességét és a hálózati sávszélesség.
+- **08:00 szombatonként Garbage Collection**: 
+- **Vasárnaponként 10:00 verification**: Heti egyszer elegendő ellenőrizni, hogy a fájlok valóban visszaállíthatóak-e, de szükségszerű ellenőrizni, hiszen nem elég hogy van backup, de az is fontos, hogy épek leglyenek.
+- **22:00 Prune**: A policy alapján már nem szükséges backup-ok törlése, ezzel helyet csinálok a reggeli backupoknak.
+- **22:30 Apt-Cacher-NG Maint**: Közvetlenül a frissítés előtt kijavítjuk a proxy gyorsítótárát, ha esetleg lenne hiba, így az Ansible hiba nélkül tudja frissíteni a VM/LXC gépeket.
+- **23:00 Ansible Update**: Akkor frissítek, amikor a napi használat már lecsökkent és nem zavar ha egy szolgáltatás kiesik egy kis időre.
+
 ```mermaid
 gantt
     title Optimalizált Rendszerfeladatok Ütemezése
@@ -134,31 +144,31 @@ gantt
 
     section Napi Rutin
     Prune                        : 22:00, 30m
-    Apt-Cacher-NG Maint          : 22:30, 20m
-    Ansible Update               : 23:00, 60m
-    SMART Short Test             : 02:00, 20m
+    Apt-Cacher-NG Maint          : 22:30, 1m
+    Ansible Update               : 23:00, 5m
+    SMART Short Test             : 02:00, 5m
 
     section Mentési Ablak
-    PVE1 -> PBS Mentés           :crit, 04:00, 75m
-    PVE2 -> PBS Mentés           :crit, 05:30, 75m
+    PVE1 -> PBS Mentés           :crit, 04:00, 50m
+    PVE2 -> PBS Mentés           :crit, 05:30, 5m
 
     section Karbantartás
     SMART Long (Havi)            :done, 01:00, 4h
-    Garbage Collection (Szo)     :done, 08:00, 2h
-    Verify Jobs (Vas)            :done, 10:00, 3h
+    Garbage Collection (Szo)     :done, 08:00, 10m
+    Verify Jobs (Vas)            :done, 10:00, 1h
 ```
 
-| Time       | Task Name                | Target Device        | Frequency             |
-|------------|-------------------------|--------------------|----------------------|
-| 22:00      | Prune                   | PBS Server          | Daily                |
-| 22:30      | Apt-Cacher-NG Maint     | Apt-Proxy Server    | Daily                |
-| 23:00      | Ansible Update          | VM/LXC              | Daily                |
-| 01:00      | SMART Long Test         | Proxmox 1 & 2       | Monthly (1st Sat)    |
-| 02:00      | SMART Short Test        | Proxmox 1 & 2       | Daily                |
-| 04:00      | VM/LXC Backup           | Proxmox 1 -> PBS    | Weekly (Sunday)      |
-| 05:30      | VM/LXC Backup           | Proxmox 2 -> PBS    | Weekly (Sunday)      |
-| Sat 08:00  | Garbage Collection      | PBS Server          | Weekly               |
-| Sun 10:00  | Backup Verify           | PBS Server          | Weekly/Monthly       |
+| Időpont | Feladat Neve | Célzott Eszköz | Gyakoriság |
+| :--- | :--- | :--- | :--- |
+| **22:00** | Prune (Retenció) | PBS Szerver | Naponta |
+| **22:30** | Apt-Cacher-NG Karbantartás | Apt-Proxy Szerver | Naponta |
+| **23:00** | Ansible Frissítés | VM/LXC | Naponta |
+| **01:00** | SMART Hosszú Teszt | Proxmox 1 & 2 | Havonta (1. Szo) |
+| **02:00** | SMART Rövid Teszt | Proxmox 1 & 2 | Naponta |
+| **04:00** | VM/LXC Mentés | Proxmox 1 -> PBS | Hetente (Vasárnap) |
+| **05:30** | VM/LXC Mentés | Proxmox 2 -> PBS | Hetente (Vasárnap) |
+| **Szo 08:00** | Garbage Collection | PBS Szerver | Hetente |
+| **Vas 10:00** | Mentés Ellenőrzés (Verify) | PBS Szerver | Hetente/Havonta |
 
 ---
 
