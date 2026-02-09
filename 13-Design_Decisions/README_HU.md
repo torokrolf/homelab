@@ -133,8 +133,8 @@ gantt
     todayMarker off
 
     section Napi Rutin
-    Prune (Retenció)             : 22:00, 30m
-    Apt-Cacher-NG Maint          : active, 22:30, 20m
+    Prune                        : 22:00, 30m
+    Apt-Cacher-NG Maint          : 22:30, 20m
     Ansible Update               : 23:00, 60m
     SMART Short Test             : 02:00, 20m
 
@@ -150,7 +150,7 @@ gantt
 
 | Time       | Task Name                | Target Device        | Frequency             |
 |------------|-------------------------|--------------------|----------------------|
-| 22:00      | Prune (Retention)       | PBS Server          | Daily                |
+| 22:00      | Prune                   | PBS Server          | Daily                |
 | 22:30      | Apt-Cacher-NG Maint     | Apt-Proxy Server    | Daily                |
 | 23:00      | Ansible Update          | VM/LXC              | Daily                |
 | 01:00      | SMART Long Test         | Proxmox 1 & 2       | Monthly (1st Sat)    |
