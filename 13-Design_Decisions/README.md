@@ -1,4 +1,4 @@
-← [Back to the Homelab main page](../README.md)
+y← [Back to the Homelab main page](../README.md)
 
 [🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
 
@@ -154,7 +154,7 @@ gantt
 
 | Time       | Task Description            | Target Device         | Frequency               |
 |------------|----------------------------|---------------------|------------------------|
-| 22:00      | Prune (Retention Policy)   | PBS Server           | Daily                  |
+| 22:00      | Prune                      | PBS Server           | Daily                  |
 | 23:00      | Ansible Update             | VM/LXC               | Daily                  |
 | 01:00      | SMART Long Test            | Proxmox 1 & 2        | Monthly (1st Sat)      |
 | 02:00      | SMART Short Test           | Proxmox 1 & 2        | Daily                  |
