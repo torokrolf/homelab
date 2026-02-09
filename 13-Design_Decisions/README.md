@@ -219,4 +219,14 @@ I am renumbering my current system according to this table, and for new VM/LXC c
 
 ---
 
+## VM/LXC Naming Convention
+
+My naming convention for VMs and LXCs reflects the service or role running on them, appended with the last octet of their IP address. This allows me to identify both the function and the IP address at a glance, making navigation much easier. The example below shows **traefik-224**, which clearly indicates that the container runs Traefik and its IP address is `192.168.2.224`.
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/411bfb50-f4b9-4a76-b464-794a79a88299" alt="Description" width="400">
+</p>
+
+---
+
 ← [Back to the Homelab main page](../README.md)
