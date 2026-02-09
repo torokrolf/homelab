@@ -127,41 +127,50 @@ Unbound (public DNS)           | msg-cache 64 MB, rrset-cache 128 MB | 0        
 
 ## Scheduled Tasks (Backup & Maintenance)
 
-This schedule is optimized to prevent IO thrashing by isolating disk-intensive operations (SMART tests, Garbage Collection, and Verify) from active backup and update windows.
+**Explanation of scheduling logic:**
+- **01:00 short SMART test**: This ensures that by morning, I am aware of whether my disks are healthy and if they can be safely worked on.
+- **02:00 long SMART test on the first Saturday of every month:** This ensures that by morning, I am aware of whether my disks are healthy and if they can be safely worked on.
+- **04:00/05:30 Backup**: These run at dawn because network traffic and CPU load are at their lowest. The two nodes (PVE1 and PVE2) start with an offset so they do not overwhelm the PBS server's write speed and network bandwidth simultaneously.
+- **08:00 Saturday Garbage Collection**: This task physically removes deleted data chunks from the storage to reclaim space.
+- **10:00 Sunday verification**: Checking once a week is sufficient to ensure that files are actually restorable; however, it is necessary to check because it is not enough to just have a backup—it is vital that they are intact.
+- **22:00 Prune**: Deleting backups that are no longer needed based on the retention policy, thus making space for the morning backups.
+- **22:30 Apt-Cacher-NG Maint**: We repair the proxy cache immediately before the update; if there are any errors, Ansible can update the VM/LXC machines without issues.
+- **23:00 Ansible Update**: I update at a time when daily usage has decreased and it is not a problem if a service is down for a short period.
 
 ```mermaid
 gantt
-    title Optimized System Task Scheduling
+    title Optimized System Tasks Schedule
     dateFormat  HH:mm
     axisFormat  %H:%M
     todayMarker off
 
     section Daily Routine
     Prune                        : 22:00, 30m
-    Apt-Cacher-NG Maintenance    : 22:30, 20m
-    Ansible Update               : 23:00, 60m
-    SMART Short Test             : 02:00, 20m
+    Apt-Cacher-NG Maint          : 22:30, 1m
+    Ansible Update               : 23:00, 5m
+    SMART Short Test             : 02:00, 5m
 
     section Backup Window
-    PVE1 -> PBS Backup           :crit, 04:00, 75m
-    PVE2 -> PBS Backup           :crit, 05:30, 75m
+    PVE1 -> PBS Backup           :crit, 04:00, 50m
+    PVE2 -> PBS Backup           :crit, 05:30, 5m
 
     section Maintenance
-    SMART Long Test (Monthly)    :done, 01:00, 4h
-    Garbage Collection (Sat)     :done, 08:00, 2h
-    Verify Jobs (Sun)            :done, 10:00, 3h
+    SMART Long (Monthly)         :done, 01:00, 4h
+    Garbage Collection (Sat)     :done, 08:00, 10m
+    Verify Jobs (Sun)            :done, 10:00, 1h
 ```
 
-| Time       | Task Description            | Target Device         | Frequency               |
-|------------|----------------------------|---------------------|------------------------|
-| 22:00      | Prune                      | PBS Server           | Daily                  |
-| 23:00      | Ansible Update             | VM/LXC               | Daily                  |
-| 01:00      | SMART Long Test            | Proxmox 1 & 2        | Monthly (1st Sat)      |
-| 02:00      | SMART Short Test           | Proxmox 1 & 2        | Daily                  |
-| 04:00      | VM/LXC Backup              | Proxmox 1 -> PBS     | Weekly (Sunday)        |
-| 05:30      | VM/LXC Backup              | Proxmox 2 -> PBS     | Weekly (Sunday)        |
-| Sat 08:00  | Garbage Collection         | PBS Server           | Weekly                 |
-| Sun 10:00  | Backup Verify              | PBS Server           | Weekly/Monthly         |
+| Time | Task Name | Target Device | Frequency |
+| :--- | :--- | :--- | :--- |
+| **22:00** | Prune (Retention) | PBS Server | Daily |
+| **22:30** | Apt-Cacher-NG Maintenance | Apt-Proxy Server | Daily |
+| **23:00** | Ansible Update | VM/LXC | Daily |
+| **01:00** | SMART Long Test | Proxmox 1 & 2 | Monthly (1st Sat) |
+| **02:00** | SMART Short Test | Proxmox 1 & 2 | Daily |
+| **04:00** | VM/LXC Backup | Proxmox 1 -> PBS | Weekly (Sunday) |
+| **05:30** | VM/LXC Backup | Proxmox 2 -> PBS | Weekly (Sunday) |
+| **Sat 08:00** | Garbage Collection | PBS Server | Weekly |
+| **Sun 10:00** | Backup Verification (Verify) | PBS Server | Weekly/Monthly |
 
 ---
 
