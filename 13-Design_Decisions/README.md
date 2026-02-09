@@ -131,13 +131,14 @@ This schedule is optimized to prevent IO thrashing by isolating disk-intensive o
 
 ```mermaid
 gantt
-    title Optimized System Task Schedule
+    title Optimized System Task Scheduling
     dateFormat  HH:mm
     axisFormat  %H:%M
     todayMarker off
 
     section Daily Routine
-    Prune (Metadata)             : 22:00, 45m
+    Prune                        : 22:00, 30m
+    Apt-Cacher-NG Maintenance    : 22:30, 20m
     Ansible Update               : 23:00, 60m
     SMART Short Test             : 02:00, 20m
 
