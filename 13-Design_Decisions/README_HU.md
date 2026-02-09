@@ -222,7 +222,7 @@ A jelenlegi rendszerem átszámozom a táblázat alapján és az új VM/LXC lét
 
 A VM/LXC neve a rajta futó szolgáltatásra vagy szerepkörre utal, kiegészítve az IP címének utolsó oktettjével, így ahogy ránézek tudom hogy mit csinál és mi az IP címe, segítve a tájékozódásom. Példa a lenti ábrán, a traefik-224, amiről így egyértelmű számomra, hogy a traefik fut rajta és az IP címe 192.168.2.224.
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/411bfb50-f4b9-4a76-b464-794a79a88299" alt="Description" width="600">
+  <img src="https://github.com/user-attachments/assets/411bfb50-f4b9-4a76-b464-794a79a88299" alt="Description" width="400">
 </p>
 
 ---
