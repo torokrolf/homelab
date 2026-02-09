@@ -172,7 +172,7 @@ Globálisan Egyedi VM/LXC ID-k használata, és ezeket nem véletlenszerűen ado
 A jelenlegi rendszerem átszámozom a táblázat alapján és az új VM/LXC létrehozásakor a táblázat szerinti osztok ID-t. Minden VM/LXC-t regisztrálok a egy táblázatban, hogy kinek milyen ID van kiosztva.
 
 | ID Tartomány | Kategória | Megjegyzés |
-| :--- | :--- | :---: | :--- |
+| :--- | :--- | :--- |
 | **100 - 499** | **LXC Core infrastruktúra** | Alapvető működéshez kötelező LXC |
 | **500 - 999** | **VM Core infrastruktúra** | Alapvető működéshez kötelező virtuális VM |
 | **1000 - 1099** | **LXC services** | Kiegészítő szolgáltatások (LXC) |
