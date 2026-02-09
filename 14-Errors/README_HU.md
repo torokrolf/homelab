@@ -18,6 +18,7 @@
 - [Hardver – M70q hálózati adapter instabilitás](#hw-m70q)
 - [Hardver – Lokális és publikus DNS problémák (Wi-Fi)](#hw-wifi)
 - [DDNS – Cloudflare frissítés pfSense mögött](#ddns-pfsense)
+- [Apt-cacher-ng csomagok beragadása](#aptcacherng)
 
 ---
 
@@ -160,6 +161,34 @@ Lenti képen látható, TrueNAS-t leállítottam akkor leáll a másik Proxmoxon
 - Egyedi script használata, amely külsőleg ellenőrzi a publikus IP-t és frissíti a Cloudflare rekordot.
 
 ❗ Script: [/11-Scripts/pfsense/ddns-force-update.sh](/11-Scripts/pfsense/ddns-force-update.sh)
+
+---
+
+## Apt-cacher-ng beragadó csomagok problémája 
+<a name="aptcacherng"></a>
+
+**Probléma**
+Kliensek Ansible-el történő frissítésekor a Semaphore GUI-nál láttam, hogy néha nem fut le, csak beragad és vár a végtelenségig. Ezt láthatom a lenti ábrán.
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/db0a18b6-dd7c-45b4-83cc-b9f97840c7f8" alt="Description" width="300">
+</p>
+
+**Ok**
+
+- Proxy szerveren: tail -f /var/log/apt-cacher-ng/apt-cacher.err –> mutatja a cache hibákat, ezt láthatom a lenti ábrán.
+- A kliens kéri a csomagot a proxy szervertől (apt-cacher-ng).
+- Az apt-cacher-ng adatbázisa látja, hogy a letöltött csomag fájlmérete nem egyezik azzal, ami az adatbázisában szerepel, hogy hivatalosan mekkora méretűnek kellene lennie a fájlnak (checked size beyond EOF).
+- A proxy megpróbálja újra letölteni a hibás fájl, de nem tudja, hiszen van már ilyen nével letölve, még ha hibásan is (file exists), ezért a kliens **vár a csomagra végtelenségig**.
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/3563cca6-e744-4dbe-b23f-4ae2823db9ac" alt="Description" width="300">
+</p>
+
+
+**Megoldás**
+
+Az acngtool karbantartó parancs cron-ba helyezve, minden nap 22:30-kor futtatva. Így automatikusan tisztítja és újraépíti a cache-t, elkerülve a beragadást, közvetlenül a 23:00 órási ansible által vezényelt update playbook előtt, elkerülve így a beragadást.
+
+30 22 * * * /usr/lib/apt-cacher-ng/acngtool maint -c /etc/apt-cacher-ng >/dev/null 2>&1
 
 ---
 
