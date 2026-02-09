@@ -160,5 +160,28 @@ gantt
 
 ---
 
+## Proxmox Backup Server mentésnél azonos VM/LXC ID-k miatti kavarodás
+
+**Problélma**
+
+Több Proxmox node használata esetén a PBS (Proxmox Backup Server) alapértelmezés szerint a VM/LXC ID-k alapján rendszerezi a mentéseket. Azonos ID-k használata (pl. 101 a Node1-en és 101 a Node2-n) esetén az alábbi hibába ütköztem. A PBS felületén nem különbözteti meg, hogy az adott 101-es VM/LXC az most a Node1 vagy Node2-ről érkezett-e, így egy azonosító alá helyeté a kétféle VM/LXC mentését, nincsenek különvélasztva.
+
+
+**Megoldás**
+Globálisan Egyedi VM/LXC ID-k használata, és ezeket nem véletlenszerűen adom meg, hanem egy rendszerbe foglalom, az alábbi táblázat alapján.
+A jelenlegi rendszerem átszámozom a táblázat alapján és az új VM/LXC létrehozásakor a táblázat szerinti osztok ID-t. Minden VM/LXC-t regisztrálok a egy táblázatban, hogy kinek milyen ID van kiosztva.
+
+| ID Tartomány | Kategória | Vizuális Jelölés | Megjegyzés |
+| :--- | :--- | :---: | :--- |
+| **100 - 499** | **LXC Core infrastruktúra** | ⚫ | Alapvető hálózati konténerek |
+| **500 - 999** | **VM Core infrastruktúra** | ⚪ | Alapvető virtuális gépek |
+| **1000 - 1099** | **LXC services** | 🟠 | Kiegészítő szolgáltatások (LXC) |
+| **1100 - 1199** | **VM linux szerverek** | 🔵 | Linux alapú szerver OS-ek |
+| **1200 - 1299** | **VM linux kliensek** | 🟡 | Linux munkaállomások és teszt OS-ek |
+| **1300 - 1399** | **VM windows szerverek** | 🟢 | Windows Server példányok |
+| **1400 - 1499** | **VM windows kliensek** | 🟡 | Windows 10/11 munkaállomások |
+
+---
+
 ← [Vissza a Homelab főoldalra](../README_HU.md)
 
