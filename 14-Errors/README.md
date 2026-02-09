@@ -170,7 +170,7 @@ The image below shows that when TrueNAS is stopped, the dependent VMs/LXCs on th
 During client updates via Ansible, I noticed in the Semaphore GUI that sometimes the update does not complete—it gets stuck and waits indefinitely. This can be seen in the figure below:
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/db0a18b6-dd7c-45b4-83cc-b9f97840c7f8" alt="Semaphore GUI" width="300">
+  <img src="https://github.com/user-attachments/assets/db0a18b6-dd7c-45b4-83cc-b9f97840c7f8" alt="Semaphore GUI" width="600">
 </p>
 
 **Cause**  
@@ -181,7 +181,7 @@ During client updates via Ansible, I noticed in the Semaphore GUI that sometimes
 - The proxy tries to re-download the faulty file but cannot, because a file with the same name already exists (even if incorrect), so the client **waits for the package indefinitely**.
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/3563cca6-e744-4dbe-b23f-4ae2823db9ac" alt="Proxy errors" width="300">
+  <img src="https://github.com/user-attachments/assets/3563cca6-e744-4dbe-b23f-4ae2823db9ac" alt="Proxy errors" width="600">
 </p>
 
 **Solution**  
