@@ -173,13 +173,13 @@ A jelenlegi rendszerem átszámozom a táblázat alapján és az új VM/LXC lét
 
 | ID Tartomány | Kategória | Vizuális Jelölés | Megjegyzés |
 | :--- | :--- | :---: | :--- |
-| **100 - 499** | **LXC Core infrastruktúra** | ⚫ | Alapvető hálózati konténerek |
-| **500 - 999** | **VM Core infrastruktúra** | ⚪ | Alapvető virtuális gépek |
-| **1000 - 1099** | **LXC services** | 🟠 | Kiegészítő szolgáltatások (LXC) |
-| **1100 - 1199** | **VM linux szerverek** | 🔵 | Linux alapú szerver OS-ek |
-| **1200 - 1299** | **VM linux kliensek** | 🟡 | Linux munkaállomások és teszt OS-ek |
-| **1300 - 1399** | **VM windows szerverek** | 🟢 | Windows Server példányok |
-| **1400 - 1499** | **VM windows kliensek** | 🟡 | Windows 10/11 munkaállomások |
+| **100 - 499** | **LXC Core infrastruktúra** | Alapvető hálózati konténerek |
+| **500 - 999** | **VM Core infrastruktúra** | Alapvető virtuális gépek |
+| **1000 - 1099** | **LXC services** | Kiegészítő szolgáltatások (LXC) |
+| **1100 - 1199** | **VM linux szerverek** | Linux alapú szerver OS-ek |
+| **1200 - 1299** | **VM linux kliensek** | Linux munkaállomások és teszt OS-ek |
+| **1300 - 1399** | **VM windows szerverek** | Windows Server példányok |
+| **1400 - 1499** | **VM windows kliensek** | Windows 10/11 munkaállomások |
 
 ---
 
