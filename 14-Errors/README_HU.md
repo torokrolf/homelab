@@ -170,7 +170,7 @@ Lenti képen látható, TrueNAS-t leállítottam akkor leáll a másik Proxmoxon
 **Probléma**
 Kliensek Ansible-el történő frissítésekor a Semaphore GUI-nál láttam, hogy néha nem fut le, csak beragad és vár a végtelenségig. Ezt láthatom a lenti ábrán.
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/db0a18b6-dd7c-45b4-83cc-b9f97840c7f8" alt="Description" width="300">
+  <img src="https://github.com/user-attachments/assets/db0a18b6-dd7c-45b4-83cc-b9f97840c7f8" alt="Description" width="600">
 </p>
 
 **Ok**
@@ -180,7 +180,7 @@ Kliensek Ansible-el történő frissítésekor a Semaphore GUI-nál láttam, hog
 - Az apt-cacher-ng adatbázisa látja, hogy a letöltött csomag fájlmérete nem egyezik azzal, ami az adatbázisában szerepel, hogy hivatalosan mekkora méretűnek kellene lennie a fájlnak (checked size beyond EOF).
 - A proxy megpróbálja újra letölteni a hibás fájl, de nem tudja, hiszen van már ilyen nével letölve, még ha hibásan is (file exists), ezért a kliens **vár a csomagra végtelenségig**.
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/3563cca6-e744-4dbe-b23f-4ae2823db9ac" alt="Description" width="300">
+  <img src="https://github.com/user-attachments/assets/3563cca6-e744-4dbe-b23f-4ae2823db9ac" alt="Description" width="600">
 </p>
 
 
