@@ -171,15 +171,37 @@ Több Proxmox node használata esetén a PBS (Proxmox Backup Server) alapértelm
 Globálisan Egyedi VM/LXC ID-k használata, és ezeket nem véletlenszerűen adom meg, hanem egy rendszerbe foglalom, az alábbi táblázat alapján.
 A jelenlegi rendszerem átszámozom a táblázat alapján és az új VM/LXC létrehozásakor a táblázat szerinti osztok ID-t. Minden VM/LXC-t regisztrálok a egy táblázatban, hogy kinek milyen ID van kiosztva.
 
-| ID Tartomány | Kategória | Vizuális Jelölés | Megjegyzés |
+| ID Tartomány | Kategória | Megjegyzés |
 | :--- | :--- | :---: | :--- |
-| **100 - 499** | **LXC Core infrastruktúra** | Alapvető hálózati konténerek |
-| **500 - 999** | **VM Core infrastruktúra** | Alapvető virtuális gépek |
+| **100 - 499** | **LXC Core infrastruktúra** | Alapvető működéshez kötelező LXC |
+| **500 - 999** | **VM Core infrastruktúra** | Alapvető működéshez kötelező virtuális VM |
 | **1000 - 1099** | **LXC services** | Kiegészítő szolgáltatások (LXC) |
-| **1100 - 1199** | **VM linux szerverek** | Linux alapú szerver OS-ek |
-| **1200 - 1299** | **VM linux kliensek** | Linux munkaállomások és teszt OS-ek |
-| **1300 - 1399** | **VM windows szerverek** | Windows Server példányok |
-| **1400 - 1499** | **VM windows kliensek** | Windows 10/11 munkaállomások |
+| **1100 - 1199** | **VM linux szerverek** | Linux alapú szerverek |
+| **1200 - 1299** | **VM linux kliensek** | Linux alapú kliensek |
+| **1300 - 1399** | **VM windows szerverek** | Windows alapú szerverek |
+| **1400 - 1499** | **VM windows kliensek** | Windows alapú kliensek |
+
+**Konkrét kiosztásom**
+
+| Core (LXC & VM) | Services (LXC) | Linux (Srv & Cli) | Windows (Srv & Cli) |
+| :--- | :--- | :--- | :--- |
+| **100-499: Core LXC** | **1000-1099: Services** | **1100-1199: Linux Srv** | **1300-1399: Win Srv** |
+| 100: dns-201 | 1000: zabbix-206 | 1100: crowdsec-218 | 1300: winszerver1-230 |
+| 101: unbound-223 | 1001: ansible-semaphore | 1101: pxeboot-209 | 1301: winszerver2-234 |
+| 102: traefik-224 | 1002: nextcloud-204 | | 1302: winszerver-core-233 |
+| 103: adguardhome-222 | 1003: homarr-206 | **1200-1299: Linux Cli** | |
+| 104: pi-hole-208 | 1004: guacamole-217 | 1200: mainubuntu-200 | **1400-1499: Win Cli** |
+| 105: nginx-202 | 1005: apt-cacher-ng | 1201: kali | 1400: mainwindows11-213 |
+| | 1006: freeipa-210 | 1202: probaubi-205 | 1401: win11kliens1-231 |
+| **500-999: Core VM** | 1007: freeradius-221 | | 1402: win11kliens2-232 |
+| 500: pfsense | 1008: restic-rclone | | |
+| 501: pbs | 1009: vaultwarden-212 | | |
+| 502: truenas-220 | 1010: jellyfin-221 | | |
+| | 1011: servarr-225 | | |
+| | 1012: gotify-226 | | |
+| | 1013: portainer-219 | | |
+| | 1014: pulse-227 | | |
+| | 1015: changedetection-229 | | |
 
 ---
 
