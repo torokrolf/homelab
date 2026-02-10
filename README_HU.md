@@ -60,9 +60,9 @@ Ez a projekt egy saját tervezésű, vállalati környezet szerű homelabot muta
 - valós problémákkal találkoztam, amikre önállóan kellett megoldást találnom, javítva a problémamegoldó képességem
 - hibák hátterének megértésének igénye nőtt, hogy legközelebb elkerüljem őket
 
-> [!DANGER]
-> [12. Tervezési döntések](./12-Design_Decisions/README_HU.md)
-> [13. Hibák és hibaelhárítás](./13-Errors/README_HU.md)
+:exclamation:
+- [12. Tervezési döntések](./12-Design_Decisions/README_HU.md)
+- [13. Hibák és hibaelhárítás](./13-Errors/README_HU.md)
 
 ---
 
