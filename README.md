@@ -1,4 +1,4 @@
-← [Back to Homelab Home](../README.md)
+← [Back to Homelab Main Page](../README.md)
 
 [🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
 
@@ -23,32 +23,132 @@
 
 ---
 
-# Brief Summary of My Homelab
+# Homelab Short Summary 
 
-## 🏠 Project Overview
+## 🏠 Homelab Project Overview
 
-This project presents a self-designed homelab resembling a corporate environment, where I practice virtualization, network security, and system administration on both Linux and Windows systems. It includes solutions for both Windows and Linux.  
+This project presents a self-designed, enterprise-grade homelab where I practice virtualization, network security, and systems administration on Linux and Windows platforms. It includes both Windows and Linux solutions. For the implementation and the mastery of the underlying theory, Udemy courses, YouTube videos, articles, and forums have been of great help—all in English. I have also started using ChatGPT, which I find useful for drastically accelerating information gathering and research.
 
-To implement this project and learn the underlying theory, I relied heavily on Udemy courses, YouTube videos, articles, and forums—all in English. I also started using ChatGPT, which I found useful for drastically speeding up information gathering and searching.  
-
-❗❗❗I have prepared detailed documentation for myself about installation processes, configuration files, what and how I set up, problems that occurred, and their solutions, illustrated with images—but these are not published here.
-
-> 🎯 **Goal**:  
-Alongside theoretical knowledge, I aim to gain practical experience and explore new technologies. When selecting technologies, I considered current job market trends, occasionally influenced by my available budget.  
-Additionally, it is important that potential employers can easily assess my skills during job applications and determine whether I am the right candidate.
+| Domain | Tools Used |
+|----------------------|---------------------------------------------------|
+| **Operating Systems** | CentOS 9 Stream, Ubuntu 22.04 Desktop/Server, Windows 10/11, Windows Server 2019 |
+| **Virtualization** | Proxmox VE (on 2 nodes), LXC, VM, Template + Cloud-init |
+| **Firewall & Router** | pfSense |
+| **DHCP** | ISC-KEA, Windows Server 2019 DHCP Server |
+| **DNS** | BIND9 + Unbound + Namecheap + Cloudflare, Windows Server 2019 DNS Server |
+| **VPN** | Tailscale, WireGuard, OpenVPN, NordVPN |
+| **Remote Access** | SSH (Termius), RDP (Guacamole) |
+| **Reverse Proxy** | Nginx Proxy Manager (replaced), Traefik (currently used) |
+| **Monitoring** | Zabbix |
+| **Automation** | Ansible + Semaphore, Cron + Cronicle |
+| **Security & Backup** | Proxmox Backup Server, Clonezilla, rclone, Nextcloud, FreeFileSync, Restic, Veeam Backup & Replication Community Edition, Macrium Reflect |
+| **Ad Filtering** | Pi-hole (replaced), AdGuard Home (currently used) |
+| **APT Cache Proxy** | APT-Cacher-NG |
+| **Dashboard** | Homarr |
+| **RADIUS, LDAP** | FreeRADIUS, FreeIPA |
+| **Password Management** | Vaultwarden |
+| **PXE Boot** | iVentoy |
+| **Troubleshooting** | Wireshark |
+| **Storage** | TrueNAS |
 
 ---
 
-## 🔮 Further Learning and Implementation Goals
+## 🎯 How this Homelab supports my professional growth:
+- Deepened my theoretical knowledge through practical, hands-on tasks.
+- Infrastructure design required significant planning and research, fostering foresight.
+- Explored and implemented new technologies, broadening my technical stack.
+- Faced real-world problems that required independent troubleshooting, improving problem-solving skills.
+- Increased the need to understand the root cause of errors to prevent them in the future.
 
-- **Deepen knowledge of Python programming.**  
-- **Cloud computing.** I am interested in this field and want to learn more (AWS, Azure).  
-- **Advanced monitoring.** Learn Grafana + Prometheus; deepen Zabbix knowledge.  
-- **Cloud storage** (Hetzner or pCloud).  
-- **High availability.** Plan to acquire three 2.5" SSDs and a Lenovo M920q Tiny PC, on which I will install Proxmox and form a three-node **cluster** with my existing machines. My goal is to integrate the three SSDs into **Ceph**.  
-- **DIY PiKVM.** KVM over IP would be useful. I plan to buy an RPI 4 to implement PiKVM.  
-- **IDS/IPS improvement.** Deepen CrowdSec knowledge, configure it on Nginx Proxy Manager, and implement Suricata.  
-- **Upgrade to a more advanced switch.** I want to experiment with 802.1x port-based authentication and set up RADIUS monitoring on the ports. Using DHCP snooping and port security, I can further improve security.
+---
+
+## 🔮 Future Learning and Implementation Goals
+
+- Deepen knowledge of the **Python** programming language.
+- **Cloud Computing:** Strong interest in AWS and Azure; aim to gain deeper expertise.
+- **Advanced Monitoring:** Learn Grafana + Prometheus; further deepen Zabbix knowledge.
+- **Cloud Storage:** Implement Hetzner or pCloud to satisfy the **3-2-1 backup rule**.
+- **High Availability:** Planning to acquire three 2.5" SSDs and a Lenovo M920q Tiny PC to build a three-node **Proxmox cluster** with **Ceph** integration.
+- **DIY PiKVM:** Implement KVM over IP using a Raspberry Pi 4.
+- **IDS/IPS:** Implementation of Suricata.
+- **Network Security Expansion:** pfBlockerNG, PacketFence.
+- **Advanced Switching:** Acquire a managed switch to test 802.1x port-based authentication and RADIUS management. Enhance security via DHCP snooping and port security.
+
+---
+
+**Homelab Network Topology:**
+
+```mermaid
+graph TD
+    %% Global
+    Internet((Internet)) --- Asus[ASUS Router]
+
+    %% Home Network Section
+    subgraph Home_Net ["Home Network"]
+        Subnet["192.168.1.0/24"]
+        TV["TV"]
+        Phone["Phones"]
+        Laptop["Laptops"]
+    end
+    Asus --- Subnet
+    Subnet --- TV
+    Subnet --- Phone
+    Subnet --- Laptop
+
+    %% Homelab Entry Point
+    Entry_IP["pfSense WAN: 192.168.1.196"]
+    Asus --- Entry_IP
+
+    %% HOMELAB SYSTEM
+    subgraph Homelab_System ["HOMELAB SYSTEM"]
+        direction TB
+
+        %% Node2 - Firewall Node
+        subgraph Node2 ["Proxmox 2 - M920q (Firewall)"]
+            P2_WAN["vmbr0 - WAN Bridge <br/> IP: 192.168.1.198"]
+            pfS{pfSense VM <br/> GW: 192.168.2.1}
+            P2_LAN["vmbr1 - LAN Bridge <br/> IP: 192.168.2.198"]
+
+            P2_WAN -- "enp1s0f0" --- pfS
+            pfS -- "enp1s0f1" --- P2_LAN
+        end
+
+        Entry_IP --- P2_WAN
+
+        %% Physical Switch
+        subgraph Switch ["TP-Link TL-SG108E Switch"]
+            SW_P1[Port 1] -- "VLAN 30 Trunk" --- SW_P8[Port 8]
+        end
+
+        P2_LAN --- SW_P1
+        SW_P8 --- P1_NIC
+
+        %% Node1 - Compute Node
+        subgraph Node1 ["Proxmox 1 - M70q (Server)"]
+            P1_NIC["NIC: enx503eaa522d61"]
+            P1_Bridge["vmbr0 - VLAN Aware <br/> IP: 192.168.2.199"]
+
+            P1_NIC --- P1_Bridge
+
+            subgraph Subnets ["VLAN Networks"]
+                P1_Bridge -- "Native" --- LAN2["192.168.2.0/24"]
+                P1_Bridge -- "VLAN 30" --- VLAN3["192.168.3.0/24"]
+            end
+
+            subgraph VMs ["Virtual Resources"]
+                LAN2 --- Linux["Linux Systems"]
+                VLAN3 --- Windows["Windows Systems"]
+            end
+        end
+    end
+
+    %% Styles
+    style Home_Net fill:#fffbe6,stroke:#d4a017
+    style Entry_IP fill:#fff3cd,stroke:#d4a017,font-weight:bold
+    style pfS fill:#f96,stroke:#333
+    style Homelab_System fill:#f8f9fa,stroke:#333,stroke-dasharray: 8 4
+    style Node1 fill:#fff
+    style Node2 fill:#fff
 
 ---
 
