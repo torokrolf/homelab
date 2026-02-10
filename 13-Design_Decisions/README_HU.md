@@ -159,14 +159,14 @@ gantt
 ```
 
 | Időpont | Feladat Neve | Célzott Eszköz | Gyakoriság | Időtartam |
-| :--- | :--- | :--- | :--- |
+| :--- | :--- | :--- | :--- | :--- |
 | **22:00** | Prune (Retenció) | PBS Szerver | Naponta | 1 perc |
 | **22:30** | Apt-Cacher-NG Karbantartás | Apt-Proxy Szerver | Naponta | 1 perc |
-| **23:00** | Ansible Frissítés | VM/LXC | Naponta |
-| **01:00** | SMART Hosszú Teszt | Proxmox 1 & 2 | Havonta (1. Szo) |
-| **02:00** | SMART Rövid Teszt | Proxmox 1 & 2 | Naponta |
-| **04:00** | VM/LXC Mentés | Proxmox 1 -> PBS | Hetente (Vasárnap) |
-| **05:30** | VM/LXC Mentés | Proxmox 2 -> PBS | Hetente (Vasárnap) |
+| **23:00** | Ansible Frissítés | VM/LXC | Naponta | - |
+| **01:00** | SMART Hosszú Teszt | Proxmox 1 & 2 | Havonta (1. Szo) | - |
+| **02:00** | SMART Rövid Teszt | Proxmox 1 & 2 | Naponta | - |
+| **04:00** | VM/LXC Mentés | Proxmox 1 -> PBS | Hetente (Vasárnap) | - |
+| **05:30** | VM/LXC Mentés | Proxmox 2 -> PBS | Hetente (Vasárnap) | - |
 | **Szo 08:00** | Garbage Collection | PBS Szerver | Hetente | 1 perc |
 | **Vas 10:00** | Mentés Ellenőrzés (Verify) | PBS Szerver | Hetente/Havonta | 20 perc |
 
