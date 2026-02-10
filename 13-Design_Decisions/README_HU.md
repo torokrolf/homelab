@@ -135,6 +135,7 @@ Unbound (public DNS)           | msg-cache 64 MB, rrset-cache 128 MB | 0        
 - **22:30 Apt-Cacher-NG Maint**: Közvetlenül a frissítés előtt kijavítjuk a proxy gyorsítótárát, ha esetleg lenne hiba, így az Ansible hiba nélkül tudja frissíteni a VM/LXC gépeket.
 - **23:00 Ansible Update**: Akkor frissítek, amikor a napi használat már lecsökkent és nem zavar ha egy szolgáltatás kiesik egy kis időre.
 
+**Lenti ábrán látható az időzítési diagram, lemértem hogy melyik mennyi időt vesz igénybe. A Proxmox VM/LXC backupnál figyelembe kell venni hogy az első backup tart a legtovább, utána már inkrementális backupok vannak, amik gyorsabbak.
 ```mermaid
 gantt
     title Optimalizált Rendszerfeladatok Ütemezése
@@ -149,7 +150,7 @@ gantt
     SMART Short Test             : 02:00, 5m
 
     section Mentési Ablak
-    PVE1 -> PBS Mentés           :crit, 04:00, 50m
+    PVE1 -> PBS Mentés           :crit, 04:00, 15m
     PVE2 -> PBS Mentés           :crit, 05:30, 5m
 
     section Karbantartás
@@ -165,8 +166,8 @@ gantt
 | **23:00** | Ansible Frissítés | VM/LXC | Naponta | - |
 | **01:00** | SMART Hosszú Teszt | Proxmox 1 & 2 | Havonta (1. Szo) | - |
 | **02:00** | SMART Rövid Teszt | Proxmox 1 & 2 | Naponta | - |
-| **04:00** | VM/LXC Mentés | Proxmox 1 -> PBS | Hetente (Vasárnap) | - |
-| **05:30** | VM/LXC Mentés | Proxmox 2 -> PBS | Hetente (Vasárnap) | - |
+| **04:00** | VM/LXC Mentés | Proxmox 1 -> PBS | Hetente (Vasárnap) | 15 perc |
+| **05:30** | VM/LXC Mentés | Proxmox 2 -> PBS | Hetente (Vasárnap) | 5 perc |
 | **Szo 08:00** | Garbage Collection | PBS Szerver | Hetente | 1 perc |
 | **Vas 10:00** | Mentés Ellenőrzés (Verify) | PBS Szerver | Hetente/Havonta | 20 perc |
 
