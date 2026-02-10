@@ -60,6 +60,12 @@ This project presents a self-designed, enterprise-grade homelab where I practice
 - Faced real-world problems that required independent troubleshooting, improving problem-solving skills.
 - Increased the need to understand the root cause of errors to prevent them in the future.
 
+> [!IMPORTANT]
+> I would like to highlight the following two sections, which I consider the most valuable parts of this project. In these documents, I explain the rationale behind my design decisions, the challenges I encountered, and the specific troubleshooting steps I took to resolve them.
+> 
+> - [12. Design Decisions](./12-Design_Decisions/README.md)
+> - [13. Errors and Troubleshooting](./13-Errors/README.md)
+
 ---
 
 ## 🔮 Future Learning and Implementation Goals
