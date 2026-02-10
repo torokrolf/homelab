@@ -127,6 +127,21 @@ gantt
     dateFormat  HH:mm
     axisFormat  %H:%M
     todayMarker off
+
+    section Daily Routine
+    Prune                        : 22:00, 1m
+    Apt-Cacher-NG Maint          : 22:30, 1m
+    Ansible Update               : 23:00, 5m
+    SMART Short Test             : 02:00, 5m
+
+    section Backup Window
+    PVE1 -> PBS Backup           :crit, 04:00, 15m
+    PVE2 -> PBS Backup           :crit, 05:30, 5m
+
+    section Maintenance
+    SMART Long (Monthly)         :done, 01:00, 4h
+    Garbage Collection (Sat)     :done, 08:00, 1m
+    Verify Jobs (Sun)            :done, 10:00, 20m
 ```
 
 | Time | Task Name | Target Device | Frequency | Duration |
