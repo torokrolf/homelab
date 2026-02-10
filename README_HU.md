@@ -60,7 +60,7 @@ Ez a projekt egy saját tervezésű, vállalati környezet szerű homelabot muta
 - valós problémákkal találkoztam, amikre önállóan kellett megoldást találnom, javítva a problémamegoldó képességem
 - hibák hátterének megértésének igénye nőtt, hogy legközelebb elkerüljem őket
 
-:exclamation:
+:exclamation: :exclamation: :exclamation: Az alábbi két menüpontot kiemelném, amit a legértékesebb pontoknak tartok, ahol elmagyarázom milyen döntést miért hoztam és hogy milyen hibákkal szembesültem illetve hogyan oldottam meg őket.
 - [12. Tervezési döntések](./12-Design_Decisions/README_HU.md)
 - [13. Hibák és hibaelhárítás](./13-Errors/README_HU.md)
 
