@@ -149,7 +149,7 @@ graph TD
     style Homelab_System fill:#f8f9fa,stroke:#333,stroke-dasharray: 8 4
     style Node1 fill:#fff
     style Node2 fill:#fff
-
+```
 ---
 
 ← [Back to Homelab Home](../README.md)
