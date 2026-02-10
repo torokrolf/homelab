@@ -143,7 +143,7 @@ gantt
     todayMarker off
 
     section Napi Rutin
-    Prune                        : 22:00, 30m
+    Prune                        : 22:00, 1m
     Apt-Cacher-NG Maint          : 22:30, 1m
     Ansible Update               : 23:00, 5m
     SMART Short Test             : 02:00, 5m
@@ -154,7 +154,7 @@ gantt
 
     section Karbantartás
     SMART Long (Havi)            :done, 01:00, 4h
-    Garbage Collection (Szo)     :done, 08:00, 10m
+    Garbage Collection (Szo)     :done, 08:00, 1m
     Verify Jobs (Vas)            :done, 10:00, 1h
 ```
 
