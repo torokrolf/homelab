@@ -74,6 +74,7 @@ Ez a projekt egy saját tervezésű, vállalati környezet szerű homelabot muta
 - **Cloud computing.** Nagyon érdekel ez a terület, szeretném jobban megismerni (AWS, Azure).
 - **Monitorozás továbbfejlesztése.** Grafana + Prometheus megtanulása, Zabbix ismeretet elmélyíteni.
 - **Cloud storage** Hetzner vagy pCloud, hogy a 3-2-1 mentési szabálynak eleget tegyek.
+- **TrueNAS átköltöztetése** egy külön fizikai gépre VM-ből.
 - **Magas rendelkezésre állás.** Három darab 2,5"-os SSD és egy Lenovo M920q Tiny PC beszerzése van tervben, amelyre Proxmoxot telepítek, hogy a meglévő gépeimmel együtt háromtagú **klasztert** alakíthassak ki. A célom, hogy a három SSD-t **Ceph**-be integráljam.
 - **DIY PiKVM.**  KVM over IP hasznos lenne. Venni szeretnék RPI 4-et, amin a PiKVM-et megvalósítanám.
 - **IDS/IPS** Suricata implementálása.
