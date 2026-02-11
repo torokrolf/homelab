@@ -74,6 +74,7 @@ This project presents a self-designed, enterprise-grade homelab where I practice
 - **Cloud Computing:** Strong interest in AWS and Azure; aim to gain deeper expertise.
 - **Advanced Monitoring:** Learn Grafana + Prometheus; further deepen Zabbix knowledge.
 - **Cloud Storage:** Implement Hetzner or pCloud to satisfy the **3-2-1 backup rule**.
+- **Migrating TrueNAS** from a VM to a dedicated physical machine.
 - **High Availability:** Planning to acquire three 2.5" SSDs and a Lenovo M920q Tiny PC to build a three-node **Proxmox cluster** with **Ceph** integration.
 - **DIY PiKVM:** Implement KVM over IP using a Raspberry Pi 4.
 - **IDS/IPS:** Implementation of Suricata.
