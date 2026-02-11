@@ -135,7 +135,7 @@ Unbound (public DNS)           | msg-cache 64 MB, rrset-cache 128 MB | 0        
 - **22:30 Apt-Cacher-NG Maint**: Közvetlenül a frissítés előtt kijavítjuk a proxy gyorsítótárát, ha esetleg lenne hiba, így az Ansible hiba nélkül tudja frissíteni a VM/LXC gépeket.
 - **23:00 Ansible Update**: Akkor frissítek, amikor a napi használat már lecsökkent és nem zavar ha egy szolgáltatás kiesik egy kis időre.
 
-**Lenti ábrán látható az időzítési diagram, lemértem hogy melyik mennyi időt vesz igénybe. A Proxmox VM/LXC backupnál figyelembe kell venni hogy az első backup tart a legtovább, utána már inkrementális backupok vannak, amik gyorsabbak.
+**Lenti ábrán látható az időzítési diagram.** Lemértem hogy melyik mennyi időt vesz igénybe. Utoljára **2026.02.11-én** ellenőriztem a jobok időtartamát. A Proxmox VM/LXC backupnál figyelembe kell venni hogy az első backup tart a legtovább, utána már inkrementális backupok vannak, amik gyorsabbak.
 ```mermaid
 gantt
     title Optimalizált Rendszerfeladatok Ütemezése
