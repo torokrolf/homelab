@@ -131,8 +131,7 @@ Unbound (public DNS)        | msg-cache 64 MB, rrset-cache 128 MB       | 0     
 - **22:30 Apt-Cacher-NG Maint**: Fixing the proxy cache right before updates ensures that Ansible can update the VM/LXC machines without errors.
 - **23:00 Ansible Update**: Updating happens when daily usage has decreased, ensuring that minor service interruptions do not cause major disturbances.
 
-**The timing diagram below shows the measured duration of each task. For Proxmox VM/LXC backups, keep in mind that the first backup takes the longest, while subsequent backups are incremental and much faster.**
-
+**The timing diagram is shown in the figure below.** I measured how long each task takes. I last checked the job durations on **2026-02-11**. For the Proxmox VM/LXC backups, it should be taken into account that the first backup takes the longest; after that, incremental backups are used, which are faster.
 ```mermaid
 gantt
     title Optimized System Task Scheduling
