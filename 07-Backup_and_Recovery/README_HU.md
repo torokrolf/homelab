@@ -22,13 +22,15 @@
 
 ## Alkalmazott mentési stratégiám
  
-- Teljes Proxmox host image Clonezillával (**blokkszintű mentés**)
-- VM és LXC mentések Proxmox Backup Serverre (**blokkszintű inkrementális mentés**)
-- Windows-os laptop rendszermentése Veeam Backup & Replication Community Editionnel SMB megosztásba (**blokkszintű inkrementális mentés**)
-- Windows és Ubuntu dualboot gép mentése Macrium Reflect-el
-- Nextcloud fájlmegosztás laptop és telefon között
-- Telefonon lévő képek FolderSync-kel SMB megosztásba mentése (**egyirányú szinkronizálás**)
-- Laptop fájl szinkron FreeFileSync-kel, később Restic-re cserélve verziózott mentés miatt (**fájlszintű mentés**)
+| Célpont / Eszköz | Alkalmazott Szoftver | Mentési technológia | Megjegyzés |
+| :--- | :--- | :--- | :--- |
+| **Proxmox Host** | Clonezilla | Blokkszintű Image | Teljes rendszermentés (Bare-metal recovery) |
+| **VM & LXC** | Proxmox Backup Server | Blokkszintű Inkrementális | Chunk-alapú deduplikáció és verziózás |
+| **Windows Laptop** | Veeam Community Ed. | Blokkszintű Inkrementális | Teljes rendszermentés SMB megosztásba |
+| **Dualboot PC** | Macrium Reflect | Blokkszintű Image | Windows és Ubuntu partíciók együttes mentése |
+| **Mobil fotók** | FolderSync (Android) | Egyirányú szinkronizálás | Fotók automatikus mentése SMB tárolóra |
+| **Laptop adatok** | Restic (korábban FreeFileSync) | Fájlszintű Deduplikált | Verziózott, titkosított és tömörített mentés |
+| **Fájlmegosztás** | Nextcloud | Valós idejű szinkron | Eszközök közötti adatkapcsolat (Laptop/Mobil) |
 
 ---
 
@@ -110,6 +112,7 @@ Nextcloud csak azokat a címeket engedi, amelyek szerepelnek a `config.php` fáj
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
