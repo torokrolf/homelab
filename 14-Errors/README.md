@@ -167,8 +167,6 @@ Since the IP address on the WAN interface never changes, pfSense **does not dete
 
 As a result, the `trkrolf.com` domain becomes unreachable from outside the network.
 
----
-
 **Solution**
 
 With the help of a script, we force pfSense to react **not to the WAN IP change**, but to the **actual public IP change**.
