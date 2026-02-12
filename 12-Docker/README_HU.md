@@ -9,15 +9,17 @@
 
 ## Jelenleg futó Docker szolgáltatások
 
-| Szolgáltatás      | LXC + Docker | Megjegyzés |
-|------------------|--------------|------------|
-| **Traefik**       | LXC → Docker | Reverse proxy és SSL kezelés |
-| **Nginx**         | LXC → Docker | Teszt web szerver / belső alkalmazások |
-| **Portainer**     | LXC → Docker | Docker menedzsment UI |
-| **Gotify**        | LXC → Docker | Értesítési szerver |
-| **Jellyseerr**    | LXC → Docker | Média kérések kezelése |
-| **Radarr**        | LXC → Docker | Filmgyűjtemény kezelő |
-| **Prowlarr**      | LXC → Docker | Indexer menedzser Radarr/Sonarr-hoz |
+| Szolgáltatás | Host LXC      | Futtatás | Megjegyzés                               |
+|--------------|----------------|----------|-------------------------------------------|
+| **Traefik**   | traefik-224   | Docker   | Reverse proxy és SSL kezelés              |
+| **Nginx**     | nginx-202     | Docker   | Teszt webszerver / belső alkalmazások    |
+| **Portainer** | portainer-219 | Docker   | Docker menedzsment felület               |
+| **Gotify**    | gotify-226    | Docker   | Értesítési szerver                       |
+| **Jellyseerr**| servarr-225   | Docker   | Média kérések kezelése                   |
+| **Radarr**    | servarr-225   | Docker   | Filmgyűjtemény kezelő                    |
+| **Prowlarr**  | servarr-225   | Docker   | Indexer menedzser Radarr/Sonarr-hoz     |
+| **Sonarr**    | servarr-225   | Docker   | Sorozatgyűjtemény kezelő                 |
+| **Bazarr**    | servarr-225   | Docker   | Feliratkezelő Sonarr/Radarr mellé       |
 
 ---
 
@@ -29,6 +31,7 @@
 
 ---
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
