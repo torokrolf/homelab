@@ -1,6 +1,7 @@
 ---
 - name: Upgrade all packages on hosts
   hosts: gepeim
+  serial: 2
   become: true
   vars:
     ansible_ssh_common_args: '-o ConnectTimeout=60 -o ServerAliveInterval=30 -o ServerAliveCountMax=3'
@@ -12,7 +13,7 @@
       block:
         - name: Wait for apt lock
           shell: |
-            # --- 3. PONT: LOCK VEDELEM (Shell timeout) ---
+            # --- 3. POINT: LOCK PROTECTION (Shell timeout) ---
             timeout 300s sh -c 'while fuser /var/lib/dpkg/lock >/dev/null 2>&1 \
               || fuser /var/lib/apt/lists/lock >/dev/null 2>&1 \
               || fuser /var/cache/apt/archives/lock >/dev/null 2>&1; do
@@ -29,13 +30,13 @@
           register: apt_update_status
           until: apt_update_status is success
           retries: 2
-          delay: 10
-          # --- 2. PONT: ANSIBLE VEDELEM (Async/Poll) ---
-          async: 300
+          delay: 30
+          # --- 2. POINT: ANSIBLE PROTECTION (Async/Poll) ---
+          async: 600
           poll: 10
           args:
-            # --- 1. PONT: HALOZATI KORLAT (APT Timeout) ---
-            dpkg_options: 'Acquire::http::Timeout=30,Acquire::https::Timeout=30,Acquire::Retries=2'
+            # --- 1. POINT: NETWORK LIMITATION (APT Timeout) ---
+            dpkg_options: 'Acquire::http::Timeout=100,Acquire::https::Timeout=100,Acquire::Retries=2'
 
         - name: Upgrade all packages
           apt:
@@ -45,7 +46,7 @@
             lock_timeout: 600
             force_apt_get: yes
           register: upgrade_output
-          # --- 2. PONT: ANSIBLE VEDELEM (Async az upgrade-nel is) ---
+          # --- 2. POINT: ANSIBLE PROTECTION (Async for upgrade too) ---
           async: 1200
           poll: 15
 
@@ -62,19 +63,19 @@
           when: reboot_required.stat.exists
 
       always:
-        - name: Ertesites kuldese Gotify-ra a playbook eredmenyerol
+        - name: Send notification to Gotify about playbook result
           uri:
             url: "http://192.168.2.226:3008/message?token=A_obN_af5n7wM7f"
             method: POST
             body_format: json
             body:
-              title: "Ansible Upgrade Eredmeny"
+              title: "Ansible Upgrade Result"
               message: |
                 {% if ansible_failed_hosts | length > 0 or ansible_failed_result is defined %}
-                Hiba tortent az Ansible futas soran!
-                Ellenorizd a logokat a hostokon.
+                An error occurred during the Ansible run!
+                Check the logs on the affected hosts.
                 {% else %}
-                Az Ansible update/upgrade playbook sikeresen lefutott.
+                The Ansible update/upgrade playbook completed successfully.
                 {% endif %}
               priority: 5
           delegate_to: localhost
