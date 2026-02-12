@@ -150,14 +150,38 @@ The image below shows that when TrueNAS is stopped, the dependent VMs/LXCs on th
 
 ---
 
-## DDNS – Cloudflare not updating behind pfSense
+## DDNS – pfSense DDNS not updating Cloudflare behind Double NAT
 <a name="ddns-pfsense"></a>
 
-**Problem**:
-- Due to the private WAN IP (Double NAT), pfSense could not detect public IP changes for DDNS.
+**Problem**
 
-**Solution**:
-- Used a custom script that checks the public IP externally and forces the Cloudflare record update.
+The pfSense WAN interface does **not have a public IP address**, but a **static private IP (e.g. 192.168.1.196)** because the router is located behind double NAT.
+
+The built-in pfSense Dynamic DNS mechanism (`/etc/rc.dyndns.update`) is triggered only in three cases:
+
+- system startup
+- the WAN interface receives a new IP address
+- the WAN interface is brought down and up again
+
+Since the IP address on the WAN interface never changes, pfSense **does not detect** that the real public IP has changed on the upstream router, therefore it does not update the Cloudflare DNS record.
+
+As a result, the `trkrolf.com` domain becomes unreachable from outside the network.
+
+---
+
+**Solution**
+
+With the help of a script, we force pfSense to react **not to the WAN IP change**, but to the **actual public IP change**.
+
+Mechanism:
+
+- It queries the current public IP using `checkip.amazonaws.com`
+- It compares it with the previously stored IP saved in a file
+- If a change is detected:
+  - it updates the stored IP in the file
+  - it manually triggers the `/etc/rc.dyndns.update` script
+
+This ensures that the Cloudflare record always points to the correct public IP.
 
 ❗ Script: [/11-Scripts/pfsense/ddns-force-update.sh](/11-Scripts/pfsense/ddns-force-update.sh)
 
