@@ -22,13 +22,15 @@
 
 ## My Backup Strategy
 
-- Full Proxmox host image with Clonezilla (**block-level backup**)  
-- VM and LXC backups to Proxmox Backup Server (**block-level incremental backup**)  
-- Windows laptop system backup with Veeam Backup & Replication Community Edition to SMB share (**block-level incremental backup**)  
-- Windows and Ubuntu dual-boot machine backup with Macrium Reflect  
-- Nextcloud file sharing between laptop and phone  
-- Phone photos backed up to SMB share via FolderSync (**one-way sync**)  
-- Laptop file sync with FreeFileSync, later replaced by Restic for versioned backup (**file-level backup**)  
+| Target / Device | Software Used | Backup Technology | Remarks |
+| :--- | :--- | :--- | :--- |
+| **Proxmox Host** | Clonezilla | Block-level Image | Full system backup (Bare-metal recovery) |
+| **VM & LXC** | Proxmox Backup Server | Block-level Incremental | Chunk-based deduplication and versioning |
+| **Windows Laptop** | Veeam Community Ed. | Block-level Incremental | Full system backup to SMB share |
+| **Dualboot PC** | Macrium Reflect | Block-level Image | Combined Windows and Ubuntu partition backup |
+| **Mobile Photos** | FolderSync (Android) | One-way Sync | Automatic photo upload to SMB storage |
+| **Laptop Data** | Restic (prev. FreeFileSync) | File-level Deduplicated | Versioned, encrypted, and compressed backup |
+| **File Sharing** | Nextcloud | Real-time Sync | Cross-device data sync (Laptop/Mobile) |
 
 ---
 
@@ -111,3 +113,4 @@ Nextcloud only allows access from addresses listed in the `config.php` file unde
 ---
 
 ← [Back to Homelab Home](../README.md)
+
