@@ -151,20 +151,43 @@ Lenti képen látható, TrueNAS-t leállítottam akkor leáll a másik Proxmoxon
 
 ---
 
-## DDNS – DDNS nem frissül Cloudflare-en pfSense mögött
+## DDNS – pfSense DDNS nem frissít Cloudflare felé Double NAT mögött
 <a name="ddns-pfsense"></a>
 
-**Probléma**:
-- A pfSense privát WAN IP-je miatt a DDNS nem érzékelte a publikus IP változását.
+**Probléma**
 
-**Megoldás**:
-- Egyedi script használata, amely külsőleg ellenőrzi a publikus IP-t és frissíti a Cloudflare rekordot.
+A pfSense WAN interfészén **nem publikus IP cím** van, hanem egy **statikus privát IP (pl. 192.168.1.196)**, mert a router double NAT mögött található.
+
+A pfSense beépített Dynamic DNS mechanizmusa (/etc/rc.dyndns.update) 3 esetben triggerelődik:
+
+- rendszerindítás történik
+- WAN interfész új IP-t kap
+- WAN interfész le/fel kapcsolódik
+
+Mivel a WAN interfészen lévő IP nem változik, a pfSense **nem érzékeli**, hogy az upstream routeren a valós publikus IP megváltozott, ezért nem frissíti a Cloudflare DNS rekordot.
+
+Ennek eredménye: a trkrolf.com domain kívülről elérhetetlenné válik.
+
+**Megoldás**
+
+Egy script segítségével a pfSense-t **nem a WAN IP változására**, hanem a **valós publikus IP változására** kényszerítjük reagálni.
+
+A mechanizmus:
+
+- Lekérdezi az aktuális publikus IP-t a checkip.amazonaws.com segítségével
+- Összehasonlítja az előzőleg eltárolt IP-vel, ami egy fájlba van írva
+- Ha változás történt:
+   - frissíti az eltárolt IP-t a fájlban
+   - kézzel meghívja az `/etc/rc.dyndns.update` scriptet
+
+Így a Cloudflare rekord mindig a helyes publikus IP-re fog mutatni.
 
 ❗ Script: [/11-Scripts/pfsense/ddns-force-update.sh](/11-Scripts/pfsense/ddns-force-update.sh)
 
 ---
 
-## Apt-cacher-ng beragadó csomagok problémája 
+## Apt-cacher-ng beragadó csomagok problémája
+
 <a name="aptcacherng"></a>
 
 **Probléma**
