@@ -9,15 +9,17 @@
 
 ## Currently running Docker services
 
-| Service          | LXC + Docker | Notes |
-|------------------|--------------|-------|
-| **Traefik**       | LXC → Docker | Reverse proxy and SSL management |
-| **Nginx**         | LXC → Docker | Test web server / internal applications |
-| **Portainer**     | LXC → Docker | Docker management UI |
-| **Gotify**        | LXC → Docker | Notification server |
-| **Jellyseerr**    | LXC → Docker | Media request management |
-| **Radarr**        | LXC → Docker | Movie library manager |
-| **Prowlarr**      | LXC → Docker | Indexer manager for Radarr/Sonarr |
+| Service      | Host LXC      | Runtime | Notes                                  |
+|--------------|----------------|---------|-----------------------------------------|
+| **Traefik**   | traefik-224   | Docker  | Reverse proxy and SSL termination       |
+| **Nginx**     | nginx-202     | Docker  | Test web server / internal apps        |
+| **Portainer** | portainer-219 | Docker  | Docker management UI                   |
+| **Gotify**    | gotify-226    | Docker  | Notification server                    |
+| **Jellyseerr**| servarr-225   | Docker  | Media request management               |
+| **Radarr**    | servarr-225   | Docker  | Movie collection manager               |
+| **Prowlarr**  | servarr-225   | Docker  | Indexer manager for Radarr/Sonarr     |
+| **Sonarr**    | servarr-225   | Docker  | TV series collection manager           |
+| **Bazarr**    | servarr-225   | Docker  | Subtitle manager for Sonarr/Radarr    |
 
 ---
 
@@ -29,3 +31,4 @@
 
 ---
 ← [Back to Homelab main page](../README_EN.md)
+
