@@ -305,6 +305,7 @@ Detailed DHCP configuration can be found in the [pfSense DHCP section](#dhcp).
 - My Ansible update playbook sends a notification upon completion, indicating whether the client updates succeeded or failed. ❗ Script: [/06-Automation/Ansible_Semaphore/Playbooks/upgrade-system.yaml](/06-Automation/Ansible_Semaphore/Playbooks/upgrade-system.yaml)
 - Notifications for VM/LXC backup results on Proxmox Backup Server. Configurable in the PBS GUI.
 - Verification results of backups on Proxmox Backup Server. Configurable in the PBS GUI.
+- On Proxmox Backup Server, when the prune runs. Configurable in the PBS GUI.
 
 The image below shows a notification received when the NAS was unavailable for 2 hours.
 <p align="center">
@@ -314,6 +315,7 @@ The image below shows a notification received when the NAS was unavailable for 2
 ---
 
 ← [Back to Homelab Main Page](../README.md)
+
 
 
 
