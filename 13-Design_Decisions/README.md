@@ -142,7 +142,7 @@ gantt
     section Daily Routine
     Prune                        : 22:00, 1m
     Apt-Cacher-NG Maint          : 22:30, 1m
-    Ansible Update               : 23:00, 5m
+    Ansible Update               : 23:00, 30m
     SMART Short Test             : 02:00, 5m
 
     section Backup Window
@@ -159,7 +159,7 @@ gantt
 | :--- | :--- | :--- | :--- | :--- |
 | **22:00** | Prune (Retention) | PBS Server | Daily | 1 min |
 | **22:30** | Apt-Cacher-NG Maintenance | Apt-Proxy Server | Daily | 1 min |
-| **23:00** | Ansible Update | VM/LXC | Daily | - |
+| **23:00** | Ansible Update | VM/LXC | Daily | 30 min |
 | **01:00** | SMART Long Test | Proxmox 1 & 2 | Monthly (1st Sat) | - |
 | **02:00** | SMART Short Test | Proxmox 1 & 2 | Daily | - |
 | **04:00** | VM/LXC Backup | Proxmox 1 -> PBS | Weekly (Sunday) | 15 min |
