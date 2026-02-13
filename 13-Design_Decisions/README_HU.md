@@ -146,7 +146,7 @@ gantt
     section Napi Rutin
     Prune                        : 22:00, 1m
     Apt-Cacher-NG Maint          : 22:30, 1m
-    Ansible Update               : 23:00, 5m
+    Ansible Update               : 23:00, 30m
     SMART Short Test             : 02:00, 5m
 
     section Mentési Ablak
@@ -163,7 +163,7 @@ gantt
 | :--- | :--- | :--- | :--- | :--- |
 | **22:00** | Prune (Retenció) | PBS Szerver | Naponta | 1 perc |
 | **22:30** | Apt-Cacher-NG Karbantartás | Apt-Proxy Szerver | Naponta | 1 perc |
-| **23:00** | Ansible Frissítés | VM/LXC | Naponta | - |
+| **23:00** | Ansible Frissítés | VM/LXC | Naponta | 30 perc |
 | **01:00** | SMART Hosszú Teszt | Proxmox 1 & 2 | Havonta (1. Szo) | - |
 | **02:00** | SMART Rövid Teszt | Proxmox 1 & 2 | Naponta | - |
 | **04:00** | VM/LXC Mentés | Proxmox 1 -> PBS | Hetente (Vasárnap) | 15 perc |
