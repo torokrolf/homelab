@@ -17,7 +17,7 @@
 | [1.4 APT cacher proxy](#apt)            | APT-Cacher-NG                                             
 | [1.5 VLAN](#vlan)                      | TP-LINK SG108E switch                                    
 | [1.6 Reverse Proxy](#reverseproxy)     | Nginx Proxy Manager (lecserélve), Traefik (jelenlegi)    
-| [1.7 Radius / LDAP](#radiusldap)       | FreeRADIUS, FreeIPA                                      
+| [1.7 IAM](#iam)       | FreeRADIUS, FreeIPA                                      
 | [1.8 Reklámszűrés](#reklamszures)      | Pi-hole (lecserélve), AdGuard Home (jelenlegi)                                                  
 | [1.9 PXE Boot](#pxe)                   | iVentoy                                                  
 | [1.10 DNS](#dns)                       | BIND9, Namecheap, Cloudflare, Windows Server 2019 DNS    
@@ -195,8 +195,8 @@ Soha nem használok fix IP-ket a proxy konfigokban — kizárólag DNS neveket.
 
 ---
 
-<a name="radiusldap"></a>
-## 1.7 RADIUS és LDAP
+<a name="iam"></a>
+## 1.7 IAM
 
 ### 1.7.1 FreeIPA mint LDAP
 - Központosított felhasználó- és jogosultságkezelés a teljes laborban.
@@ -314,6 +314,7 @@ Lenti képen látható, 2 órán át nem volt elérhető a NAS és erről kaptam
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
