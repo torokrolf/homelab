@@ -17,7 +17,7 @@
 | [1.4 APT cacher proxy](#apt)            | APT-Cacher-NG                                             |
 | [1.5 VLAN](#vlan)                      | TP-LINK SG108E switch                                    |
 | [1.6 Reverse Proxy](#reverseproxy)     | Nginx Proxy Manager (replaced), Traefik (current)        |
-| [1.7 Radius / LDAP](#radiusldap)       | FreeRADIUS, FreeIPA                                      |
+| [1.7 IAM](#iam)       | FreeRADIUS, FreeIPA                                      |
 | [1.8 Ad-blocking](#reklamszures)       | Pi-hole (replaced), AdGuard Home (current)               |
 | [1.9 PXE Boot](#pxe)                   | iVentoy                                                  |
 | [1.10 DNS](#dns)                       | BIND9, Namecheap, Cloudflare, Windows Server 2019 DNS    |
@@ -196,8 +196,8 @@ I never use static IPs in proxy configurations — only DNS names.
 
 ---
 
-<a name="radiusldap"></a>
-## 1.7 RADIUS and LDAP
+<a name="iam"></a>
+## 1.7 IAM
 
 ### 1.7.1 FreeIPA as LDAP
 - Centralized user and permission management across the entire lab.
@@ -315,6 +315,7 @@ The image below shows a notification received when the NAS was unavailable for 2
 ---
 
 ← [Back to Homelab Main Page](../README.md)
+
 
 
 
