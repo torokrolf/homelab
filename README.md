@@ -18,8 +18,9 @@
 - [09. Password Management](./09-Password_Management/README.md)
 - [10. Storage](./10-Storage/README.md)
 - [11. Scripts](./11-Scripts/README.md)
-- [12. Design Decisions](./12-Design_Decisions/README.md)
-- [13. Errors and Troubleshooting](./13-Errors/README.md)
+- [12. Docker](./12-Docker/README.md)
+- [13. Design Decisions](./13-Design_Decisions/README.md)
+- [14. Errors and Troubleshooting](./14-Errors/README.md)
 
 ---
 
