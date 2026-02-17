@@ -19,8 +19,8 @@
 - [10. Tárolás](./10-Storage/README_HU.md)
 - [11. Scriptek](./11-Scripts/README_HU.md)
 - [12. Docker](./12-Docker/README_HU.md)
-- [13. Tervezési döntések](./12-Design_Decisions/README_HU.md)
-- [14. Hibák és hibaelhárítás](./13-Errors/README_HU.md)
+- [13. Tervezési döntések](./13-Design_Decisions/README_HU.md)
+- [14. Hibák és hibaelhárítás](./14-Errors/README_HU.md)
 
 ---
 
@@ -64,8 +64,8 @@ Ez a projekt egy saját tervezésű, vállalati környezet szerű homelabot muta
 > [!IMPORTANT]
 >  Az alábbi két menüpontot kiemelném, amit a legértékesebb pontoknak tartok, ahol elmagyarázom milyen döntést miért hoztam és hogy milyen hibákkal szembesültem illetve hogyan oldottam meg őket.
 > 
-> - [13. Tervezési döntések](./12-Design_Decisions/README_HU.md)
-> - [14. Hibák és hibaelhárítás](./13-Errors/README_HU.md)
+> - [13. Tervezési döntések](./13-Design_Decisions/README_HU.md)
+> - [14. Hibák és hibaelhárítás](./14-Errors/README_HU.md)
 
 ---
 
