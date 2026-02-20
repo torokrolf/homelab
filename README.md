@@ -71,16 +71,17 @@ This project presents a self-designed, enterprise-grade homelab where I practice
 
 ## 🔮 Future Learning and Implementation Goals
 
-- Deepen knowledge of the **Python** programming language.
-- **Cloud Computing:** Strong interest in AWS and Azure; aim to gain deeper expertise.
-- **Advanced Monitoring:** Learn Grafana + Prometheus; further deepen Zabbix knowledge.
-- **Cloud Storage:** Implement Hetzner or pCloud to satisfy the **3-2-1 backup rule**.
-- **Migrating TrueNAS** from a VM to a dedicated physical machine.
-- **High Availability:** Planning to acquire three 2.5" SSDs and a Lenovo M920q Tiny PC to build a three-node **Proxmox cluster** with **Ceph** integration.
-- **DIY PiKVM:** Implement KVM over IP using a Raspberry Pi 4.
-- **IDS/IPS:** Implementation of Suricata.
-- **Network Security Expansion:** pfBlockerNG, PacketFence.
-- **Advanced Switching:** Acquire a managed switch to test 802.1x port-based authentication and RADIUS management. Enhance security via DHCP snooping and port security.
+- **WS-C2960CX-8TC-L Switch** purchase. I want to try **802.1X** port-based authentication, **DHCP snooping**, **port security**, **VLAN**, and **STP**.
+- **MikroTik hAP ax2** router purchase.
+- Deepening my knowledge of the **Python** programming language.
+- **Cloud computing.** I am very interested in this field and want to get to know it better (**AWS**, **Azure**).
+- **Advanced monitoring.** Learning **Grafana + Prometheus**, deepening my knowledge of **Zabbix**.
+- **Cloud storage** via **Hetzner** or **pCloud** to comply with the **3-2-1 backup rule**.
+- Migrating **TrueNAS** to a separate physical machine from a VM.
+- **High Availability.** Planning to acquire three 2.5" SSDs and a **Lenovo M920q Tiny PC** to install Proxmox and create a **three-node cluster** with my existing machines. My goal is to integrate the three SSDs into **Ceph**.
+- **DIY PiKVM.** KVM over IP would be very useful. I want to buy an **RPI 4** to implement **PiKVM**.
+- **IDS/IPS** **Suricata** implementation.
+- **Expanding further network security elements:** **pfBlockerNG**, **PacketFence**.
 
 ---
 
