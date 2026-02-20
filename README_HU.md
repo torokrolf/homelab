@@ -71,6 +71,8 @@ Ez a projekt egy saját tervezésű, vállalati környezet szerű homelabot muta
 
 ## 🔮 További tanulási és megvalósítási célkitűzéseim
 
+- **WS-C2960CX-8TC-L Switch** vásárlása. Ki szeretném próbálni a 802.1x port based autentikációt, DHCP snooping-ot, port security-t, VLAN-t, STP-t.
+- -**MikroTik hAP ax2** router vásárlása 
 - **Python** programozási nyelv mélyebb elsajátítása.
 - **Cloud computing.** Nagyon érdekel ez a terület, szeretném jobban megismerni (AWS, Azure).
 - **Monitorozás továbbfejlesztése.** Grafana + Prometheus megtanulása, Zabbix ismeretet elmélyíteni.
@@ -80,7 +82,6 @@ Ez a projekt egy saját tervezésű, vállalati környezet szerű homelabot muta
 - **DIY PiKVM.**  KVM over IP hasznos lenne. Venni szeretnék RPI 4-et, amin a PiKVM-et megvalósítanám.
 - **IDS/IPS** Suricata implementálása.
 - **További hálózati biztonsági elemek bővítése:** pfBlockerNG, PacketFence. 
-- **Komolyabb switch vásárlása.** Ki szeretném próbálni a 802.1x port based autentikációt és beállítani a Radius felügyeletet a portokon. DHCP snooping és port security által még tovább növelhetném a biztonságot.
   
 ---
 
