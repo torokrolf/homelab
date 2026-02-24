@@ -86,26 +86,20 @@ flowchart TB
     PVE1 -- "autofs" --> SMB1
     PVE1 -- "autofs" --> SMB2
 
-    %% Consumers (bottom row)
+    %% Consumers (bottom row) - Egységes stílus
     subgraph CONSUMERS["VM/LXC Consumers"]
         direction LR
-        JELLY["LXC 1010 Jellyfin\nProxmox-mounted"]
-        DOCKER["VM 1102 platform-docker-01\nfstab mount"]
-        RESTIC["LXC 1008 Restic\nProxmox-mounted"]
-        PXEVM["VM 209 PXEBoot\nfstab mount"]
+        JELLY["LXC 1010 Jellyfin"]
+        DOCKER["VM 1102 platform-docker-01"]
+        RESTIC["LXC 1008 Restic"]
+        PXEVM["VM 209 PXEBoot"]
     end
 
     %% Storage → Consumers connections
     NFS ==>|fstab| DOCKER
     NFS -- "bindmount" --> JELLY
     SMB1 -- "bindmount" --> RESTIC
-    SMB2 ==>|fstab| PXEVM
-    
-    %% Styling
-    classDef fstab fill:#f96,stroke:#333,stroke-width:2px;
-    class DOCKER,PXEVM fstab;
-    classDef pve fill:#2c3e50,color:#fff;
-    class PVE1,PVE2 pve;
+    SMB2 ==>|fstab
 ```
 
 ---
