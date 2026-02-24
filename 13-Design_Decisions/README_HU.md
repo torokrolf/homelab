@@ -53,7 +53,6 @@ A fő cél, hogy **minden szolgáltatás külön LXC-ben fusson**, így izolált
 - Proxmox hosthoz csatolom a TrueNAS megosztásokat, hogy továbbadja az unprivileged LXC-nek.
 - VM esetében az fstab segítségével mountolom a VM-hez közvetlenül a TrueNAS megosztásokat és nem a Proxmox adja tovább.
 
-```mermaid
 flowchart TB
     %% Smooth lines
     linkStyle default interpolate basis
@@ -77,27 +76,30 @@ flowchart TB
     SSD_TRUENAS --> NFS["NFS Share: torrent"]
     SSD_TRUENAS --> SMB1["SMB Share: backup"]
     SSD_TRUENAS --> SMB2["SMB Share: pxeiso"]
+    SSD_TRUENAS --> SMB3["SMB Share: telefon"]
 
-    %% Proxmox1 mounts the shares
-    PVE1 --> NFS
-    PVE1 --> SMB1
-    PVE1 --> SMB2
+    %% Proxmox1 mounts for LXCs
+    PVE1 -.->|Storage mount| NFS
+    PVE1 -.->|Storage mount| SMB1
 
     %% Consumers (bottom row)
     subgraph CONSUMERS["VM/LXC Consumers"]
         direction LR
         JELLY["LXC 1010 Jellyfin\nProxmox-mounted"]
-        SERVARR["LXC 1011 Servarr\nProxmox-mounted"]
+        DOCKER["VM 1102 platform-docker-01\nfstab mount"]
         RESTIC["LXC 1008 Restic\nProxmox-mounted"]
         PXEVM["VM 209 PXEBoot\nfstab mount"]
     end
 
     %% Storage → Consumers connections
+    NFS ==>|fstab| DOCKER
     NFS --> JELLY
-    NFS --> SERVARR
     SMB1 --> RESTIC
-    SMB2 --> PXEVM
-```
+    SMB2 ==>|fstab| PXEVM
+    
+    %% Note for clarity
+    classDef fstab fill:#f96,stroke:#333,stroke-width:2px;
+    class DOCKER,PXEVM fstab;
 
 ---
 
