@@ -98,8 +98,8 @@ flowchart TB
     %% Storage → Consumers connections
     NFS ==>|fstab| DOCKER
     NFS -- "bindmount" --> JELLY
-    SMB1 --> RESTIC
-    SMB2 ==>|bindmount| PXEVM
+    SMB1 -- "bindmount" --> RESTIC
+    SMB2 ==>|fstab| PXEVM
     
     %% Styling
     classDef fstab fill:#f96,stroke:#333,stroke-width:2px;
