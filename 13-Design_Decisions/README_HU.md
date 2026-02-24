@@ -58,18 +58,20 @@ flowchart TB
     %% Smooth lines
     linkStyle default interpolate basis
 
-    %% Top row: Proxmox nodes in original order
+    %% Top row: Forced order with Proxmox1 first
     subgraph PROXMOX["Proxmox Nodes"]
         direction LR
         PVE1["Proxmox1"]
         PVE2["Proxmox2"]
+        %% Invisible link to force ordering
+        PVE1 ~~~ PVE2
     end
 
     %% Passthrough disks going directly to VMs (middle layer)
     SSD_TRUENAS["SSD Passthrough → TrueNAS (VM)"]
     SSD_PBS["Disk Passthrough → PBS (VM)"]
 
-    %% Passthrough connections (back to PVE2 only)
+    %% Passthrough connections (PVE2-höz kötve)
     PVE2 --> SSD_TRUENAS
     PVE2 --> SSD_PBS
 
