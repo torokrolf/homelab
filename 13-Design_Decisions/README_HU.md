@@ -99,7 +99,11 @@ flowchart TB
     NFS ==>|fstab| DOCKER
     NFS -- "bindmount" --> JELLY
     SMB1 -- "bindmount" --> RESTIC
-    SMB2 ==>|fstab
+    SMB2 ==>|fstab| PXEVM
+    
+    %% Styling
+    classDef pve fill:#2c3e50,color:#fff;
+    class PVE1,PVE2 pve;
 ```
 
 ---
