@@ -250,7 +250,12 @@ Lenti ábrán láthatom a felhasznált blokklistát.
 - Helyi zóna: otthoni.local.
 - **DNS override**: A wildcardolt trkrolf.com (*.trkrolf.com) rekordok belső hálózaton közvetlenül a Traefik helyi IP-re oldódik fel, kikerülve a külső lekérdezést.
 
-### 1.10.3 Bind9 + AdGuard Home + Unbound + Traefik működési logikája
+### 1.10.3 Privát Rekurzív Resolver (Unbound)
+Az **Unbound** a rendszer független feloldó szervere, amely elsődlegesen a külső lekérdezések **anonimitásáért** felel.
+- **Anonimitás és Privacy**: Az Unbound maga deríti fel a publikus nameservereket iteratív kérésekkel, így a nagy szolgáltatók nem tudják naplózni és profilozni a teljes böngészési előzményt, és véd a DNS-szintű manipuláció ellen.
+- **Caching**: A már feloldott címeket helyben tárolja, ami jelentősen csökkenti a válaszidőt a hálózaton belüli ismételt kérések esetén.
+
+### 1.10.4 Bind9 + AdGuard Home + Unbound + Traefik működési logikája
 
 Amennyiben lokális domainre vonatkozó lekérdezés történik, az AdGuard Home-ban **conditional forwarding**-ban megadott szabály alapján, az otthoni.local alapján a Bind9 szerverre továbbítja, a Bind9 válaszol.  
 <p align="center">
@@ -314,6 +319,7 @@ Lenti képen látható, 2 órán át nem volt elérhető a NAS és erről kaptam
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
