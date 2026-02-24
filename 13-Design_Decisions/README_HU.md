@@ -54,54 +54,59 @@ A fő cél, hogy **minden szolgáltatás külön LXC-ben fusson**, így izolált
 - VM esetében az fstab segítségével mountolom a VM-hez közvetlenül a TrueNAS megosztásokat és nem a Proxmox adja tovább.
 
 ```mermaid
-flowchart TB
-    %% Smooth lines
+flowchart LR
     linkStyle default interpolate basis
 
-    %% Top row: Forced order with Proxmox1 first
+    %% PROXMOX LAYER
     subgraph PROXMOX["Proxmox Nodes"]
-        direction LR
+        direction TB
         PVE1["Proxmox1"]
         PVE2["Proxmox2"]
-        %% Invisible link to force ordering
-        PVE1 ~~~ PVE2
     end
 
-    %% Passthrough disks going directly to VMs (middle layer)
-    SSD_TRUENAS["SSD Passthrough → TrueNAS (VM)"]
-    SSD_PBS["Disk Passthrough → PBS (VM)"]
+    %% PASSTHROUGH LAYER
+    subgraph STORAGE["Passthrough Disks"]
+        direction TB
+        SSD_TRUENAS["SSD → TrueNAS (VM)"]
+        SSD_PBS["Disk → PBS (VM)"]
+    end
 
-    %% Passthrough connections (PVE2-höz kötve)
-    PVE2 --> SSD_TRUENAS
-    PVE2 --> SSD_PBS
+    %% EXPORT LAYER
+    subgraph EXPORTS["TrueNAS Shares"]
+        direction TB
+        NFS["NFS: torrent"]
+        SMB1["SMB: backup"]
+        SMB2["SMB: pxeiso"]
+        SMB3["SMB: telefon"]
+    end
 
-    %% TrueNAS storage exports
-    SSD_TRUENAS --> NFS["NFS Share: torrent"]
-    SSD_TRUENAS --> SMB1["SMB Share: backup"]
-    SSD_TRUENAS --> SMB2["SMB Share: pxeiso"]
-    SSD_TRUENAS --> SMB3["SMB Share: telefon"]
-
-    %% Proxmox1 mounts with autofs (telefon nélkül)
-    PVE1 -- "autofs" --> NFS
-    PVE1 -- "autofs" --> SMB1
-    PVE1 -- "autofs" --> SMB2
-
-    %% Consumers (bottom row) - Egységes stílus
+    %% CONSUMERS
     subgraph CONSUMERS["VM/LXC Consumers"]
-        direction LR
+        direction TB
         JELLY["LXC 1010 Jellyfin"]
         DOCKER["VM 1102 platform-docker-01"]
         RESTIC["LXC 1008 Restic"]
         PXEVM["VM 209 PXEBoot"]
     end
 
-    %% Storage → Consumers connections
-    NFS ==>|fstab| DOCKER
-    NFS -- "bindmount" --> JELLY
-    SMB1 -- "bindmount" --> RESTIC
-    SMB2 ==>|fstab| PXEVM
-    
-    %% Styling
+    %% Connections
+    PVE2 --> SSD_TRUENAS
+    PVE2 --> SSD_PBS
+
+    SSD_TRUENAS --> NFS
+    SSD_TRUENAS --> SMB1
+    SSD_TRUENAS --> SMB2
+    SSD_TRUENAS --> SMB3
+
+    PVE1 -->|autofs| NFS
+    PVE1 -->|autofs| SMB1
+    PVE1 -->|autofs| SMB2
+
+    NFS -->|fstab| DOCKER
+    NFS -->|bindmount| JELLY
+    SMB1 -->|bindmount| RESTIC
+    SMB2 -->|fstab| PXEVM
+
     classDef pve fill:#2c3e50,color:#fff;
     class PVE1,PVE2 pve;
 ```
