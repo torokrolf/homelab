@@ -53,6 +53,7 @@ A fő cél, hogy **minden szolgáltatás külön LXC-ben fusson**, így izolált
 - Proxmox hosthoz csatolom a TrueNAS megosztásokat, hogy továbbadja az unprivileged LXC-nek.
 - VM esetében az fstab segítségével mountolom a VM-hez közvetlenül a TrueNAS megosztásokat és nem a Proxmox adja tovább.
 
+```mermaid
 flowchart TB
     %% Smooth lines
     linkStyle default interpolate basis
@@ -100,6 +101,7 @@ flowchart TB
     %% Note for clarity
     classDef fstab fill:#f96,stroke:#333,stroke-width:2px;
     class DOCKER,PXEVM fstab;
+```
 
 ---
 
