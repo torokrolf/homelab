@@ -58,41 +58,61 @@ The main goal is that **every service runs in its own LXC**, fully isolated. If 
 - In the case of VMs, I mount TrueNAS shares directly inside the VM via fstab, not through Proxmox
 
 ```mermaid
-flowchart TB
+flowchart LR
     linkStyle default interpolate basis
 
+    %% PROXMOX LAYER
     subgraph PROXMOX["Proxmox Nodes"]
-        direction LR
+        direction TB
         PVE1["Proxmox1"]
         PVE2["Proxmox2"]
     end
 
-    SSD_TRUENAS["SSD Passthrough → TrueNAS (VM)"]
-    SSD_PBS["Disk Passthrough → PBS (VM)"]
+    %% PASSTHROUGH LAYER
+    subgraph STORAGE["Passthrough Disks"]
+        direction TB
+        SSD_TRUENAS["SSD → TrueNAS (VM)"]
+        SSD_PBS["Disk → PBS (VM)"]
+    end
 
+    %% EXPORT LAYER
+    subgraph EXPORTS["TrueNAS Shares"]
+        direction TB
+        NFS["NFS: torrent"]
+        SMB1["SMB: backup"]
+        SMB2["SMB: pxeiso"]
+        SMB3["SMB: telefon"]
+    end
+
+    %% CONSUMERS
+    subgraph CONSUMERS["VM/LXC Consumers"]
+        direction TB
+        JELLY["LXC 1010 Jellyfin"]
+        DOCKER["VM 1102 platform-docker-01"]
+        RESTIC["LXC 1008 Restic"]
+        PXEVM["VM 209 PXEBoot"]
+    end
+
+    %% Connections
     PVE2 --> SSD_TRUENAS
     PVE2 --> SSD_PBS
 
-    SSD_TRUENAS --> NFS["NFS Share: torrent"]
-    SSD_TRUENAS --> SMB1["SMB Share: backup"]
-    SSD_TRUENAS --> SMB2["SMB Share: pxeiso"]
+    SSD_TRUENAS --> NFS
+    SSD_TRUENAS --> SMB1
+    SSD_TRUENAS --> SMB2
+    SSD_TRUENAS --> SMB3
 
-    PVE1 --> NFS
-    PVE1 --> SMB1
-    PVE1 --> SMB2
+    PVE1 -->|autofs| NFS
+    PVE1 -->|autofs| SMB1
+    PVE1 -->|autofs| SMB2
 
-    subgraph CONSUMERS["VM/LXC Consumers"]
-        direction LR
-        JELLY["LXC 1010 Jellyfin\nProxmox-mounted"]
-        SERVARR["LXC 1011 Servarr\nProxmox-mounted"]
-        RESTIC["LXC 1008 Restic\nProxmox-mounted"]
-        PXEVM["VM 209 PXEBoot\nfstab mount"]
-    end
+    NFS -->|fstab| DOCKER
+    NFS -->|bindmount| JELLY
+    SMB1 -->|bindmount| RESTIC
+    SMB2 -->|fstab| PXEVM
 
-    NFS --> JELLY
-    NFS --> SERVARR
-    SMB1 --> RESTIC
-    SMB2 --> PXEVM
+    classDef pve fill:#2c3e50,color:#fff;
+    class PVE1,PVE2 pve;
 ```
 
 ---
