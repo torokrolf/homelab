@@ -58,7 +58,7 @@ flowchart TB
     %% Smooth lines
     linkStyle default interpolate basis
 
-    %% Top row: Proxmox nodes side by side
+    %% Top row: Proxmox nodes in original order
     subgraph PROXMOX["Proxmox Nodes"]
         direction LR
         PVE1["Proxmox1"]
@@ -69,7 +69,7 @@ flowchart TB
     SSD_TRUENAS["SSD Passthrough → TrueNAS (VM)"]
     SSD_PBS["Disk Passthrough → PBS (VM)"]
 
-    %% Passthrough connections (PVE2 only)
+    %% Passthrough connections (back to PVE2 only)
     PVE2 --> SSD_TRUENAS
     PVE2 --> SSD_PBS
 
