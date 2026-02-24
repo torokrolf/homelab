@@ -251,7 +251,12 @@ The figure below shows the blocklists utilized.
 - Local Zone: `otthoni.local`.
 - **DNS Override**: Wildcarded `*.trkrolf.com` records resolve directly to the local Traefik IP on the internal network, bypassing external lookups.
 
-### 1.10.3 Bind9 + AdGuard Home + Unbound + Traefik Operational Logic
+### 1.10.3 Private Recursive Resolver (Unbound)
+**Unbound** is the system's independent resolver server, primarily responsible for the **anonymity** of external queries.
+- **Anonymity and Privacy**: Unbound discovers public nameservers itself through iterative queries, preventing large providers from logging and profiling the entire browsing history, and providing protection against DNS-level manipulation.
+- **Caching**: It stores previously resolved addresses locally, which significantly reduces response times for repeated requests within the network.
+
+### 1.10.4 Bind9 + AdGuard Home + Unbound + Traefik Operational Logic
 
 When a query for a local domain occurs, AdGuard Home forwards it to the Bind9 server based on the **conditional forwarding** rules for `otthoni.local`, and Bind9 provides the answer.
 <p align="center">
@@ -315,6 +320,7 @@ The image below shows a notification received when the NAS was unavailable for 2
 ---
 
 ← [Back to Homelab Main Page](../README.md)
+
 
 
 
