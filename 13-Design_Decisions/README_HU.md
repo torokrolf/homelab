@@ -79,9 +79,11 @@ flowchart TB
     SSD_TRUENAS --> SMB2["SMB Share: pxeiso"]
     SSD_TRUENAS --> SMB3["SMB Share: telefon"]
 
-    %% Proxmox1 mounts for LXCs
-    PVE1 -.->|Storage mount| NFS
-    PVE1 -.->|Storage mount| SMB1
+    %% Proxmox1 mounts with autofs
+    PVE1 -- "autofs" --> NFS
+    PVE1 -- "autofs" --> SMB1
+    PVE1 -- "autofs" --> SMB2
+    PVE1 -- "autofs" --> SMB3
 
     %% Consumers (bottom row)
     subgraph CONSUMERS["VM/LXC Consumers"]
@@ -98,9 +100,11 @@ flowchart TB
     SMB1 --> RESTIC
     SMB2 ==>|fstab| PXEVM
     
-    %% Note for clarity
+    %% Styling
     classDef fstab fill:#f96,stroke:#333,stroke-width:2px;
     class DOCKER,PXEVM fstab;
+    classDef pve fill:#2c3e50,color:#fff;
+    class PVE1,PVE2 pve;
 ```
 
 ---
