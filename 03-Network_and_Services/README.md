@@ -305,7 +305,7 @@ Detailed DHCP configuration can be found in the [pfSense DHCP section](#dhcp).
 **Where do I use it?**
 - If Proxmox loses TrueNAS mounts, I receive a notification. ❗ Script: [/11-Scripts/proxmox/mount-monitor](/11-Scripts/proxmox/mount-monitor)
 - I receive notifications from Proxmox regarding warnings/errors, such as low disk space. Configurable in the Proxmox GUI.
-- Notifications for S.M.A.R.T. errors. ❗ Script: [/11-Scripts/proxmox/S.M.A.R.T.](/11-Scripts/proxmox/S.M.A.R.T.)
+- Notifications for SMART errors. ❗ Script: [/11-Scripts/proxmox/SMART](/11-Scripts/proxmox/SMART)
 - Radarr/Sonarr sends a notification when a movie/series finishes downloading. Supported natively in their GUIs.
 - My Ansible update playbook sends a notification upon completion, indicating whether the client updates succeeded or failed. ❗ Script: [/06-Automation/Ansible_Semaphore/Playbooks/upgrade-system.yaml](/06-Automation/Ansible_Semaphore/Playbooks/upgrade-system.yaml)
 - Notifications for VM/LXC backup results on Proxmox Backup Server. Configurable in the PBS GUI.
@@ -320,6 +320,7 @@ The image below shows a notification received when the NAS was unavailable for 2
 ---
 
 ← [Back to Homelab Main Page](../README.md)
+
 
 
 
