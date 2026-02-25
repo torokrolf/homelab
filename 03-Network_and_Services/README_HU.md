@@ -304,7 +304,7 @@ A részletes DHCP konfiguráció a [pfSense DHCP fejezetben](#dhcp) található.
 **Hol használom?**  
 - Proxmox ha elveszíti a TrueNAS mountolásokat, erről értesítést kapok. ❗ Script: [/11-Scripts/proxmox/mount-monitor](/11-Scripts/proxmox/mount-monitor)
 - Proxmox-ról értesítést kapok warnings/errors témákban, például ha kevés a lemezhely. Promox GUI-ban beállítható.
-- S.m.a.r.t. hibákról kapok értesítést. ❗ Script: [/11-Scripts/proxmox/S.M.A.R.T.](/11-Scripts/proxmox/S.M.A.R.T.)
+- SMART hibákról kapok értesítést. ❗ Script: [/11-Scripts/proxmox/SMART](/11-Scripts/proxmox/SMART)
 - Radarr/Sonarr ha végez a film/sorozat letöltésével, értesítést kapok erről. Radarr/Sonarr GUI-ja támogatja natívan, GUI-ból.
 - Ansible update playbookom, ami updateli a klienseket, ha lefut, akkor ennek eredményéről értesítést kapok, hogy sikeresen vagy sikertelenül futott-e le.❗ Script: [/06-Automation/Ansible_Semaphore/Playbooks/upgrade-system.yaml](/06-Automation/Ansible_Semaphore/Playbooks/upgrade-system.yaml)
 - Proxmox Backup Server-re törtétnő VM/LXC mentés után az eredményről értesítést kapok. PBS GUI-ban beállítható.
@@ -319,6 +319,7 @@ Lenti képen látható, 2 órán át nem volt elérhető a NAS és erről kaptam
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
 
 
 
