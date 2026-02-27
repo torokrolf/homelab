@@ -98,9 +98,9 @@ flowchart LR
     SSD_TRUENAS --> SMB2
     SSD_TRUENAS --> SMB3
 
-    PVE1 -->|autofs| NFS
-    PVE1 -->|autofs| SMB1
-    PVE1 -->|autofs| SMB2
+    PVE1 -->|fstab| NFS
+    PVE1 -->|fstab| SMB1
+    PVE1 -->|fstab| SMB2
 
     NFS -->|fstab| DOCKER
     NFS -->|bindmount| JELLY
