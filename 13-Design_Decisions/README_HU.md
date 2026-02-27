@@ -50,7 +50,7 @@ A fő cél, hogy **minden szolgáltatás külön LXC-ben fusson**, így izolált
 
 - Proxmox1 node-on nincsen disk passthrough
 - Proxmox2 node-on fut van 2 disk passthrough (TrueNAS-nak és Proxmox Backup Servernek)
-- Proxmox hosthoz csatolom a TrueNAS megosztásokat, hogy továbbadja az unprivileged LXC-nek.
+- Proxmox hosthoz csatolom a TrueNAS megosztásokat fstab-al, hogy továbbadja az unprivileged LXC-nek.
 - VM esetében az fstab segítségével mountolom a VM-hez közvetlenül a TrueNAS megosztásokat és nem a Proxmox adja tovább.
 
 ```mermaid
