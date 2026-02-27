@@ -91,7 +91,7 @@ A Pi-hole-ról AdGuard Home-ra való átállás után a 192.168.1.0/24 hálózat
 - Unprivileged LXC konténerek nem tudnak közvetlenül hálózati megosztást mountolni.
 
 **Megoldás**:
-- A Proxmox hoston **AutoFS**-el csatolt megosztás továbbadása bind mount (`mp0`) segítségével.
+- A Proxmox hoston **AutoFS**-al csatolt megosztás továbbadása bind mount (`mp0`) segítségével.
 - Ez kiküszöböli a `df` parancs fagyását, ha a tároló nem elérhető.
 
 ---
@@ -104,7 +104,7 @@ A Pi-hole-ról AdGuard Home-ra való átállás után a 192.168.1.0/24 hálózat
 
 **Megoldás**:
 Legjobb megoldásnak azt találtam, ha leállítom ekkor az LXC és VM gépeket, úgyis az ahány szolgáltatás annyi VM/LXC elvet követem, így ez nem befolyásolja más szolgáltatás futását. Amennyiben elérhető a megosztás, akkor elindítom a VM/LXC-t.
-- Proxmoxhoz autofs-el minden megosztás mountolva van, hogy tudja ellenőrizni és továbbosztani LXC-nek.
+- Proxmoxhoz fstab-al minden megosztás mountolva van, hogy tudja ellenőrizni és továbbosztani LXC-nek.
 - Leellenőrzöm scripttel 30 másodpercenként, hogy elérhető-e a megosztás.
 - Ha elérhető a megosztás, megnézi hogy fut-e a VM/LXC, ha nem fut, elindítja.
 - Ha nem elérhető a megosztás, akkor leállítja a VM/LXC-t ha fut.
