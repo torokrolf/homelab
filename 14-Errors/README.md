@@ -89,7 +89,7 @@ After migrating from Pi-hole to AdGuard Home (AGH), Proxmox hosts (`192.168.2.19
 - Unprivileged LXC containers cannot mount network shares directly.
 
 **Solution**:
-- Use **AutoFS** on the Proxmox host to mount the shares, then pass them to the LXC using a bind mount (`mp0`).
+- Use **fstab** on the Proxmox host to mount the shares, then pass them to the LXC using a bind mount (`mp0`).
 - This prevents the `df` command from hanging if the storage goes offline.
 
 ---
@@ -102,7 +102,7 @@ After migrating from Pi-hole to AdGuard Home (AGH), Proxmox hosts (`192.168.2.19
 
 **Solution**:
 - Adopted a "shutdown on failure" policy. Since I follow the "one service per VM/LXC" principle, stopping affected machines doesn't impact other services.
-- Proxmox uses **autofs** to mount and monitor shares.
+- Proxmox uses **fstab** to mount and monitor shares.
 - A script runs every 30 seconds to check share availability.
 - If the share is online: The script starts the VM/LXC if it isn't running.
 - If the share is offline: The script shuts down the affected VM/LXC immediately.
