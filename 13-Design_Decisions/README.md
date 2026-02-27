@@ -54,7 +54,7 @@ The main goal is that **every service runs in its own LXC**, fully isolated. If 
 
 - No disk passthrough on Proxmox1 node
 - On Proxmox2 node there are 2 disk passthroughs (for TrueNAS and Proxmox Backup Server)
-- I mount TrueNAS shares to the Proxmox host, which then passes them to unprivileged LXCs
+- I mount TrueNAS shares to the Proxmox host with fstab, which then passes them to unprivileged LXCs
 - In the case of VMs, I mount TrueNAS shares directly inside the VM via fstab, not through Proxmox
 
 ```mermaid
