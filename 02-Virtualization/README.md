@@ -45,7 +45,6 @@
 | 1011 | servarr-225 | LXC | 192.168.2.225 | Media Automation |
 | 1012 | gotify-226 | LXC | 192.168.2.226 | Push Notifications |
 | 1013 | portainer-219 | LXC | 192.168.2.219 | Docker Management |
-| 1014 | pulse-227 | LXC | 192.168.2.227 | Monitoring Agent |
 | 1015 | changedetection-229 | LXC | 192.168.2.229 | Web Monitoring |
 
 **VM Linux Servers (ID 1100-1199)**

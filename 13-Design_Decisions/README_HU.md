@@ -215,7 +215,7 @@ A jelenlegi rendszerem átszámozom a táblázat alapján és az új VM/LXC lét
 - `500:pfsense`, `501:pbs`, `502:truenas`
 
 **LXC Services (1000-1099)**
-- `1000:zabbix`, `1001:ansible`, `1002:nextcloud`, `1003:homarr`, `1004:guacamole`, `1005:apt-cacher`, `1006:freeipa`, `1007:freeradius`, `1008:restic`, `1009:vaultwarden`, `1010:jellyfin`, `1011:servarr`, `1012:gotify`, `1013:portainer`, `1014:pulse`, `1015:changedetection`
+- `1000:zabbix`, `1001:ansible`, `1002:nextcloud`, `1003:homarr`, `1004:guacamole`, `1005:apt-cacher`, `1006:freeipa`, `1007:freeradius`, `1008:restic`, `1009:vaultwarden`, `1010:jellyfin`, `1011:servarr`, `1012:gotify`, `1013:portainer`, `1015:changedetection`
 
 **VM linux szerverek (1100-1199)**
 - `1100:crowdsec`, `1101:pxeboot`
