@@ -8,6 +8,8 @@
 
 Itt bemutatom, hogy miért esett a döntésem bizonyos technológiákra és architektúrákra.
 
+---
+
 ## 📚 Tartalomjegyzék
 
 - [1TB-os M.2 SSD-n Proxmox és VM-ek közösen, később ezt szétválasztom és Proxmox kerül a 250 GB SSD-re míg VM-ek gyors 1 TB-os M.2 SSD-re](#ssdvalasztas)
