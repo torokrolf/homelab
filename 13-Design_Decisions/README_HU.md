@@ -8,13 +8,23 @@
 
 Itt bemutatom, hogy miért esett a döntésem bizonyos technológiákra és architektúrákra.
 
+## 📚 Tartalomjegyzék
+
+- [1TB-os M.2 SSD-n Proxmox és VM-ek közösen, később ezt szétválasztom és Proxmox kerül a 250 GB SSD-re míg VM-ek gyors 1 TB-os M.2 SSD-re](#ssdvalasztas)
+- [FreeFileSync lecserélése Restic-re](#resticrecsere)
+- [Miért Nextcloud?](#nextcloud)
+- [Miért Vaultwarden?](#vaultwarden)
+- [Minden szolgáltatást, amit tudok, LXC-ként futtatok, minden szolgáltatás külön LXC-n fut](#kulonlxc)
+- [Mountolási stratégiám](#mountstrategia)
 ---
 ## 1TB-os M.2 SSD-n Proxmox és VM-ek közösen, később ezt szétválasztom és Proxmox kerül a 250 GB SSD-re míg VM-ek gyors 1 TB-os M.2 SSD-re
+<a name="ssdvalasztas"></a>
 
 - **Helyspórolás**: Így Clonezilla mentés csak a 250 GB-os Proxmox-ot tartalmazó SSD-ről szükséges. A VM-eket a Proxmox Backup Server (PBS) menti, róluk szükségtelen Clonezilla mentés. Eredmény gyorsabb és kevesebb tárhelyet igénylő mentés.
 - **I/O terhelés szétválasztása**: a Proxmox host és a VM-ek is végeznek I/O műveleteket. Ha egy lemezen lennének, a terhelés összeadódna, külön SSD-vel pedig a műveletek eloszlanak, ami stabilabb és gyorsabb rendszert biztosít.
 ---
 ## FreeFileSync lecserélése Restic-re
+<a name="resticrecsere"></a>
 
   - Az új laptopomon lévő fontos fájlaimról **Restic** segítségével készítek biztonsági mentést a TrueNAS szerverre.
   - Miért Restic:
@@ -23,18 +33,21 @@ Itt bemutatom, hogy miért esett a döntésem bizonyos technológiákra és arch
     - **Hatékony**: tömörít, gyors, FreeFileSync sokkal lassabban ellenőrizte le a változásokat és lassabban másolta  a megváltozott fájlokat.
 ---
 ## Miért Nextcloud?
+<a name="nextcloud"></a>
 
 - Self-hosted fájl- és képkezelés  
 - Nem szükséges Google Drive / más felhő, Nextcloud a saját Google Drive-om
 - Teljes kontroll és biztonság  
 ---
 ## Miért Vaultwarden?
+<a name="vaultwarden"></a>
 
 - Self-hosted jelszókezelés  
 - Jelszavak nem kerülnek ki az internetre  
 - Teljes kontroll és biztonság  
 ---
 ## Minden szolgáltatást, amit tudok, LXC-ként futtatok, minden szolgáltatás külön LXC-n fut
+<a name="kulonlxc"></a>
 
 A fő cél, hogy **minden szolgáltatás külön LXC-ben fusson**, így izoláltak: ha egy konténer leáll, az **nem érinti a többi szolgáltatást**.
 
@@ -47,6 +60,7 @@ A fő cél, hogy **minden szolgáltatás külön LXC-ben fusson**, így izolált
 ---
 
 ## Mountolási stratégiám
+<a name="mountstrategia"></a>
 
 - Proxmox1 node-on nincsen disk passthrough
 - Proxmox2 node-on fut van 2 disk passthrough (TrueNAS-nak és Proxmox Backup Servernek)
