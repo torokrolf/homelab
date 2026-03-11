@@ -9,13 +9,30 @@
 Here I present why I chose certain technologies and architectural approaches.
 
 ---
+
+## 📚 Table of Contents
+
+- [Proxmox and VMs initially sharing a 1TB M.2 SSD, later separating them](#ssd-strategy)
+- [Replacing FreeFileSync with Restic](#restic)
+- [Why Nextcloud?](#nextcloud)
+- [Why Vaultwarden?](#vaultwarden)
+- [Running each service in its own LXC](#lxc)
+- [My mounting strategy](#mounting)
+- [Bind9, AdGuard Home, Unbound cache and TTL strategy](#dns-ttl)
+- [Scheduled Tasks (Backup & Maintenance)](#scheduled)
+- [Confusion caused by identical VM/LXC IDs in Proxmox Backup Server](#pbs-id)
+- [My VM/LXC naming convention](#naming)
+
+---
 ## Proxmox and VMs initially sharing a 1TB M.2 SSD, later separating them so Proxmox moves to a 250 GB SSD while VMs remain on the fast 1 TB M.2 SSD
+<a name="ssd-strategy"></a>
 
 - **Space saving**: This way, Clonezilla backup is only required for the 250 GB SSD containing Proxmox. The VMs are backed up by Proxmox Backup Server (PBS), so Clonezilla backup for them is unnecessary. Result: faster backups and less storage usage.
 - **I/O load separation**: The Proxmox host and the VMs both perform I/O operations. If they were on the same disk, the load would accumulate. With separate SSDs, operations are distributed, providing a more stable and faster system.
 
 ---
 ## Replacing FreeFileSync with Restic
+<a name="restic"></a>
 
 - I back up the important files from my new laptop to the TrueNAS server using **Restic**.
 - Why Restic:
@@ -25,6 +42,7 @@ Here I present why I chose certain technologies and architectural approaches.
 
 ---
 ## Why Nextcloud?
+<a name="nextcloud"></a>
 
 - Self-hosted file and photo management
 - No need for Google Drive / other cloud providers — Nextcloud is my own Google Drive
@@ -32,6 +50,7 @@ Here I present why I chose certain technologies and architectural approaches.
 
 ---
 ## Why Vaultwarden?
+<a name="vaultwarden"></a>
 
 - Self-hosted password manager
 - Passwords never leave my infrastructure
@@ -39,6 +58,7 @@ Here I present why I chose certain technologies and architectural approaches.
 
 ---
 ## I run every possible service as an LXC, each service in its own LXC
+<a name="lxc"></a>
 
 The main goal is that **every service runs in its own LXC**, fully isolated. If one container stops, it **does not affect other services**.
 
@@ -51,6 +71,7 @@ The main goal is that **every service runs in its own LXC**, fully isolated. If 
 ---
 
 ## My mounting strategy
+<a name="mounting"></a>
 
 - No disk passthrough on Proxmox1 node
 - On Proxmox2 node there are 2 disk passthroughs (for TrueNAS and Proxmox Backup Server)
@@ -118,6 +139,7 @@ flowchart LR
 ---
 
 ## Bind9, AdGuard Home, Unbound cache and TTL strategy
+<a name="dns-ttl"></a>
 
 **BIND9 (Local authoritative source):**
 - Since pfSense assigns static IPs, internal service addresses are constant, the name-IP mapping does not change.
@@ -140,6 +162,7 @@ Unbound (public DNS)        | msg-cache 64 MB, rrset-cache 128 MB       | 0     
 ---
 
 ## Scheduled Tasks (Backup & Maintenance)
+<a name="scheduled"></a>
 
 **Explanation of the scheduling logic:**
 - **01:00 Short SMART test**: This ensures I am aware by morning whether the disks are healthy and if it is safe to perform operations on them.
@@ -190,6 +213,7 @@ gantt
 ---
 
 ## Confusion caused by identical VM/LXC IDs in Proxmox Backup Server
+<a name="pbs-id"></a>
 
 **Problem**
 
@@ -237,6 +261,7 @@ I am renumbering my current system according to this table, and when creating ne
 ---
 
 ## My VM/LXC naming convention
+<a name="naming"></a>
 
 The VM/LXC name refers to the service or role running on it, extended with the last octet of its IP address. This way, at a glance, I know what it does and what its IP address is. For example, `traefik-224` clearly shows that Traefik runs on it and its IP address is `192.168.2.224`.
 
