@@ -16,6 +16,11 @@ Itt bemutatom, hogy miért esett a döntésem bizonyos technológiákra és arch
 - [Miért Vaultwarden?](#vaultwarden)
 - [Minden szolgáltatást, amit tudok, LXC-ként futtatok, minden szolgáltatás külön LXC-n fut](#kulonlxc)
 - [Mountolási stratégiám](#mountstrategia)
+- [Bind9, AdGuard Home, Unbound cache és TTL stratégiája](#ttl)
+- [Ütemezett feladatok (Backup & Karbantartás)](#utemezes)
+- [Proxmox Backup Server mentésnél azonos VM/LXC ID-k miatti kavarodás](#kavarodas)
+- [VM/LXC elnevezési konvencióm](#konvenicom)
+
 ---
 ## 1TB-os M.2 SSD-n Proxmox és VM-ek közösen, később ezt szétválasztom és Proxmox kerül a 250 GB SSD-re míg VM-ek gyors 1 TB-os M.2 SSD-re
 <a name="ssdvalasztas"></a>
@@ -128,6 +133,7 @@ flowchart LR
 ---
 
 ## Bind9, AdGuard Home, Unbound cache és TTL stratégiája
+<a name="ttl"></a>
 
 **BIND9 (Lokális autoritatív forrás):**
 - Mivel a pfSense statikus IP-ket oszt, a belső szolgáltatások címei állandóak, a név-IP párosítás nem változik.
@@ -150,6 +156,7 @@ Unbound (public DNS)           | msg-cache 64 MB, rrset-cache 128 MB | 0        
 ---
 
 ## Ütemezett feladatok (Backup & Karbantartás)
+<a name="utemezes"></a>
 
 **Az ütemezés logikájának magyarázata:**
 - **01:00 short SMART teszt**: Így reggelre már tisztában vagyok azzal, hogy a lemezeim épek-e, és lehet-e rájuk biztonságosan dolgozni.
@@ -200,6 +207,7 @@ gantt
 ---
 
 ## Proxmox Backup Server mentésnél azonos VM/LXC ID-k miatti kavarodás
+<a name="kavarodas"></a>
 
 **Problélma**
 
@@ -221,6 +229,7 @@ A jelenlegi rendszerem átszámozom a táblázat alapján és az új VM/LXC lét
 | **1400 - 1499** | **VM windows kliensek** | Windows alapú kliensek |
 
 **Konkrét kiosztásom**
+<a name="konvenicom"></a>
 
 **LXC Core infrastruktúra (100-499)**
 - `100:dns`, `101:unbound`, `102:traefik`, `103:adguard`, `104:pi-hole`, `105:nginx`
