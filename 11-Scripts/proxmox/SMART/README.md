@@ -15,3 +15,9 @@ Ez a Bash script a szerver fizikai meghajtóinak állapotát figyeli és küldi 
 *   **Hiba-megelőzés:** Az öntesztek futtatásával még azelőtt kiszűrhetők a gyengélkedő szektorok, mielőtt adatvesztés történne.
 *   **Központi naplózás:** Minden lemez adata (hőmérséklet, kondíció, hátralévő élettartam) egy helyen látható.
 
+*   
+•	<p align="center">
+  <img src="https://github.com/user-attachments/assets/1e7ee0e3-a313-4e9f-af83-dfee54403e0a" alt="Description" width="300">
+</p>
+
+
