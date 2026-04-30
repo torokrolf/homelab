@@ -19,16 +19,15 @@
 
 ---
 
-## qBittorrent + NFS (TrueNAS)
+## SMART
 
-- **[nfs_qbittorrent.sh](./qBittorrent/nfs_qbittorrent.sh)** – Script, ami folyamatosan ellenőrzi, hogy a TrueNAS NFS megosztás elérhető-e. Ha igen, mountolja a megosztást és elindítja a **qbittorrent-nox** szolgáltatást; ha a megosztás eltűnik, leállítja a qBittorrentet és unmountolja a megosztást.  
-- **[nfs_qbittorrent.service](./qBittorrent/nfs_qbittorrent.service)** – systemd service, amely automatikusan indítja a **nfs_qbittorrent.sh** scriptet a boot során és folyamatosan futtatja, így a qBittorrent csak akkor fut, ha a NAS elérhető.
+- **[hdsentinel.sh](./proxmox/SMART/hdsentinel.sh)** – Háttértárak S.M.A.R.T. olvasása, tesztek futtatása.
 
 ---
 
-## Termux / Android
+## TrueNAS
 
-- **[toggle_pihole_ssh.sh](./Android/toggle_pihole_ssh.sh)** – Termux alatt futó Bash script, amely SSH-n keresztül kapcsolja ki vagy be a Pi-hole-t. Gyorsan használható telefonról, ha egy weboldal blokkolva van a Pi-hole miatt; a script ellenőrzi az aktuális állapotot, majd ennek megfelelően engedélyezi vagy tiltja a Pi-hole-t, és toast értesítést küld az Androidon.
+- **[mount-watchdog.sh](./proxmox/truenas/mount-watchdog.sh)** – TrueNAS megosztás ha nem elérhető, a megosztást használó VM/LXC/Docker-t leállítja.
 
 ---
 
