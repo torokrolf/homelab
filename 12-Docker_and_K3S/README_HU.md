@@ -11,7 +11,7 @@
 ## 1.1 📚 Tartalomjegyzék
 
 - [1.2 Virtualizációs stratégia](#vs)
-- [1.3 docker](#docker)
+- [1.3 Docker](#docker)
 - [1.4 K3S](#k3s)
 
 ---
@@ -24,9 +24,9 @@ A kritikus azonosítási és hálózati rétegek tudatosan a **K3S-en kívül**,
 
 | Hostnév | Típus | Stackek / Feladatok | Stratégia (Tier) |
 | :--- | :--- | :--- | :--- |
-| **ACCESS-CORE-01** | VM | **Identity:** Authentik, FreeIPA, RADIUS <br> **Access:** Teleport, Guacamole | **MARAD (Tier 0):** Kritikus réteg. Az azonosításnak akkor is futnia kell, ha a K3S fürt karbantartás alatt áll. |
+| **ACCESS-CORE-01** | VM | **Identity:** Authentik, FreeIPA, RADIUS <br> **Access:** Teleport, Guacamole | **MARAD (Tier 0):** Kritikus réteg. Az azonosításnak akkor is futnia kell, ha a K3S fürt nem elérhető. |
 | **EDGE-GW-01** | VM | **Edge Gateway:** Cloudflare Tunnel, Traefik | **MARAD (Tier 1):** Ingress pont. A K3S-től függetlenített gateway a stabil külső elérésért. |
-| **MGMT-CORE-01** | VM | **Management:** Ansible, Terraform, Semaphore, GitHub Runner, Portainer | **MARAD (Tier 2):** Parancsnoki híd. Nem futhat abban az infrastruktúrában, amit vezérel és provizionál. |
+| **MGMT-CORE-01** | VM | **Management:** Ansible, Terraform, Semaphore, GitHub Runner, Portainer | **MARAD (Tier 2):** Nem futhat abban az infrastruktúrában, amit vezérel. |
 | **K3S-SERVER-01** | VM | **Apps:** Vaultwarden, Monitoring (Prometheus/Grafana), Nextcloud, Media-stack (Arr appok), Notifications, Dashboard | **ÖSSZEVONT (K3S):** Minden alkalmazáskonténer ide került Kubernetes Namespace-ekre bontva az erőforrás-optimalizálás érdekében. |
 | **DNS-201** | LXC | Bind9 (Internal DNS) | **Tier 0:** Alapvető hálózati szolgáltatás. |
 | **UNBOUND-223** | LXC | Unbound (Recursive DNS) | **Tier 0:** Biztonságos, rekurzív névfeloldás. |
