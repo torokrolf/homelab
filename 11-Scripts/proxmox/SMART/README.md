@@ -16,8 +16,8 @@ Ez a Bash script a szerver fizikai meghajtóinak állapotát figyeli és küldi 
 **Központi naplózás:** Minden lemez adata (hőmérséklet, kondíció, hátralévő élettartam) egy helyen látható.
 
   Itt láthatom az értesítés egy részletét Gotify-on.
-•	<p align="center">
-  <img src="https://github.com/user-attachments/assets/1e7ee0e3-a313-4e9f-af83-dfee54403e0a" alt="Description" width="300">
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/1e7ee0e3-a313-4e9f-af83-dfee54403e0a" alt="Description" width="500">
 </p>
 
 
