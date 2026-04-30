@@ -19,7 +19,13 @@ Ez az automatizáció a Proxmox host szintjén figyeli a központi adattároló 
 
 # Rendszerkomponensek
 
-1.  **`mount-watchdog.sh`**: A központi Bash logika, amely kezeli a PVE (pct/qm) és a távoli K3s (kubectl) parancsokat.
-2.  **`mount-watchdog.service`**: Systemd unit, amely tartalmazza a boot-idő alapú állapotfájl-törlést.
-3.  **`mount-watchdog.timer`**: 30 másodpercenkénti ütemezést és nagy pontosságot (`AccuracySec=1s`) biztosít.
-4.  **Gotify integráció**: Minden állapotváltásról (TrueNAS DOWN/UP) azonnali push értesítés érkezik a mobilomra.
+**`mount-watchdog.sh`**: A központi Bash logika, amely kezeli a PVE (pct/qm) és a távoli K3s (kubectl) parancsokat.
+**`mount-watchdog.service`**: Systemd unit, amely tartalmazza a boot-idő alapú állapotfájl-törlést.
+**`mount-watchdog.timer`**: 30 másodpercenkénti ütemezést és nagy pontosságot (`AccuracySec=1s`) biztosít.
+**Gotify integráció**: Minden állapotváltásról (TrueNAS DOWN/UP) azonnali push értesítés érkezik a mobilomra.
+
+ Itt láthatom az értesítés egy részletét Gotify-on.
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/a8a0e206-cca0-4a7e-90a7-a69804076534" alt="Description" width="500">
+</p>
+
