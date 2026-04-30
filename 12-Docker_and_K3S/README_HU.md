@@ -66,13 +66,13 @@ A média-stack (Jellyfin) tudatosan LXC konténerben maradt. Ez a megoldás egys
 
 ## 1.4 K3S (Kubernetes)
 
-A projekt ezen része a dokumentációs adósság felszámolása érdekében született. A manuális alkalmazástelepítések és a felmerülő hibák egyedi dokumentálása hosszú távon fenntarthatatlanná vált, ezért álltam át az Infrastructure as Code (IaC) szemléletre. Ebben a megközelítésben a konfigurációk verziókövetett kód formájában léteznek, ami egyszerűbbé teszi az átláthatóságot és a hibakeresést.
+A manuális alkalmazástelepítések és a felmerülő hibák egyedi dokumentálása hosszú távon fenntarthatatlanná vált, ezért kezdtem el az átállást az Infrastructure as Code (IaC) szemléletre. Ebben a megközelítésben a konfigurációk verziókövetett kód formájában léteznek, ami egyszerűbbé teszi az átláthatóságot és a hibakeresést.
 
 ### Motiváció és Megvalósítás
 
-*   Átláthatóság: A manuális lépések helyett minden konfiguráció YAML manifestekben és Ansible role-okban van rögzítve.
+*   Átláthatóság: A manuális lépések helyett minden konfiguráció YAML fájlokban és Ansible role-okban van rögzítve.
 *   Konténer-felügyelet: A K3s automatikusan kezeli az alkalmazások életciklusát, biztosítja az öngyógyító (self-healing) képességet és a belső hálózatot.
-*   Reprodukálhatóság: A teljes környezet bármikor újraépíthető az Ansible playbookok segítségével, minimalizálva a manuális beavatkozás szükségességét[cite: 1].
+*   Reprodukálhatóság: A teljes környezet bármikor újraépíthető az Ansible playbookok segítségével, minimalizálva a manuális beavatkozás szükségességét.
 
 ### CI/CD: GitHub Actions és Self-hosted Runner
 
