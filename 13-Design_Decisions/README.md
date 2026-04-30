@@ -16,7 +16,6 @@ Here I present why I chose certain technologies and architectural approaches.
 - [Replacing FreeFileSync with Restic](#restic)
 - [Why Nextcloud?](#nextcloud)
 - [Why Vaultwarden?](#vaultwarden)
-- [Running each service in its own LXC](#lxc)
 - [My mounting strategy](#mounting)
 - [Bind9, AdGuard Home, Unbound cache and TTL strategy](#dns-ttl)
 - [Scheduled Tasks (Backup & Maintenance)](#scheduled)
@@ -55,18 +54,6 @@ Here I present why I chose certain technologies and architectural approaches.
 - Self-hosted password manager
 - Passwords never leave my infrastructure
 - Full control and security
-
----
-## I run every possible service as an LXC, each service in its own LXC
-<a name="lxc"></a>
-
-The main goal is that **every service runs in its own LXC**, fully isolated. If one container stops, it **does not affect other services**.
-
-**Advantages of LXC compared to VMs:**
-- **Lower resource usage**: less RAM and CPU required, faster startup
-- **Faster deployment**: new containers can be created in minutes
-- **Scalability**: more containers fit on a host than VMs
-- **Isolation**: a failed service does not bring down others
 
 ---
 

@@ -16,7 +16,6 @@ Itt bemutatom, hogy miért esett a döntésem bizonyos technológiákra és arch
 - [FreeFileSync lecserélése Restic-re](#resticrecsere)
 - [Miért Nextcloud?](#nextcloud)
 - [Miért Vaultwarden?](#vaultwarden)
-- [Minden szolgáltatást, amit tudok, LXC-ként futtatok, minden szolgáltatás külön LXC-n fut](#kulonlxc)
 - [Mountolási stratégiám](#mountstrategia)
 - [Bind9, AdGuard Home, Unbound cache és TTL stratégiája](#ttl)
 - [Ütemezett feladatok (Backup & Karbantartás)](#utemezes)
@@ -52,18 +51,6 @@ Itt bemutatom, hogy miért esett a döntésem bizonyos technológiákra és arch
 - Self-hosted jelszókezelés  
 - Jelszavak nem kerülnek ki az internetre  
 - Teljes kontroll és biztonság  
----
-## Minden szolgáltatást, amit tudok, LXC-ként futtatok, minden szolgáltatás külön LXC-n fut
-<a name="kulonlxc"></a>
-
-A fő cél, hogy **minden szolgáltatás külön LXC-ben fusson**, így izoláltak: ha egy konténer leáll, az **nem érinti a többi szolgáltatást**.
-
-**Előnyök LXC használatával VM-ekhez képest:**
-- **Kisebb erőforrásigény**: kevesebb RAM és CPU szükséges, gyorsabb indítás
-- **Gyorsabb deployment**: új konténerek percek alatt létrehozhatók
-- **Skálázhatóság**: több konténer fér el egy hoston, mint VM
-- **Izoláció**: hibás vagy leállt szolgáltatás nem állítja le a többit
-
 ---
 
 ## Mountolási stratégiám
