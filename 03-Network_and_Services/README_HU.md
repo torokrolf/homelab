@@ -16,14 +16,13 @@
 | [1.3 VPN](#vpn)                        | Tailscale, WireGuard, OpenVPN, NordVPN                   
 | [1.4 APT cacher proxy](#apt)            | APT-Cacher-NG                                             
 | [1.5 VLAN](#vlan)                      | TP-LINK SG108E switch                                    
-| [1.6 Reverse Proxy](#reverseproxy)     | Nginx Proxy Manager (lecserélve), Traefik (jelenlegi)    
-| [1.7 IAM](#iam)       | FreeRADIUS, FreeIPA                                      
-| [1.8 Reklámszűrés](#reklamszures)      | Pi-hole (lecserélve), AdGuard Home (jelenlegi)                                                  
-| [1.9 PXE Boot](#pxe)                   | iVentoy                                                  
-| [1.10 DNS](#dns)                       | BIND9, Namecheap, Cloudflare, Windows Server 2019 DNS    
-| [1.11 Hálózati hibakeresés](#debug)    | Wireshark                                                
-| [1.12 DHCP](#dhcp2)                    | ISC-KEA, Windows Server 2019 DHCP                        
-| [1.13 Notification](#notification)   | Gotify 
+| [1.6 Reverse Proxy](#reverseproxy)     | Nginx Proxy Manager (lecserélve), Traefik (jelenlegi)                                       
+| [1.7 Reklámszűrés](#reklamszures)      | Pi-hole (lecserélve), AdGuard Home (jelenlegi)                                                  
+| [1.8 PXE Boot](#pxe)                   | iVentoy                                                  
+| [1.9 DNS](#dns)                       | BIND9, Namecheap, Cloudflare, Windows Server 2019 DNS    
+| [1.10 Hálózati hibakeresés](#debug)    | Wireshark                                                
+| [1.11 DHCP](#dhcp2)                    | ISC-KEA, Windows Server 2019 DHCP                        
+| [1.12 Notification](#notification)   | Gotify 
 
 **A homelab hálózat topológiája az alábbi diagramon látható:**
 ```mermaid
@@ -193,26 +192,11 @@ Soha nem használok fix IP-ket a proxy konfigokban — kizárólag DNS neveket.
 - **Validálás**: DNS-01 challenge a Cloudflare API-n keresztül.
 - **Előny**: Lehetővé teszi a wildcard tanúsítványok (pl. `*.trkrolf.com`) használatát belső portok megnyitása nélkül.
 
----
-
-<a name="iam"></a>
-## 1.7 IAM
-
-### 1.7.1 FreeIPA mint LDAP
-- Központosított felhasználó- és jogosultságkezelés a teljes laborban.
-- Sudo szabályok egységes konfigurációja.
-
-### 1.7.2 FreeRADIUS
-- **pfSense autentikáció**: A pfSense GUI-ba való belépés RADIUS-on keresztül történik.
-- **Kezelés**: SQL + PhpMyAdmin integráció a felhasználók kezeléséhez.
-- **Biztonsági tartalék**: Helyi felhasználó fallback beállítva a kizáródás megelőzésére.
-
----
 
 <a name="reklamszures"></a>
-## 1.8 Reklámszűrés
+## 1.7 Reklámszűrés
 
-### 1.8.1 AdGuard Home
+### 1.7.1 AdGuard Home
 
 - DNS-alapú hálózati szintű reklám- és követő kód szűrés.
 - Integrálva a WireGuard VPN-be a mobilvédelem érdekében.
@@ -230,7 +214,7 @@ Lenti ábrán láthatom a felhasznált blokklistát.
 ---
 
 <a name="pxe"></a>
-## 1.9 PXE Boot – iVentoy
+## 1.8 PXE Boot – iVentoy
 
 - Hálózati ISO bootolás (Clonezilla, Windows, Ubuntu telepítők).
 - Megszünteti a fizikai pendrive-ok szükségességét; a telepítők közvetlenül a hálózaton keresztül töltődnek be.
@@ -238,24 +222,24 @@ Lenti ábrán láthatom a felhasznált blokklistát.
 ---
 
 <a name="dns"></a>
-## 1.10 DNS architektúra
+## 1.9 DNS architektúra
 
-### 1.10.1 Publikus DNS szerver (Namecheap + Cloudflare)
+### 1.9.1 Publikus DNS szerver (Namecheap + Cloudflare)
 - **Namecheap** domain registar-on vásároltam a domain-em, de **Cloudflare** a DNS provider, delegáltam a domainem a nameservereire.
 **Miért a Cloudflare?**
   - DNS-01 Challenge: Lehetővé teszi a Traefik számára a Wildcard SSL tanúsítványok automatikus igénylését a Cloudflare API-n keresztül, jóval egyszerűbben, mint Namecheap-en.
   - Gyorsabban frissülnek a rekordjai.
 
-### 1.10.2 Privát DNS szerver (Bind9)
+### 1.9.2 Privát DNS szerver (Bind9)
 - Helyi zóna: otthoni.local.
 - **DNS override**: A wildcardolt trkrolf.com (*.trkrolf.com) rekordok belső hálózaton közvetlenül a Traefik helyi IP-re oldódik fel, kikerülve a külső lekérdezést.
 
-### 1.10.3 Privát Rekurzív Resolver (Unbound)
+### 1.9.3 Privát Rekurzív Resolver (Unbound)
 Az **Unbound** a rendszer független feloldó szervere, amely elsődlegesen a külső lekérdezések **anonimitásáért** felel.
 - **Anonimitás és Privacy**: Az Unbound maga deríti fel a publikus nameservereket iteratív kérésekkel, így a nagy szolgáltatók nem tudják naplózni és profilozni a teljes böngészési előzményt, és véd a DNS-szintű manipuláció ellen.
 - **Caching**: A már feloldott címeket helyben tárolja, ami jelentősen csökkenti a válaszidőt a hálózaton belüli ismételt kérések esetén.
 
-### 1.10.4 Bind9 + AdGuard Home + Unbound + Traefik működési logikája
+### 1.9.4 Bind9 + AdGuard Home + Unbound + Traefik működési logikája
 
 Amennyiben lokális domainre vonatkozó lekérdezés történik, az AdGuard Home-ban **conditional forwarding**-ban megadott szabály alapján, az otthoni.local alapján a Bind9 szerverre továbbítja, a Bind9 válaszol.  
 <p align="center">
@@ -275,7 +259,7 @@ Ha egy publikus domainre vonatkozó lekérdezés történik, az AdGuard Home-ban
 ---
 
 <a name="debug"></a>
-## 1.11 Hálózati hibakeresés – Wireshark
+## 1.10 Hálózati hibakeresés – Wireshark
 
 Mélyreható csomagelemzés a következők tanulmányozására:
 - DNS, DHCP és ARP kézfogások.
@@ -284,15 +268,15 @@ Mélyreható csomagelemzés a következők tanulmányozására:
 ---
 
 <a name="dhcp2"></a>
-## 1.12 DHCP
+## 1.11 DHCP
 
 A részletes DHCP konfiguráció a [pfSense DHCP fejezetben](#dhcp) található.
 
 ---
 <a name="notification"></a>
-## 1.13  Notification
+## 1.12  Notification
 
-### 1.13.1 Gotify
+### 1.12.1 Gotify
 
 **Gotify** egy könnyű, saját hosztolt szerver valós idejű értesítések küldésére, hogy gyorsan értesüljek hibákról, állapotokról.  
 

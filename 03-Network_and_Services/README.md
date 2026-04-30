@@ -16,14 +16,13 @@
 | [1.3 VPN](#vpn)                        | Tailscale, WireGuard, OpenVPN, NordVPN                   |
 | [1.4 APT cacher proxy](#apt)            | APT-Cacher-NG                                             |
 | [1.5 VLAN](#vlan)                      | TP-LINK SG108E switch                                    |
-| [1.6 Reverse Proxy](#reverseproxy)     | Nginx Proxy Manager (replaced), Traefik (current)        |
-| [1.7 IAM](#iam)       | FreeRADIUS, FreeIPA                                      |
-| [1.8 Ad-blocking](#reklamszures)       | Pi-hole (replaced), AdGuard Home (current)               |
-| [1.9 PXE Boot](#pxe)                   | iVentoy                                                  |
-| [1.10 DNS](#dns)                       | BIND9, Namecheap, Cloudflare, Windows Server 2019 DNS    |
-| [1.11 Network Debugging](#debug)       | Wireshark                                                |
-| [1.12 DHCP](#dhcp2)                    | ISC-KEA, Windows Server 2019 DHCP                        |
-| [1.13 Notifications](#notification)    | Gotify                                                   |
+| [1.6 Reverse Proxy](#reverseproxy)     | Nginx Proxy Manager (replaced), Traefik (current)        |                                    |
+| [1.7 Ad-blocking](#reklamszures)       | Pi-hole (replaced), AdGuard Home (current)               |
+| [1.8 PXE Boot](#pxe)                   | iVentoy                                                  |
+| [1.9 DNS](#dns)                       | BIND9, Namecheap, Cloudflare, Windows Server 2019 DNS    |
+| [1.10 Network Debugging](#debug)       | Wireshark                                                |
+| [1.11 DHCP](#dhcp2)                    | ISC-KEA, Windows Server 2019 DHCP                        |
+| [1.12 Notifications](#notification)    | Gotify                                                   |
 
 
 **The homelab network topology is shown in the diagram below:**
@@ -194,21 +193,7 @@ I never use static IPs in proxy configurations — only DNS names.
 - **Validation**: DNS-01 challenge via Cloudflare API.
 - **Advantage**: Allows the use of wildcard certificates (e.g., `*.trkrolf.com`) without opening internal ports.
 
----
 
-<a name="iam"></a>
-## 1.7 IAM
-
-### 1.7.1 FreeIPA as LDAP
-- Centralized user and permission management across the entire lab.
-- Unified configuration of Sudo rules.
-
-### 1.7.2 FreeRADIUS
-- **pfSense Authentication**: Access to the pfSense GUI is handled via RADIUS.
-- **Management**: SQL + PhpMyAdmin integration for user management.
-- **Safety Net**: Local user fallback configured to prevent lockout.
-
----
 
 <a name="reklamszures"></a>
 ## 1.8 Ad-blocking

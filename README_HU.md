@@ -15,7 +15,7 @@
 - [06. Automatizáció](./06-Automation/README_HU.md)
 - [07. Mentés és helyreállítás](./07-Backup_and_Recovery/README_HU.md)
 - [08. Dashboard](./08-Dashboard/README_HU.md)
-- [09. IAM](./09-IAM/README_HU.md)
+- [09. Identity and Access Management](./09-Identity_and_Access_Management/README_HU.md)
 - [10. Tárolás](./10-Storage/README_HU.md)
 - [11. Scriptek](./11-Scripts/README_HU.md)
 - [12. Docker](./12-Docker/README_HU.md)
