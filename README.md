@@ -15,7 +15,7 @@
 - [06. Automation](./06-Automation/README.md)
 - [07. Backup and Recovery](./07-Backup_and_Recovery/README.md)
 - [08. Dashboard](./08-Dashboard/README.md)
-- [09. Password Management](./09-Password_Management/README.md)
+- [09. IAM](./09-IAM/README.md)
 - [10. Storage](./10-Storage/README.md)
 - [11. Scripts](./11-Scripts/README.md)
 - [12. Docker](./12-Docker/README.md)
