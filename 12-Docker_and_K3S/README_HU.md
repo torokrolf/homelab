@@ -34,21 +34,21 @@ A kritikus azonosítási és hálózati rétegek tudatosan a **K3S-en kívül**,
 | **JELLYFIN-221** | LXC | Jellyfin (Media Server) | **Tier 5:** LXC-ben marad a stabil GPU Passthrough (hardveres transzkódolás) miatt. |
 | **APT-CACHER-207**| LXC | APT Cacher NG | **Tier 3:** Helyi frissítési proxy az összes VM és LXC számára. |
 
-## 1.2.1 Architektúrális alapelvek
-
-### 🛡️ Failure Domain Separation (Hiba-szeparáció)
+### Failure Domain Separation (Hiba-szeparáció)
 A hálózati alapréteg (DNS, Gateway) és az Identity réteg (Authentik, Teleport) különálló virtuális gépeken fut. Ez garantálja, hogy egy esetleges Kubernetes frissítési hiba vagy egy rosszul konfigurált YAML fájl nem okoz teljes hálózati sötétséget (blackout).
 
-### ⚙️ Infrastructure as Code (IaC)
+### Infrastructure as Code (IaC)
 Az összes gazdagép (VM/LXC) provizionálása és konfigurációmenedzsmentje az `MGMT-CORE-01` gépen futó **Ansible** és **Terraform** segítségével történik. Ez biztosítja a reprodukálhatóságot és a verziókövetett infrastruktúrát.
 
-### 🌐 Edge Security & Connectivity
+### Edge Security & Connectivity
 A külső elérést **Cloudflare Tunnel** biztosítja, így nincs szükség nyitott portokra a tűzfalon. A belső SSL terminálást és a **Forward Auth** irányítást az Authentik felé a dedikált **Traefik** példány végzi, amely független a Kubernetes-ben futó Ingress Controller-től.
 
-### 🔌 Hardware Passthrough
-A média-stack (Jellyfin) tudatosan LXC konténerben maradt. Ez a megoldás egyszerűbb és stabilabb GPU-hozzáférést tesz lehetővé a gazdagép kernelén keresztül, elkerülve a Kubernetes-alapú GPU-ütemezés (Device Plugin) felesleges komplexitását.
+### Hardware Passthrough
+A média-stack (Jellyfin) tudatosan LXC konténerben maradt. Ez a megoldás egyszerűbb és stabilabb GPU-hozzáférést tesz lehetővé a gazdagép kernelén keresztül.
 
 ---
+
+<a name="docker"></a>
 
 ## 1.3 Docker
 
@@ -62,8 +62,9 @@ A média-stack (Jellyfin) tudatosan LXC konténerben maradt. Ez a megoldás egys
 
 ---
 
+<a name="k3s"></a>
 
-
+## 1.4 K3s
 
 ---
 ← [Vissza a Homelab főoldalra](../README_HU.md)
