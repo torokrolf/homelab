@@ -13,7 +13,7 @@
 - [1.2 FreeIPA](#freeipa)
 - [1.3 Authentik](#authentik)
 - [1.4 Teleport](#teleport)
-- [1.4 Vaultwarden](#vaultwarden)
+- [1.5 Vaultwarden](#vaultwarden)
 ---
 
 <a name="freeipa"></a>
@@ -26,7 +26,7 @@
 
 <a name="authentik"></a>
 
-## Authentik
+## 1.3 Authentik
 
 Az Authentik a homelab központi **Identity Provider (IdP)** megoldása, amely lehetővé teszi a modern biztonsági protokollok integrációját és az egységesített beléptetést.
 
@@ -39,8 +39,6 @@ Az Authentik a homelab központi **Identity Provider (IdP)** megoldása, amely l
 <a name="teleport"></a>
 
 ---
-
-## Teleport
 
 ## 1.4 Teleport (Access Plane & Zero Trust)
 
@@ -56,7 +54,7 @@ A Teleport biztosítja a biztonságos, infrastruktúra-szintű hozzáférést a 
 
 ---
 
-## Vaultwarden Password Manager
+## 1.5 Vaultwarden Password Manager
 
 A Vaultwarden célja: **önálló, self-hosted jelszókezelés a homelabban**.
 
