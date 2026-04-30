@@ -76,27 +76,25 @@ A manuális alkalmazástelepítések és a felmerülő hibák egyedi dokumentál
 
 ### CI/CD: GitHub Actions és Self-hosted Runner
 
-A folyamatos integrációt és kiterjesztést saját erőforrásokra alapoztam:
-
 *   Self-hosted Runner: A GitHub Actions workflow-k nem külső felhőben, hanem a saját MGMT-CORE-01 menedzsment gépemen futnak[cite: 1].
 *   Közvetlen elérés: A saját runner használata lehetővé teszi a belső hálózati szegmensek biztonságos elérését a deployment során.
-*   Automata folyamatok: A kódbázis frissítésekor a runner aktiválódik, és az Ansible segítségével végrehajtja a szükséges módosításokat a fürtön vagy a Docker hostokon[cite: 1].
+*   Automata folyamatok: A kódbázis frissítésekor vagy manuálisan vagy időzítve a runner aktiválódik, és az Ansible segítségével végrehajtja a szükséges módosításokat a fürtön vagy a Docker hostokon[cite: 1].
 
 ### Tárolás és Felépítés
 
-*   Single-Node klaszter: Az erőforrás-optimalizálás érdekében a Kubernetes master és worker funkciók egyetlen virtuális gépen (K3S-SERVER-01) futnak[cite: 1].
-*   Helyi adattárolás (Local Storage): Az alkalmazások perzisztens adatai – például a Guacamole adatbázis fájljai – a klaszter helyi meghajtóin tárolódnak hostPath alapú megoldással[cite: 1]. Ez alacsony késleltetést és egyszerű mentési folyamatokat biztosít.
-*   Hiba-szeparáció: A kritikus hálózati alapkövek (DNS, Identity) tudatosan a K3s-en kívül maradtak, megakadályozva a körkörös függőségek kialakulását[cite: 1].
+*   Single-Node klaszter: Az erőforrás-optimalizálás érdekében a Kubernetes master és worker funkciók egyetlen virtuális gépen (K3S-SERVER-01) futnak jelenleg.
+*   Helyi adattárolás (Local Storage): Az alkalmazások perzisztens adatai – például a Guacamole adatbázis fájljai – a klaszter helyi meghajtóin tárolódnak hostPath alapú megoldással. Ez alacsony késleltetést és egyszerű mentési folyamatokat biztosít.
+*   Hiba-szeparáció: A kritikus hálózati alapkövek (DNS, Identity) tudatosan a K3s-en kívül maradtak, megakadályozva a körkörös függőségek kialakulását.
 
 ### Alkalmazott technológiák
 
 | Technológia | Feladat |
 | :--- | :--- |
 | K3s | Pehelysúlyú Kubernetes disztribúció a konténerek kezeléséhez. |
-| GitHub Actions | Pipeline-ok és automatizált munkafolyamatok vezérlése. |
-| Self-hosted Runner | Saját infrastruktúrán futó végrehajtó környezet a pipeline-okhoz[cite: 1]. |
-| Ansible | A virtuális gépek és a K3s fürt automatizált felkészítése és telepítése[cite: 1]. |
-| Local Path Provisioner | Dinamikus helyi tárhely-kezelés az alkalmazások adatai számára[cite: 1]. |
+| GitHub Actions | Automatizált munkafolyamatok vezérlése. |
+| Self-hosted Runner | Saját infrastruktúrán futó végrehajtó környezet a pipeline-okhoz. |
+| Ansible | A virtuális gépek és a K3s fürt automatizált felkészítése és telepítése. |
+| Local Path Provisioner | Dinamikus helyi tárhely-kezelés az alkalmazások adatai számára. |
 
 ---
 ← [Vissza a Homelab főoldalra](../README_HU.md)
