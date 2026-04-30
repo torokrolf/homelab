@@ -29,6 +29,22 @@
 
 Authentik serves as the central **Identity Provider (IdP)** for the homelab, enabling modern security protocols and a seamless, secure authentication experience.
 
+| Application | Method | Strategy / Notes |
+| :--- | :--- | :--- |
+| **Nextcloud, Grafana** | OIDC | Native OIDC integration for granular permission and role mapping. |
+| **Portainer, Jellyfin** | OIDC | Modern authentication implemented via native settings or plugins. |
+| **Teleport, ArgoCD** | OIDC | Infrastructure-level access integrated with centralized SSO. |
+| **TrueNAS SCALE** | OIDC | Securing the storage layer with a centralized Identity Provider. |
+| **Guacamole, Semaphore**| OIDC | Remote access and automation powered by OIDC workflows. |
+| **Prometheus / AdGuard** | Proxy Provider | External protection (Forward Auth) for apps lacking native OIDC support. |
+| **Vaultwarden** | Proxy Provider | Traefik-level security layer added in front of the password manager. |
+| **Switch UI, Webmin** | Proxy Provider | "Locking down" network hardware and admin web interfaces. |
+| **Arr Stack, Gotify** | Proxy Provider | Unified external authentication layer for media and notification services. |
+| **pfSense** | **LOCAL** | **Critical:** Excluded from SSO to avoid circular dependencies. |
+| **FreeIPA** | **LOCAL** | **Core Layer:** The directory service must not depend on the upstream IdP. |
+| **Proxmox VE 1 & 2** | OIDC / Local | OIDC for daily use; `root@pam` retained for emergency break-glass access. |
+| **PBS (Backup Server)** | OIDC / Local | Secure SSO for backup management with an independent local fallback. |
+
 ### 🔐 Key Implementations:
 - **Single Sign-On (SSO):** Centralized authentication for all self-hosted services. A single login grants access to all integrated applications for a 24-hour session duration.
 - **OAuth2 & OpenID Connect (OIDC):** Native integration with modern applications (e.g., Grafana, Nextcloud) for secure, token-based authentication.
