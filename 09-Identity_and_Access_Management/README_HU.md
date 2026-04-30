@@ -40,8 +40,6 @@ Az Authentik a homelab központi **Identity Provider (IdP)** megoldása, amely l
 
 <a name="teleport"></a>
 
----
-
 ## 1.4 Teleport (Access Plane & Zero Trust)
 
 A Teleport biztosítja a biztonságos, infrastruktúra-szintű hozzáférést a homelab erőforrásaihoz, a **Zero Trust** elveit követve.
