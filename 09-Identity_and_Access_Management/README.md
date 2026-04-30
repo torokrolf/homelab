@@ -2,42 +2,64 @@
 
 [🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
 
----
-
-# Password Management Overview
-
-| Service           | Tool         |
-|------------------|-------------|
-| Password Manager  | Vaultwarden |
-
+# 1. Identity and Access Management 
 
 ---
 
-<a name="iam"></a>
-## 1.7 IAM
+## 1.1 📚 Table of Contents
 
-### 1.7.1 FreeIPA as LDAP
-- Centralized user and permission management across the entire lab.
-- Unified configuration of Sudo rules.
-
-### 1.7.2 FreeRADIUS
-- **pfSense Authentication**: Access to the pfSense GUI is handled via RADIUS.
-- **Management**: SQL + PhpMyAdmin integration for user management.
-- **Safety Net**: Local user fallback configured to prevent lockout.
-
----
----
-
-## Vaultwarden Password Manager
-
-The purpose of Vaultwarden: **self-hosted, independent password management for the homelab**.
+- [1.2 FreeIPA as LDAP](#freeipa)
+- [1.3 Authentik (IdP & SSO)](#authentik)
+- [1.4 Teleport (Access Plane)](#teleport)
+- [1.5 Vaultwarden (Password Manager)](#vaultwarden)
 
 ---
 
-### 🔐 Features
+<a name="freeipa"></a>
 
-- **Secure password storage**: All homelab passwords **never leave the local network**.  
-- **Self-hosted**: full control over the server.  
+## 1.2 FreeIPA as LDAP
+- **Centralized Identity Management:** Unified user and permission management across the entire lab environment.
+- **Sudo Policy Enforcement:** Consistent configuration of sudo rules and host-based access control (HBAC).
+
+---
+
+<a name="authentik"></a>
+
+## 1.3 Authentik (Identity Provider & SSO)
+
+Authentik serves as the central **Identity Provider (IdP)** for the homelab, enabling modern security protocols and a seamless, secure authentication experience.
+
+### 🔐 Key Implementations:
+- **Single Sign-On (SSO):** Centralized authentication for all self-hosted services. A single login grants access to all integrated applications for a 24-hour session duration.
+- **OAuth2 & OpenID Connect (OIDC):** Native integration with modern applications (e.g., Grafana, Nextcloud) for secure, token-based authentication.
+- **Forward Auth / Proxy Provider:** Traefik-based protection for legacy services lacking built-in authentication. It ensures applications are only reachable with a valid Authentik session. Where supported, upstream authentication is bypassed to eliminate "double-login" scenarios.
+- **Passwordless & Break-glass Access:** Primary authentication is handled via **Passkey (WebAuthn)** for a passwordless workflow. To prevent lockout, **Static Recovery Tokens** are generated and stored securely offline as a "break-glass" solution in case of hardware authenticator failure.
+
+---
+
+<a name="teleport"></a>
+
+## 1.4 Teleport (Access Plane & Zero Trust)
+
+Teleport provides secure, infrastructure-level access to homelab resources, strictly following **Zero Trust** principles.
+
+### 🛡️ Solutions:
+- **Certificate-Based SSH Access:** Replaced static SSH keys with short-lived X.509 certificates. This eliminates the overhead and security risks associated with manual SSH key management (`authorized_keys`).
+- **Session Recording & Audit:** All SSH and GUI sessions are fully recorded and searchable. Recorded sessions can be replayed for security audits and incident response.
+- **Unified Access Plane:** Provides a consolidated entry point (via Web UI or the `tsh` CLI) to access all servers over SSH without the need for a VPN.
+- **RBAC (Role-Based Access Control):** Granular permission management ensuring users can only access resources tagged with specific labels assigned to their roles.
+
+---
+
+<a name="vaultwarden"></a>
+
+## 1.5 Vaultwarden Password Manager
+
+The goal of Vaultwarden is to provide **self-hosted, sovereign password management** within the homelab environment.
+
+### 🔑 Features:
+- **Secure Vaulting:** All lab-related credentials are stored locally, ensuring sensitive data **never leaves the internal network**.
+- **Full Sovereignty:** Complete control over the server, database, and encryption keys without relying on third-party cloud providers.
 
 ---
 

@@ -26,15 +26,17 @@
 
 <a name="authentik"></a>
 
-## 1.3 Authentik
+## 1.3 Authentik (Identity Provider & SSO)
 
-Az Authentik a homelab központi **Identity Provider (IdP)** megoldása, amely lehetővé teszi a modern biztonsági protokollok integrációját és az egységesített beléptetést.
+Az Authentik a homelab központi **Identity Provider (IdP)** megoldása, amely lehetővé teszi a modern biztonsági protokollok integrációját és a zökkenőmentes, biztonságos beléptetést.
 
 ### 🔐 Főbb implementációk:
-- **Single Sign-On (SSO):** Központosított hitelesítés az összes önállóan hosztolt (self-hosted) szolgáltatáshoz. Egyetlen bejelentkezéssel (MFA mellett) minden alkalmazás elérhetővé válik a session lejártáig.
-- **OAuth2 & OpenID Connect (OIDC):** Natív integráció a modern alkalmazásokkal a biztonságos token-alapú hitelesítés érdekében.
-- **Forward Auth / Proxy Provider:** Olyan legacy szolgáltatások védelme, amelyek nem rendelkeznek beépített hitelesítéssel. A hálózati forgalom egy központi proxy-n fut keresztül, amely kényszeríti az Authentik session meglétét.
-- **MFA:** Többtényezős hitelesítés (WebAuthn, TOTP) kényszerítése a kritikus szolgáltatások elérése előtt.
+- **Single Sign-On (SSO):** Központosított hitelesítés az összes önállóan hosztolt szolgáltatáshoz. Egyetlen bejelentkezéssel (Passkey-alapú MFA mellett) minden alkalmazás elérhetővé válik 24 órás session időtartamra.
+- **OAuth2 & OpenID Connect (OIDC):** Natív integráció a modern alkalmazásokkal a biztonságos, token-alapú hitelesítés érdekében.
+- **Forward Auth / Proxy Provider:** Traefik alapú védelem azon legacy szolgáltatásokhoz, amelyek nem rendelkeznek beépített hitelesítéssel. A megoldás biztosítja, hogy az alkalmazások csak érvényes Authentik session birtokában legyenek elérhetőek. Ahol az alkalmazás lehetővé teszi, a lokális hitelesítést kiiktattam a dupla bejelentkezés elkerülése miatt.
+- **Passwordless & Break-glass Access:** Elsődlegesen **Passkey (WebAuthn)** alapú, jelszómentes hitelesítést alkalmazok. A kizáródás elleni védelem érdekében **Static Recovery Tokeneket** generáltam, amelyeket biztonságos, garantálva a hozzáférést a hitelesítő eszköz meghibásodása esetén is.
+
+---
 
 <a name="teleport"></a>
 
@@ -44,15 +46,15 @@ Az Authentik a homelab központi **Identity Provider (IdP)** megoldása, amely l
 
 A Teleport biztosítja a biztonságos, infrastruktúra-szintű hozzáférést a homelab erőforrásaihoz, a **Zero Trust** elveit követve.
 
-### 🛡️ Megoldások:
-- **SSH & Server Access:** Kiváltottam a statikus SSH-kulcsokat rövid élettartamú, X.509 tanúsítványalapú hitelesítéssel. Nincs többé `authorized_keys` menedzselés.
+### Megoldások:
+- **SSH & Server Access:** Kiváltottam a statikus SSH-kulcsokat így, és nincs többé ssh kulcs menedzselés.
 - **Session Recording & Audit:** Minden SSH és GUI-alapú munkamenet rögzítésre kerül. A tevékenységek visszajátszhatóak és auditálhatóak, ami kritikus a biztonsági incidensek elemzésekor.
-- **Unified Access Plane:** Egyetlen felületen (Web UI vagy `tsh` CLI) keresztül érem el a Linux szervereket, Kubernetes klasztereket és belső adatbázisokat, VPN használata nélkül.
+- **Unified Access Plane:** Egyetlen felületen (Web UI vagy `tsh` CLI) keresztül érem el a szervereket SSH-n.
 - **RBAC (Role-Based Access Control):** Szigorú jogosultságkezelés: a felhasználók csak a számukra kijelölt címkékkel (labels) ellátott erőforrásokhoz férhetnek hozzá.
 
-<a name="vaultwarden"></a>
-
 ---
+
+<a name="vaultwarden"></a>
 
 ## 1.5 Vaultwarden Password Manager
 
@@ -60,7 +62,7 @@ A Vaultwarden célja: **önálló, self-hosted jelszókezelés a homelabban**.
 
 ---
 
-### 🔐 Funkciók
+### Funkciók
 
 - **Biztonságos jelszó tárolás**: a homelab összes jelszava **nem kerül ki az internetre**.  
 - **Self-hosted**: teljes kontroll a szerver felett.  
