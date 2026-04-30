@@ -66,41 +66,42 @@ A média-stack (Jellyfin) tudatosan LXC konténerben maradt. Ez a megoldás egys
 
 ## 1.4 K3S (Kubernetes)
 
-A fürt nem csupán konténerek futtatására szolgál, hanem egy teljes körű **GitOps alapú ökoszisztéma**, ahol az infrastruktúra minden eleme kódból (IaC) definiált. A cél a minimális manuális beavatkozás és a maximális reprodukálható biztonság.
+A projekt ezen része a dokumentációs adósság felszámolása érdekében született. A manuális alkalmazástelepítések és a felmerülő hibák egyedi dokumentálása hosszú távon fenntarthatatlanná vált, ezért álltam át az Infrastructure as Code (IaC) szemléletre. Ebben a megközelítésben a konfigurációk verziókövetett kód formájában léteznek, ami egyszerűbbé teszi az átláthatóságot és a hibakeresést.
 
-### Technológiai Stack
-*   **Orkesztráció:** K3s (Lightweight Kubernetes)
-*   **GitOps:** ArgoCD (Automata szinkronizáció a GitHub repóval)
-*   **Provisioning:** Ansible (Automata node-előkészítés és klaszter telepítés)
-*   **Titkosítás:** SOPS + Age (Titkosított változók a repóban)
-*   **Azonosítás:** Authentik (OIDC) integráció az alkalmazásokhoz
+### Motiváció és Megvalósítás
 
-### Architektúra és Automatizáció
+*   Átláthatóság: A manuális lépések helyett minden konfiguráció YAML manifestekben és Ansible role-okban van rögzítve.
+*   Konténer-felügyelet: A K3s automatikusan kezeli az alkalmazások életciklusát, biztosítja az öngyógyító (self-healing) képességet és a belső hálózatot.
+*   Reprodukálhatóság: A teljes környezet bármikor újraépíthető az Ansible playbookok segítségével, minimalizálva a manuális beavatkozás szükségességét[cite: 1].
 
-A rendszer felépítése során az alábbi best-practice megoldásokat alkalmaztam:
+### CI/CD: GitHub Actions és Self-hosted Runner
 
-| Funkció | Megvalósítás | Leírás |
-| :--- | :--- | :--- |
-| **Bootstrapping** | **Ansible** | Egyetlen paranccsal előkészíti a VM-eket, telepíti a K3s-t és felhúzza az ArgoCD-t. |
-| **GitOps Workflow** | **ArgoCD** | A `kubernetes/apps` mappa változásait automatikusan élesíti a fürtön. |
-| **Secret Management** | **SOPS** | A szenzitív adatok (jelszavak, tokenek) `age` kulccsal titkosítva pihennek a repóban. |
-| **Storage** | **NFS/SMB** | A perzisztens adatok külső NAS-on tárolódnak, amit az Ansible csatol fel a node-okra. |
-| **Identity Management** | **OpenID Connect** | Pl. a Guacamole az Authentik-en keresztül kap SSO-t. |
+A folyamatos integrációt és kiterjesztést saját erőforrásokra alapoztam:
 
-### Biztonság és Hozzáférés
-A klaszter belső hálózaton működik, de a külvilág felé transzparens és biztonságos elérést biztosít:
-*   **Zero Trust:** Nincsenek nyitott portok. A forgalom Cloudflare Tunnel-en érkezik.
-*   **SSO Integráció:** A Kubernetes-en futó alkalmazások (pl. Guacamole) OIDC flow-t használnak, így központi helyen kezelhető a jogosultság.
-*   **Értesítések:** Az Ansible folyamatok végén **Gotify** push-értesítést kapok a deployment állapotáról.
+*   Self-hosted Runner: A GitHub Actions workflow-k nem külső felhőben, hanem a saját MGMT-CORE-01 menedzsment gépemen futnak[cite: 1].
+*   Közvetlen elérés: A saját runner használata lehetővé teszi a belső hálózati szegmensek biztonságos elérését a deployment során.
+*   Automata folyamatok: A kódbázis frissítésekor a runner aktiválódik, és az Ansible segítségével végrehajtja a szükséges módosításokat a fürtön vagy a Docker hostokon[cite: 1].
 
-### Példa Manifestek a repóban
-A konfigurációk strukturáltan, namespace-ekre bontva találhatóak meg:
-- `kubernetes/apps/access/`: Guacamole, PostgreSQL és OIDC konfigurációk.
-- `ansible/roles/k3s_install/`: A klaszter telepítési logikája.
-- `.sops.yaml`: Titkosítási szabályrendszer.
+### Tárolás és Felépítés
+
+*   Single-Node klaszter: Az erőforrás-optimalizálás érdekében a Kubernetes master és worker funkciók egyetlen virtuális gépen (K3S-SERVER-01) futnak[cite: 1].
+*   Helyi adattárolás (Local Storage): Az alkalmazások perzisztens adatai – például a Guacamole adatbázis fájljai – a klaszter helyi meghajtóin tárolódnak hostPath alapú megoldással[cite: 1]. Ez alacsony késleltetést és egyszerű mentési folyamatokat biztosít.
+*   Hiba-szeparáció: A kritikus hálózati alapkövek (DNS, Identity) tudatosan a K3s-en kívül maradtak, megakadályozva a körkörös függőségek kialakulását[cite: 1].
+
+### Alkalmazott technológiák
+
+| Technológia | Feladat |
+| :--- | :--- |
+| K3s | Pehelysúlyú Kubernetes disztribúció a konténerek kezeléséhez. |
+| GitHub Actions | Pipeline-ok és automatizált munkafolyamatok vezérlése. |
+| Self-hosted Runner | Saját infrastruktúrán futó végrehajtó környezet a pipeline-okhoz[cite: 1]. |
+| Ansible | A virtuális gépek és a K3s fürt automatizált felkészítése és telepítése[cite: 1]. |
+| Local Path Provisioner | Dinamikus helyi tárhely-kezelés az alkalmazások adatai számára[cite: 1]. |
 
 ---
 ← [Vissza a Homelab főoldalra](../README_HU.md)
+
+
 
 
 
