@@ -68,14 +68,14 @@ A média-stack (Jellyfin) tudatosan LXC konténerben maradt. Ez a megoldás egys
 
 A fürt nem csupán konténerek futtatására szolgál, hanem egy teljes körű **GitOps alapú ökoszisztéma**, ahol az infrastruktúra minden eleme kódból (IaC) definiált. A cél a minimális manuális beavatkozás és a maximális reprodukálható biztonság.
 
-### 🚀 Technológiai Stack
+### Technológiai Stack
 *   **Orkesztráció:** K3s (Lightweight Kubernetes)
 *   **GitOps:** ArgoCD (Automata szinkronizáció a GitHub repóval)
 *   **Provisioning:** Ansible (Automata node-előkészítés és klaszter telepítés)
 *   **Titkosítás:** SOPS + Age (Titkosított változók a repóban)
 *   **Azonosítás:** Authentik (OIDC) integráció az alkalmazásokhoz
 
-### 🏗️ Architektúra és Automatizáció
+### Architektúra és Automatizáció
 
 A rendszer felépítése során az alábbi best-practice megoldásokat alkalmaztam:
 
@@ -87,13 +87,13 @@ A rendszer felépítése során az alábbi best-practice megoldásokat alkalmazt
 | **Storage** | **NFS/SMB** | A perzisztens adatok külső NAS-on tárolódnak, amit az Ansible csatol fel a node-okra. |
 | **Identity Management** | **OpenID Connect** | Pl. a Guacamole az Authentik-en keresztül kap SSO-t. |
 
-### 🔐 Biztonság és Hozzáférés
+### Biztonság és Hozzáférés
 A klaszter belső hálózaton működik, de a külvilág felé transzparens és biztonságos elérést biztosít:
 *   **Zero Trust:** Nincsenek nyitott portok. A forgalom Cloudflare Tunnel-en érkezik.
 *   **SSO Integráció:** A Kubernetes-en futó alkalmazások (pl. Guacamole) OIDC flow-t használnak, így központi helyen kezelhető a jogosultság.
 *   **Értesítések:** Az Ansible folyamatok végén **Gotify** push-értesítést kapok a deployment állapotáról.
 
-### 🛠️ Példa Manifestek a repóban
+### Példa Manifestek a repóban
 A konfigurációk strukturáltan, namespace-ekre bontva találhatóak meg:
 - `kubernetes/apps/access/`: Guacamole, PostgreSQL és OIDC konfigurációk.
 - `ansible/roles/k3s_install/`: A klaszter telepítési logikája.
