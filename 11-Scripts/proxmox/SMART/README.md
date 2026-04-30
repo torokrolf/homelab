@@ -4,16 +4,16 @@ Ez a Bash script a szerver fizikai meghajtóinak állapotát figyeli és küldi 
 
 ## Működési elv
 
-**Automatikus detektálás:** A script magától felismeri a rendszerben lévő SATA SSD-ket és NVMe meghajtókat.
-**Aktív tesztelés:** Nem csak a korábbi adatokat olvassa ki, hanem indít egy rövid öntesztet (short test) minden meghajtón.
-**Adatgyűjtés:** Összefésüli a smartctl short test és a hdsentinel állapotjelentő kimenetét egyetlen jelentésbe.
-**Értesítés:** Az összeállított riportot egy POST kéréssel küldi el a Gotify szervernek, ami azonnal push értesítést generál.
+*  **Automatikus detektálás:** A script magától felismeri a rendszerben lévő SATA SSD-ket és NVMe meghajtókat.
+*  **Aktív tesztelés:** Nem csak a korábbi adatokat olvassa ki, hanem indít egy rövid öntesztet (short test) minden meghajtón.
+*  **Adatgyűjtés:** Összefésüli a smartctl short test és a hdsentinel állapotjelentő kimenetét egyetlen jelentésbe.
+*  **Értesítés:** Az összeállított riportot egy POST kéréssel küldi el a Gotify szervernek, ami azonnal push értesítést generál.
 
 ### Miért hasznos?
 
-**Időzített ellenőrzés:** Cron segítségével (pl. napi futtatással) automatizálható a teljes folyamat, én is ezt alkalmazom.
-**Hiba-megelőzés:** Az öntesztek futtatásával még azelőtt kiszűrhetők a gyengélkedő szektorok, mielőtt adatvesztés történne.
-**Központi naplózás:** Minden lemez adata (hőmérséklet, kondíció, hátralévő élettartam) egy helyen látható.
+*  **Időzített ellenőrzés:** Cron segítségével (pl. napi futtatással) automatizálható a teljes folyamat, én is ezt alkalmazom.
+*  **Hiba-megelőzés:** Az öntesztek futtatásával még azelőtt kiszűrhetők a gyengélkedő szektorok, mielőtt adatvesztés történne.
+*  **Központi naplózás:** Minden lemez adata (hőmérséklet, kondíció, hátralévő élettartam) egy helyen látható.
 
   Itt láthatom az értesítés egy részletét Gotify-on.
 <p align="center">
