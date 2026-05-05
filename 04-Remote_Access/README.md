@@ -21,10 +21,10 @@
 ## 1.2 RDP 
 
 - **Why Guacamole:**
-  - Convenient access to multiple machines directly from the browser.
-  - Superior to Proxmox's built-in RDP as it supports **audio passthrough** when needed.
-  - Centralized access to **any machine via RDP** with a single click.
-  - **Clipboard sync issues** experienced with Proxmox are resolved; Guacamole provides stable performance.
+  - Conveniently access multiple machines directly from your browser.
+  - Superior to Proxmox's built-in RDP as it supports **audio passthrough**.
+  - Centralized dashboard to access **any machine via RDP** with a single click.
+  - Stable performance; resolves the **clipboard sync issues** often found in Proxmox.
 
 ---
 
@@ -32,26 +32,23 @@
 
 ## 1.3 SSH 
 
-### 1.3.1 SSH - Linux Configuration (Automated Hardening)
+### 1.3.1 SSH - Linux Configuration & Automated Hardening
 
-In my lab, SSH settings are automated via **Ansible**[cite: 1] to ensure every new machine meets modern security standards. The hardening process implements the following technical steps:
+In my lab, SSH security is strictly enforced and automated via **Ansible**[cite: 1]. The following hardening measures ensure a secure baseline across all nodes:
 
-*   **Disable Root Login**: Prevents direct root access using the `PermitRootLogin no` setting[cite: 1].
-*   **Disable Password Authentication**: Only key-based authentication is permitted (`PasswordAuthentication no`), protecting the system against brute-force attacks[cite: 1].
-*   **Automated Session Timeout**: Inactive sessions are automatically terminated after 15 minutes via `export TMOUT=900`[cite: 1].
-*   **Legal Banner**: The content of `/etc/issue.net` is displayed upon login to warn about activity logging[cite: 1].
-*   **Anti-Lock Protection**: The playbook automatically terminates background update processes and clears lock files to ensure automation never stalls[cite: 1].
-
-> **[➔ Click here to view the complete Ansible Hardening Playbook](../06-Automation/Ansible_Semaphore/Playbooks/complete_setup.yaml)**
+*   **Disable Root Login**: Direct root access is blocked via `PermitRootLogin no`, requiring the use of a standard user with sudo privileges[cite: 1].
+*   **Key-Based Authentication Only**: Password login is fully disabled (`PasswordAuthentication no`) to eliminate the risk of brute-force attacks[cite: 1].
+*   **SSH Key Management**: Access is granted exclusively through secure SSH keys (without passphrases for automation compatibility), managed centrally[cite: 1].
+*   **Automatic Session Timeout**: Inactive connections are automatically terminated after 15 minutes (900 seconds) via the `TMOUT` variable in `/etc/profile`[cite: 1].
+*   **Legal Warning Banner**: A custom warning from `/etc/issue.net` is displayed upon login to notify users that all activity is logged[cite: 1].
 
 ---
 
 ### 1.3.2 SSH - Why Termius
 
-- Manage multiple machines simultaneously from a single interface using **profiles and groups**.
-- Built-in **SSH key management**: simplified importing and deployment of keys.
-- Convenient **multiplatform** support: Windows, Linux, macOS, and mobile.
-- Encrypted configurations with easy **synchronization across devices**.
+- **Centralized Management**: Manage all nodes from a single interface with organized profiles and groups.
+- **SSH Key Management**: Built-in secure vault for easy key importing and deployment.
+- **Multiplatform**: Seamlessly sync encrypted configurations across Windows, Linux, macOS, and mobile devices.
 
 ---
 
@@ -59,10 +56,10 @@ In my lab, SSH settings are automated via **Ansible**[cite: 1] to ensure every n
 
 ## 1.4 VPN Usage in the Homelab
 
-- I utilize **OpenVPN** and **WireGuard**, having also tested **Tailscale** and **NordVPN Meshnet** solutions.
-- **Public Services**: Accessible directly from the internet via Reverse Proxy without a VPN.
-- **Internal Services**: Accessible **exclusively via VPN**, ensuring the protection of management interfaces.
-- **Full Tunnel**: Enabled on mobile devices to route all traffic through the home network, allowing remote access to **Pi-hole / AdGuard Home** ad-blocking.
+- I utilize **OpenVPN** and **WireGuard**, having also tested **Tailscale** and **NordVPN Meshnet**.
+- **Public Services**: Accessible directly via Reverse Proxy without a VPN.
+- **Internal Services**: Accessible **exclusively via VPN**, ensuring management interfaces remain hidden.
+- **Full Tunnel**: Enabled on mobile to route all traffic through the home network, providing remote access to **Pi-hole / AdGuard Home** ad-blocking.
 
 ---
 <a name="zerotrust"></a>
@@ -71,10 +68,10 @@ In my lab, SSH settings are automated via **Ansible**[cite: 1] to ensure every n
 
 Unlike traditional VPNs, a Cloudflare Tunnel establishes only an outbound connection between the homelab and the Cloudflare network.
 
-- **No Port Forwarding:** There is no need to open OpenVPN or WireGuard ports on the router. This completely hides my public IP address from direct attacks.
-- **Security Layers:** **Cloudflare Access** can be enabled in front of the tunnel, requiring extra authentication (e.g., Google OAuth, GitHub login, or Authentik) before a request even reaches my internal server.
-- **WAF (Web Application Firewall):** Automatic protection against bots and common web attacks like SQL injection and XSS.
-- **Simple Management:** `cloudflared` runs as a single lightweight container in Docker and is centrally configured via the Cloudflare Zero Trust dashboard.
+- **No Port Forwarding:** Eliminates the need to open ports on the router, hiding my public IP from direct attacks.
+- **Security Layers:** **Cloudflare Access** adds an extra layer of authentication (e.g., Google OAuth, GitHub, or Authentik) before reaching the server.
+- **WAF (Web Application Firewall):** Provides automated protection against bots and common attacks like SQL injection or XSS.
+- **Lightweight Management:** Runs as a single `cloudflared` container, managed centrally via the Cloudflare Zero Trust dashboard.
 
 ---
 

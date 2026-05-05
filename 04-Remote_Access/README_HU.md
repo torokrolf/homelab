@@ -32,27 +32,19 @@
 
 ## 1.3 SSH 
 
-### 1.3.1 SSH - Beállítások Linuxon
+### 1.3.1 SSH - Linux konfiguráció és automatizált hardening
 
-- **Timeout beállítása**: inaktív SSH session-ök automatikus bontása.
-- **Root felhasználó tiltása SSH-n**: közvetlen root belépés megakadályozása.  
-- **Jelszavas bejelentkezés letiltva**  
-- **Kulcsalapú hitelesítés használata**  : jelszó alapú belépés minimalizálva, erősebb hitelesítés.
-  - SSH key beállítva  
-  - Passphrase (passkey) nélkül
+Az alábbi hardening intézkedéseket tettem:
 
- ---
- 
-### 1.3.2 SSH - Beállítások Linuxon
-
-*   **Root felhasználó tiltása**: A `PermitRootLogin no` beállítással megakadályozom a közvetlen root belépést.
-*   **Jelszó alapú hitelesítés letiltása**: Csak kulcsalapú hitelesítés engedélyezett (`PasswordAuthentication no`), így védve a rendszert a Brute-force támadások ellen.
-*   **Automatikus Session Timeout**: Az `export TMOUT=900` beállítással 15 perc inaktivitás után a rendszer automatikusan bontja a kapcsolatot.
-*   **Jogi figyelmeztetés (Banner)**: Minden belépésnél megjelenik a `/etc/issue.net` tartalma, figyelmeztetve a naplózásra.
+*   **Root belépés tiltása**: A `PermitRootLogin no` beállítással megakadályozom a közvetlen root hozzáférést, így kötelező a sudo jogosultsággal rendelkező felhasználó használata.
+*   **Kizárólag kulcsalapú hitelesítés**: A jelszavas bejelentkezést teljesen letiltottam (`PasswordAuthentication no`), így kiküszöbölve a brute-force támadások kockázatát.
+*   **SSH kulcskezelés**: A hozzáférés kizárólag biztonságos SSH kulcsokkal (az automatizáció miatt jelszó nélkül) lehetséges, melyeket Ansible-lel menedzselek.
+*   **Automatikus munkamenet-időtúllépés**: Az inaktív kapcsolatokat a rendszer 15 perc (900 másodperc) után automatikusan bontja az `/etc/profile` fájlban beállított `TMOUT` változó segítségével.
+*   **Jogi figyelmeztető banner**: Minden belépési kísérletnél megjelenik az `/etc/issue.net` tartalma, amely tájékoztatja a felhasználót a tevékenységek naplózásáról.
 
  ---
  
-### 1.3.3 SSH - Miért Termius
+### 1.3.2 SSH - Miért Termius
 
   - Több gép egyszerre kezelhető egy helyről, **profilokkal és csoportokkal**  
   - Beépített **SSH key management**: kulcsok egyszerű importálása és használata  
