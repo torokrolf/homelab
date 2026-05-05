@@ -12,16 +12,16 @@ A homelab infrastruktúra átláthatóságát és üzembiztonságát egy közpon
 
 | Szolgáltatás / Eszköz | Leírás |
 |----------------------|--------|
-| **Prometheus**       | Idősoros adatbázis, amely gyűjti és tárolja a metrikákat. |
+| **Prometheus**       | Gyűjti és tárolja a metrikákat. |
 | **Grafana**          | Vizualizációs platform az adatok megjelenítésére és dashboardok készítésére. |
 | **Node Exporter**    | A fizikai gépek (Proxmox host) és virtuális gépek (VM) erőforrásainak kinyerése. |
-| **Gotify**           | Saját hosztolású push értesítési szolgáltatás a riasztások fogadására. |
+| **Gotify**           | A riasztások fogadására. |
 
 ---
 
-## 1.2 Monitorozott Területek
+## 1.2 Monitorozott Területek---importált dashboard-al
 
-A rendszer folyamatosan figyeli a **Proxmox** hypervisort és az összes futó **Virtuális Gépet (VM)**. Kiemelt figyelmet kapnak az alábbiak:
+A rendszer folyamatosan figyeli a **Proxmox** hypervisort és az összes futó **VM-et**. Kiemelt figyelmet kapnak az alábbiak:
 
 - **Erőforrás használat:** CPU, RAM és Disk kihasználtság.
 - **S.M.A.R.T. adatok:** A fizikai meghajtók (HDD/SSD) állapotának figyelése a váratlan adatvesztés megelőzése érdekében.
@@ -30,7 +30,7 @@ A rendszer folyamatosan figyeli a **Proxmox** hypervisort és az összes futó *
 
 ## 1.3 Riasztási Szabályok (Alerting)
 
-A riasztások **Gotify**-ra érkeznek, amennyiben az alábbi küszöbértékek átlépésre kerülnek:
+A riasztások **Gotify**-ra érkeznek, amennyiben triggerelve lesznek:
 
 | Erőforrás | Küszöbérték | Időtartam | Leírás |
 |-----------|------------|-----------|--------|
