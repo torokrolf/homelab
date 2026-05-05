@@ -96,9 +96,8 @@ flowchart LR
     subgraph CONSUMERS["VM/LXC Consumers"]
         direction TB
         JELLY["LXC 1010 Jellyfin"]
-        DOCKER["VM 1102 platform-docker-01"]
-        RESTIC["LXC 1008 Restic"]
-        PXEVM["VM 209 PXEBoot"]
+        K3S["VM 1105 k3s-server-01-225"]
+        PXEVM["VM 1101 pxeboot-20ö"]
     end
 
     %% Connections
@@ -114,9 +113,8 @@ flowchart LR
     PVE1 -->|fstab| SMB1
     PVE1 -->|fstab| SMB2
 
-    NFS -->|fstab| DOCKER
+    NFS -->|fstab| K3S
     NFS -->|bindmount| JELLY
-    SMB1 -->|bindmount| RESTIC
     SMB2 -->|fstab| PXEVM
 
     classDef pve fill:#2c3e50,color:#fff;
