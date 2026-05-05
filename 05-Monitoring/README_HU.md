@@ -4,32 +4,40 @@
 
 ---
 
-# Monitorozás összefoglaló
+# Monitorozás és Riasztás
+
+A homelab infrastruktúra átláthatóságát és üzembiztonságát egy központosított monitorozó rendszer biztosítja.
+
+## 1.1 Alkalmazott Eszközök
 
 | Szolgáltatás / Eszköz | Leírás |
 |----------------------|--------|
-| **Monitorozás**      | Zabbix |
-
-## Zabbix Monitoring Server
-
-A Zabbix szerver célja: **központi infrastruktúra-monitoring** a homelab gépeken.
+| **Prometheus**       | Idősoros adatbázis, amely gyűjti és tárolja a metrikákat. |
+| **Grafana**          | Vizualizációs platform az adatok megjelenítésére és dashboardok készítésére. |
+| **Node Exporter**    | A fizikai gépek (Proxmox host) és virtuális gépek (VM) erőforrásainak kinyerése. |
+| **Gotify**           | Saját hosztolású push értesítési szolgáltatás a riasztások fogadására. |
 
 ---
 
-### Megvalósított funkciók
-> A monitorozás jelenleg az alap funkcionalitásra fókuszál; a rendszer további bővítése tervben van.
-> 
-- Zabbix Agent telepítése Linux és Windows gépekre.
-- Alap problem triggerek létrehozása:
-  - gép nem elérhető (ping) 1 percen keresztül,
-  - szabad tárhely egy meghatározott szint alá csökken,
-  - CPU terhelés egy beállított érték fölé emelkedik.
-- Riasztások konfigurálása a triggerekhez, email értesítésekkel.
+## 1.2 Monitorozott Területek
+
+A rendszer folyamatosan figyeli a **Proxmox** hypervisort és az összes futó **Virtuális Gépet (VM)**. Kiemelt figyelmet kapnak az alábbiak:
+
+- **Erőforrás használat:** CPU, RAM és Disk kihasználtság.
+- **S.M.A.R.T. adatok:** A fizikai meghajtók (HDD/SSD) állapotának figyelése a váratlan adatvesztés megelőzése érdekében.
+
+---
+
+## 1.3 Riasztási Szabályok (Alerting)
+
+A riasztások **Gotify**-ra érkeznek, amennyiben az alábbi küszöbértékek átlépésre kerülnek:
+
+| Erőforrás | Küszöbérték | Időtartam | Leírás |
+|-----------|------------|-----------|--------|
+| **Disk**  | > 85%      | 5 perc    | Megakadályozza a tároló megtelését és a VM-ek leállását. |
+| **RAM**   | > 90%      | 5 perc    | Jelzi a memória szűkületet vagy a "memory leak" jelenséget. |
+| **CPU**   | > 90%      | 10 perc   | Tartós túlterhelés esetén riaszt (rövid kiugrásokat figyelmen kívül hagy). |
 
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
-
-
-
-
