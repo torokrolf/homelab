@@ -66,6 +66,13 @@
 
 ## 1.5 Zero Trust Remote Access 
 
+A hagyományos VPN-nel szemben a Cloudflare Tunnel csak kifelé irányuló kapcsolatot hoz létre a homelab és a Cloudflare hálózata között.
+
+- **Nincs Port Forwarding:** Nem kell megnyitni a  OpenVPN vagy WireGuard portokat a routeren. Ezzel teljesen elrejtem a publikus IP-címemet a közvetlen támadások elől.
+- **Biztonsági rétegek:** A tunnel előtt bekapcsolható a **Cloudflare Access**, ami extra hitelesítést (pl. Google OAuth, GitHub login vagy Authentik) kér, mielőtt a kérés egyáltalán elérné a belső szerveremet.
+- **WAF (Web Application Firewall):** Automatikus védelem a botok és a gyakori webes támadások (SQL injection, XSS) ellen.
+- **Egyszerű kezelés:** A `cloudflared` egyetlen pehelykönnyű konténerként fut a Dockerben, és központilag, a Cloudflare Zero Trust műszerfaláról konfigurálható.
+
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)

@@ -1,4 +1,4 @@
-← [Back to Homelab Home](../README.md)
+← [Back to Homelab Main Page](../README.md)
 
 [🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
 
@@ -6,42 +6,73 @@
 
 # Remote Access
 
-| Service / Tool | Description |
-|----------------|------------|
-| **Remote Access** | SSH (Termius), RDP (Guacamole) |
+## 1.1 Remote Access Overview
+
+| Service / Area                         | Tools / Software                                         |
+|----------------------------------------|----------------------------------------------------------|
+| [1.2 RDP](#rdp)                        | Guacamole                                                |
+| [1.3 SSH](#ssh)                        | Termius, Teleport                                        |
+| [1.4 VPN](#vpn)                        | Wireguard, OpenVPN, Cloudflare Tunnel                    |
+| [1.5 Zero Trust Remote Access](#zerotrust) | Cloudflare Tunnel                                    |
+
+---
+<a name="rdp"></a>
+
+## 1.2 RDP 
+
+- **Why Guacamole:**
+  - Conveniently access multiple machines directly from a browser.
+  - Superior to Proxmox's built-in console as it **supports audio passthrough**.
+  - Centralized access to **any RDP-enabled machine** with a single click.
+  - **Reliable clipboard sync**: Fixed the inconsistent clipboard issues often experienced with Proxmox.
 
 ---
 
-## RDP
+<a name="ssh"></a>
 
-- **Why Guacamole:**  
-  - Convenient access to multiple machines from a browser  
-  - Better than Proxmox built-in RDP because it can **forward audio** if needed  
-  - From a central location, I can access **any machine via RDP** with one click  
-  - **Clipboard transfer issues** that sometimes occurred in Proxmox work reliably in Guacamole
+## 1.3 SSH 
 
----
+### 1.3.1 SSH - Linux Configuration
 
-## SSH
-
-### SSH – Linux Settings
-
-- **Timeout configuration**: automatically disconnect inactive SSH sessions  
-- **Disable root login via SSH**: prevent direct root access  
-- **Password login disabled**  
-- **Use key-based authentication**: minimize password logins for stronger security  
-  - SSH key configured  
-  - Without passphrase
+- **Timeout Configuration**: Automatic termination of inactive SSH sessions.
+- **Disable Root Login**: Prevented direct root access for enhanced security.
+- **Password Authentication Disabled**: Passwords are blocked in favor of keys.
+- **Key-based Authentication**: Minimal attack surface using strong cryptographic keys.
+  - SSH keys configured.
+  - Passphrase (passkey) used for added security.
 
 ---
 
-### SSH – Why Termius
+### 1.3.2 SSH - Why Termius
 
-- Manage multiple machines from one place, **with profiles and groups**  
-- Built-in **SSH key management**: easy import and use of keys  
-- Convenient **cross-platform**: Windows, Linux, macOS, mobile  
-- Encrypted configurations, easily **synchronized across devices**
+- Manage multiple servers from one place using **profiles and groups**.
+- Built-in **SSH key management**: Easy importing and deployment of keys.
+- Convenient **multiplatform** support: Windows, Linux, macOS, and Mobile.
+- Encrypted configurations that are easily **synchronized across devices**.
 
 ---
 
-← [Back to Homelab Home](../README.md)
+<a name="vpn"></a>
+
+## 1.4 Using VPN in the Homelab
+
+- I use **OpenVPN** and **WireGuard**, but I have also tested **Tailscale** and **NordVPN Meshnet** solutions.
+- **Public Services**: Directly accessible from the internet (via Reverse Proxy) without a VPN.
+- **Internal Services**: Accessible **exclusively via VPN**, ensuring the protection of management interfaces.
+- **Full Tunnel**: Enabled on mobile devices to route all traffic through the home network, allowing me to use **Pi-hole / AdGuard Home** ad-blocking on the go.
+
+---
+<a name="zerotrust"></a>
+
+## 1.5 Zero Trust Remote Access (Cloudflare Tunnel)
+
+Unlike traditional VPNs, Cloudflare Tunnel establishes an outbound-only connection between the homelab and the Cloudflare network.
+
+- **No Port Forwarding Required:** No need to open OpenVPN or WireGuard ports on the router. This completely hides my public IP address from direct internet scans and attacks.
+- **Security Layers:** I can enable **Cloudflare Access** in front of the tunnel to require extra authentication (e.g., Google OAuth, GitHub login, or Authentik) before a request even reaches my internal server.
+- **WAF (Web Application Firewall):** Automatic protection against bots and common web attacks like SQL injection and XSS.
+- **Simplified Management:** The `cloudflared` agent runs as a lightweight Docker container and is centrally configured via the Cloudflare Zero Trust dashboard.
+
+---
+
+← [Back to Homelab Main Page](../README.md)
