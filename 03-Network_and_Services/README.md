@@ -13,16 +13,15 @@
 | Service / Area                         | Tools / Software                                         |
 |----------------------------------------|----------------------------------------------------------|
 | [1.2 Firewall / Router](#pfsense)      | pfSense                                                  |
-| [1.3 VPN](#vpn)                        | Tailscale, WireGuard, OpenVPN, NordVPN                   |
-| [1.4 APT cacher proxy](#apt)            | APT-Cacher-NG                                             |
-| [1.5 VLAN](#vlan)                      | TP-LINK SG108E switch                                    |
-| [1.6 Reverse Proxy](#reverseproxy)     | Nginx Proxy Manager (replaced), Traefik (current)        |                                    |
-| [1.7 Ad-blocking](#reklamszures)       | Pi-hole (replaced), AdGuard Home (current)               |
-| [1.8 PXE Boot](#pxe)                   | iVentoy                                                  |
-| [1.9 DNS](#dns)                       | BIND9, Namecheap, Cloudflare, Windows Server 2019 DNS    |
-| [1.10 Network Debugging](#debug)       | Wireshark                                                |
-| [1.11 DHCP](#dhcp2)                    | ISC-KEA, Windows Server 2019 DHCP                        |
-| [1.12 Notifications](#notification)    | Gotify                                                   |
+| [1.3 APT cacher proxy](#apt)            | APT-Cacher-NG                                             |
+| [1.4 VLAN](#vlan)                      | TP-LINK SG108E switch                                    |
+| [1.5 Reverse Proxy](#reverseproxy)     | Nginx Proxy Manager (replaced), Traefik (current)        |                                    |
+| [1.6 Ad-blocking](#reklamszures)       | Pi-hole (replaced), AdGuard Home (current)               |
+| [1.7 PXE Boot](#pxe)                   | iVentoy                                                  |
+| [1.8 DNS](#dns)                       | BIND9, Namecheap, Cloudflare, Windows Server 2019 DNS    |
+| [1.9 Network Debugging](#debug)       | Wireshark                                                |
+| [1.10 DHCP](#dhcp2)                    | ISC-KEA, Windows Server 2019 DHCP                        |
+| [1.11 Notifications](#notification)    | Gotify                                                   |
 
 
 **The homelab network topology is shown in the diagram below:**
@@ -139,20 +138,10 @@ In my homelab, I use a **pfSense-based firewall and router** to manage all traff
 
 ---
 
-<a name="vpn"></a>
-## 1.3 VPN Usage in the Homelab
-
-- I use **OpenVPN** and **WireGuard**, but I have also tested **Tailscale** and **NordVPN Meshnet** solutions.
-- **Public Services**: Directly accessible from the internet (via Reverse Proxy) without a VPN.
-- **Internal Services**: Accessible exclusively **via VPN**, ensuring the protection of management interfaces.
-- **Full Tunnel**: Enabled on mobile devices to route all traffic through the home network, allowing me to enjoy **Pi-hole / AdGuard Home** ad-blocking remotely.
-
----
-
 <a name="apt"></a>
-## 1.4 APT Cacher NG
+## 1.3 APT Cacher NG
 
-### 1.4.1 Why use it?
+### 1.3.1 Why use it?
 
 - Optimized for **Ansible-scheduled VM and LXC updates** (set to 3:00 AM).
 - Prevents every machine from downloading the same packages individually, saving significant bandwidth.
@@ -167,7 +156,7 @@ On certain days, the "cache hit" rate reached **88.26%**: out of 34.05 MB of tra
 ---
 
 <a name="vlan"></a>
-## 1.5 VLAN and Network Segmentation
+## 1.4 VLAN and Network Segmentation
 
 - **Proxmox Integration**: VLAN-aware bridge (`vmbr0`) and tagged interfaces (e.g., `.30`).
 - **Isolation**: Creation of new subnets (192.168.3.0/24) for testing purposes.
@@ -177,17 +166,17 @@ On certain days, the "cache hit" rate reached **88.26%**: out of 34.05 MB of tra
 ---
 
 <a name="reverseproxy"></a>
-## 1.6 Reverse Proxy
+## 1.5 Reverse Proxy
 
 Centralized **SSL/TLS certificate management** and traffic routing.
 
-### 1.6.1 Usage of Local DNS Names (Nginx / Traefik)
+### 1.5.1 Usage of Local DNS Names (Nginx / Traefik)
 
 I never use static IPs in proxy configurations — only DNS names.
 - **Advantage**: If an IP address changes, the proxy doesn't break; only the internal DNS needs to be updated.
 - **Readability**: Cleaner, more transparent setup.
 
-### 1.6.2 SSL/TLS (Let’s Encrypt) – DNS-01 Wildcard
+### 1.5.2 SSL/TLS (Let’s Encrypt) – DNS-01 Wildcard
 
 - **Security**: Full HTTPS encryption via Let’s Encrypt.
 - **Validation**: DNS-01 challenge via Cloudflare API.
@@ -196,9 +185,9 @@ I never use static IPs in proxy configurations — only DNS names.
 
 
 <a name="reklamszures"></a>
-## 1.8 Ad-blocking
+## 1.6 Ad-blocking
 
-### 1.8.1 AdGuard Home
+### 1.6.1 AdGuard Home
 
 - DNS-based network-level ad and tracker filtering.
 - Integrated into the WireGuard VPN for mobile protection.
@@ -216,7 +205,7 @@ The figure below shows the blocklists utilized.
 ---
 
 <a name="pxe"></a>
-## 1.9 PXE Boot – iVentoy
+## 1.7 PXE Boot – iVentoy
 
 - Network ISO booting (Clonezilla, Windows, Ubuntu installers).
 - Eliminates the need for physical USB drives; installers load directly over the network.
@@ -224,24 +213,24 @@ The figure below shows the blocklists utilized.
 ---
 
 <a name="dns"></a>
-## 1.10 DNS Architecture
+## 1.8 DNS Architecture
 
-### 1.10.1 Public DNS (Namecheap + Cloudflare)
+### 1.8.1 Public DNS (Namecheap + Cloudflare)
 - I purchased my domain through **Namecheap**, but **Cloudflare** is the DNS provider; I delegated the domain to their nameservers.
 **Why Cloudflare?**
   - DNS-01 Challenge: Allows Traefik to automatically request Wildcard SSL certificates via API much easier than with Namecheap.
   - Record updates propagate significantly faster.
 
-### 1.10.2 Private DNS Server (Bind9)
+### 1.8.2 Private DNS Server (Bind9)
 - Local Zone: `otthoni.local`.
 - **DNS Override**: Wildcarded `*.trkrolf.com` records resolve directly to the local Traefik IP on the internal network, bypassing external lookups.
 
-### 1.10.3 Private Recursive Resolver (Unbound)
+### 1.8.3 Private Recursive Resolver (Unbound)
 **Unbound** is the system's independent resolver server, primarily responsible for the **anonymity** of external queries.
 - **Anonymity and Privacy**: Unbound discovers public nameservers itself through iterative queries, preventing large providers from logging and profiling the entire browsing history, and providing protection against DNS-level manipulation.
 - **Caching**: It stores previously resolved addresses locally, which significantly reduces response times for repeated requests within the network.
 
-### 1.10.4 Bind9 + AdGuard Home + Unbound + Traefik Operational Logic
+### 1.8.4 Bind9 + AdGuard Home + Unbound + Traefik Operational Logic
 
 When a query for a local domain occurs, AdGuard Home forwards it to the Bind9 server based on the **conditional forwarding** rules for `otthoni.local`, and Bind9 provides the answer.
 <p align="center">
@@ -261,7 +250,7 @@ If a query for a public domain occurs, AdGuard Home follows the **conditional fo
 ---
 
 <a name="debug"></a>
-## 1.11 Network Debugging – Wireshark
+## 1.9 Network Debugging – Wireshark
 
 Deep packet analysis to study:
 - DNS, DHCP, and ARP handshakes.
@@ -270,15 +259,15 @@ Deep packet analysis to study:
 ---
 
 <a name="dhcp2"></a>
-## 1.12 DHCP
+## 1.10 DHCP
 
 Detailed DHCP configuration can be found in the [pfSense DHCP section](#dhcp).
 
 ---
 <a name="notification"></a>
-## 1.13 Notification
+## 1.11 Notification
 
-### 1.13.1 Gotify
+### 1.1.1 Gotify
 
 **Gotify** is a lightweight, self-hosted server for sending real-time notifications to quickly stay informed about errors and statuses.
 

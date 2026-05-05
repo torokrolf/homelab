@@ -1,6 +1,6 @@
 # Docker és Rendszertakarítás
 
-A homelab folyamatos működése során jelentős mennyiségű "szemét" (régi Docker image-ek, logfájlok, archívumok) keletkezik. Ez a script automatizálja a helyfelszabadítást.
+A homelab folyamatos működése során jelentős mennyiségű "szemét" (régi Docker image-ek, logfájlok, archívumok) keletkezik. Ez a script automatizálja a helyfelszabadítást úgy, hogy közben ügyel a speciális szolgáltatások (pl. Renovate) integritására.
 
 # Szelektív Image Takarítás
 
