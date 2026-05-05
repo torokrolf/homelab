@@ -92,8 +92,8 @@ flowchart LR
     subgraph CONSUMERS["VM/LXC Consumers"]
         direction TB
         JELLY["LXC 1010 Jellyfin"]
-        K3S["VM 1102 k3s-server-01-225"]
-        PXEVM["VM 209 PXEBoot"]
+        K3S["VM 1105 k3s-server-01-225"]
+        PXEVM["VM 1101 pxeboot-20ö"]
     end
 
     %% Connections
