@@ -12,7 +12,7 @@
 |----------------------------------------|----------------------------------------------------------
 | [1.2 RDP](#rdp)        | Guacamole                                                              
 | [1.3 SSH](#ssh)            | Termius, Teleport                                             
-| [1.4 VPN](#vpn)                      | Wireguard, OpenVPN, Cloudflare tunnel                                   
+| [1.4 VPN](#vpn)                      | Wireguard, OpenVPN                                   
 | [1.5 Zero Trust Remote Access](#zerotrust)     | Cloudflare tunnel                                        
 
 ---
