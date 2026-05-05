@@ -1,0 +1,161 @@
+--- FILE: ./06-Automation/Ansible_Semaphore/Playbooks/add_ssh_key.yaml ---
+---
+- name: Add SSH public key for ansibleuser
+  hosts: gepeim
+  become: true
+  gather_facts: false
+
+  vars:
+    ansibleserver_username: username
+    ansibleclient_username: username
+
+  tasks:
+    - name: Add SSH public key to user's authorized_keys
+      authorized_key:
+        user: "{{ ansibleclient_username }}"
+        state: present
+        key: "{{ lookup('file', '/home/' + ansibleserver_username + '/.ssh/id_ed25519.pub') }}"
+
+
+--- FILE: ./06-Automation/Ansible_Semaphore/Playbooks/create_ansible_user.yaml ---
+---
+- name: Create a user with sudo privileges
+  hosts: gepeim
+  become: true
+  gather_facts: false
+
+  vars:
+    ansiblekliens_username: username
+    ansiblekliens_password: pwd
+
+  tasks:
+    - name: Create ansible user with password
+      user:
+        name: "{{ ansiblekliens_username }}"
+        password: "{{ ansiblekliens_password | password_hash('sha512') }}"
+        shell: /bin/bash
+        create_home: yes
+
+    - name: Grant sudo privileges to user
+      copy:
+        dest: "/etc/sudoers.d/{{ ansiblekliens_username }}"
+        content: "{{ ansiblekliens_username }} ALL=(ALL) ALL"
+        owner: root
+        group: root
+        mode: '0440'
+
+
+--- FILE: ./06-Automation/Ansible_Semaphore/Playbooks/set-apt-proxy.yaml ---
+---
+- name: Configure APT proxy
+  hosts: gepeim
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Set APT proxy
+      copy:
+        dest: /etc/apt/apt.conf.d/01proxy
+        content: 'Acquire::http::Proxy "http://192.168.2.207:3142";'
+        owner: root
+        group: root
+        mode: '0644'
+        force: yes
+
+
+--- FILE: ./06-Automation/Ansible_Semaphore/Playbooks/set-timezone.yaml ---
+---
+- hosts: gepeim
+  become: yes
+  tasks:
+    - name: Set timezone to Europe/Budapest
+      ansible.builtin.timezone:
+        name: Europe/Budapest
+
+
+--- FILE: ./06-Automation/Ansible_Semaphore/Playbooks/upgrade-system.yaml ---
+---
+- name: Upgrade all packages on hosts
+  hosts: gepeim
+  serial: 2
+  become: true
+  vars:
+    ansible_ssh_common_args: '-o ConnectTimeout=60 -o ServerAliveInterval=30 -o ServerAliveCountMax=3'
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
+  tasks:
+    - name: Main upgrade block
+      block:
+        - name: Wait for apt lock
+          shell: |
+            # --- 3. POINT: LOCK PROTECTION (Shell timeout) ---
+            timeout 300s sh -c 'while fuser /var/lib/dpkg/lock >/dev/null 2>&1 \
+              || fuser /var/lib/apt/lists/lock >/dev/null 2>&1 \
+              || fuser /var/cache/apt/archives/lock >/dev/null 2>&1; do
+              sleep 5
+            done'
+          changed_when: false
+
+        - name: Update apt cache
+          apt:
+            update_cache: yes
+            cache_valid_time: 3600
+            lock_timeout: 180
+            force_apt_get: yes
+          register: apt_update_status
+          until: apt_update_status is success
+          retries: 2
+          delay: 30
+          # --- 2. POINT: ANSIBLE PROTECTION (Async/Poll) ---
+          async: 600
+          poll: 10
+          args:
+            # --- 1. POINT: NETWORK LIMITATION (APT Timeout) ---
+            dpkg_options: 'Acquire::http::Timeout=100,Acquire::https::Timeout=100,Acquire::Retries=2'
+
+        - name: Upgrade all packages
+          apt:
+            upgrade: dist
+            autoremove: yes
+            autoclean: yes
+            lock_timeout: 600
+            force_apt_get: yes
+          register: upgrade_output
+          # --- 2. POINT: ANSIBLE PROTECTION (Async for upgrade too) ---
+          async: 1200
+          poll: 15
+
+        - name: Check if reboot is required
+          stat:
+            path: /var/run/reboot-required
+          register: reboot_required
+
+        - name: Reboot if required
+          reboot:
+            reboot_timeout: 600
+            post_reboot_delay: 30
+            test_command: uptime
+          when: reboot_required.stat.exists
+
+      always:
+        - name: Send notification to Gotify about playbook result
+          uri:
+            url: "http://192.168.2.226:3008/message?token=A_obN_af5n7wM7f"
+            method: POST
+            body_format: json
+            body:
+              title: "Ansible Upgrade Result"
+              message: |
+                {% if ansible_failed_hosts | length > 0 or ansible_failed_result is defined %}
+                An error occurred during the Ansible run!
+                Check the logs on the affected hosts.
+                {% else %}
+                The Ansible update/upgrade playbook completed successfully.
+                {% endif %}
+              priority: 5
+          delegate_to: localhost
+          run_once: true
+          become: false
+
+

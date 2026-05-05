@@ -40,10 +40,19 @@
 - **Kulcsalapú hitelesítés használata**  : jelszó alapú belépés minimalizálva, erősebb hitelesítés.
   - SSH key beállítva  
   - Passphrase (passkey) nélkül
- 
+
  ---
  
-### 1.3.2 SSH - Miért Termius
+### 1.3.2 SSH - Beállítások Linuxon
+
+*   **Root felhasználó tiltása**: A `PermitRootLogin no` beállítással megakadályozom a közvetlen root belépést.
+*   **Jelszó alapú hitelesítés letiltása**: Csak kulcsalapú hitelesítés engedélyezett (`PasswordAuthentication no`), így védve a rendszert a Brute-force támadások ellen.
+*   **Automatikus Session Timeout**: Az `export TMOUT=900` beállítással 15 perc inaktivitás után a rendszer automatikusan bontja a kapcsolatot.
+*   **Jogi figyelmeztetés (Banner)**: Minden belépésnél megjelenik a `/etc/issue.net` tartalma, figyelmeztetve a naplózásra.
+
+ ---
+ 
+### 1.3.3 SSH - Miért Termius
 
   - Több gép egyszerre kezelhető egy helyről, **profilokkal és csoportokkal**  
   - Beépített **SSH key management**: kulcsok egyszerű importálása és használata  
