@@ -256,13 +256,12 @@ A VM/LXC neve a rajta futó szolgáltatásra vagy szerepkörre utal, kiegészít
 ## Docker futtatási környezet: VM vs. LXC
 <a name="dockervms"></a>
 
-**Döntés:** A Docker konténereket kizárólag dedikált Virtuális Gépekben (VM - Ubuntu/Debian Server) futtatom, az LXC konténerekkel szemben.
+**Döntés:** A Docker és a Kubernetes (k3s) rendszereket **Virtuális Gépben (VM)** futtatom, nem LXC konténerben.
 
 **Indoklás:**
-- **Enterprise környezet:** Vállalati standardok szerint a Docker izolációja és stabilitása teljes virtualizációs rétegen (VM) garantált.
-- **Biztonsági kockázatok:** Az LXC-n belüli Docker ún. *nested virtualization*-t igényel. Ahhoz, hogy a Docker fusson LXC alatt, gyengíteni kell az LXC izolációját (pl. `nesting=1`, AppArmor profilok kikapcsolása), ami biztonsági rést üthet a host rendszeren.
-- **Stabilitás és Storage:** Az LXC alatti Docker gyakran küzd tárolókezelési problémákkal (pl. Overlay2 storage driver inkompatibilitás a ZFS/LVM vékony rétegekkel), ami kernel-szintű instabilitáshoz vezethet.
-- **Kernel szeparáció:** A VM-ben futtatott Docker saját kernelt használ. Így egy esetleges konténer-szintű hiba vagy támadás nem tud közvetlenül kihatni a Proxmox host kernelére, szemben az LXC-vel, amely osztozik a host kernelén.
+
+*   **Biztonság (Elszigetelés):** A VM egy teljesen különálló egység saját operációs rendszerrel. Ha a Dockerben hiba történik vagy feltörik, az nem tud "kilépni" a gazdagépre (Proxmox). Az LXC-nél ez a védelem gyengébb, mert a konténer osztozik a fizikai szerver alapjain (kernel).
+*   **Egyszerűség:** A Docker alapvetően teljes operációs rendszerekre (VM) lett tervezve. VM-ben minden funkció azonnal, extra konfiguráció nélkül működik. LXC-ben gyakran plusz jogosultságokat kell adni a konténernek a működéshez, ami biztonsági kockázatot jelent.
 
 ---
 

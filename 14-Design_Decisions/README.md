@@ -260,13 +260,12 @@ The VM/LXC name refers to the service or role running on it, extended with the l
 ## Docker Runtime Environment: VM vs. LXC
 <a name="dockervms"></a>
 
-**Decision:** Docker containers are deployed exclusively within dedicated Virtual Machines (VM - Ubuntu/Debian Server) rather than LXC containers.
+**Decision:** Docker and Kubernetes (k3s) systems are deployed in a **Virtual Machine (VM)** instead of an LXC container.
 
 **Rationale:**
-- **Enterprise Standards:** Following industry best practices, Docker isolation and stability are best guaranteed when running on a full virtualization layer (VM).
-- **Security Risks:** Running Docker inside LXC requires "nested virtualization." To make Docker functional within an LXC, security boundaries must be weakened (e.g., enabling `nesting=1`, disabling or modifying AppArmor profiles), which creates potential security vulnerabilities on the host system.
-- **Stability and Storage:** Docker on LXC often encounters complex storage issues, such as Overlay2 driver incompatibilities with ZFS/LVM thin-provisioned layers. This can lead to kernel-level instability or unexpected container crashes.
-- **Kernel Separation:** A VM-hosted Docker environment utilizes its own dedicated kernel. This ensures that any container-level exploit or system crash remains isolated within the VM and cannot directly impact the Proxmox host kernel, unlike LXC which shares the host's kernel.
+
+*   **Security (Isolation):** A VM is a completely separate unit with its own operating system. If a bug or hack occurs inside Docker, it cannot "leak" out to the host server (Proxmox). With LXC, this protection is weaker because the container shares the host's core (kernel).
+*   **Simplicity:** Docker is natively designed to run on full operating systems (VMs). In a VM, all features work out of the box without extra configuration. Running it in LXC often requires granting extra permissions to the container, which creates security risks.
 
 ---
 
