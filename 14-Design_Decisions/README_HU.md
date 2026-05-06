@@ -264,19 +264,19 @@ A VM/LXC neve a rajta futó szolgáltatásra vagy szerepkörre utal, kiegészít
 
 ---
 
-## SSL Tanúsítványkezelés: DNS-01 Challenge és Wildcard előnyei
+## SSL Certificate Management: DNS-01 Challenge and Wildcard Benefits
 <a name="ssl-strategy"></a>
 
-**Döntés:** A szolgáltatásaimhoz Let's Encrypt tanúsítványokat használok **DNS-01 challenge** hitelesítéssel és **Wildcard** (`*.domain.com`) formátumban.
+**Decision:** I use Let's Encrypt certificates with **DNS-01 challenge** validation in a **Wildcard** (`*.domain.com`) format.
 
-**Miért a DNS-01 challenge?**
-*   **Nincs szükség nyitott portokra:** A hitelesítés DNS-szinten történik (Cloudflare API-n keresztül), így nem kell a 80-as portot megnyitnom az internet felé.
-*   **Belső SSL:** Olyan belső szolgáltatásokhoz is tudok valódi tanúsítványt generálni, amik soha nem érhetők el kívülről.
+**Why DNS-01 challenge?**
+*   **No open ports required:** Validation happens at the DNS level (via Cloudflare API), eliminating the need to open port 80 or 443 to the internet for the challenge itself.
+*   **Internal SSL:** I can generate trusted, public SSL certificates for internal services that are never exposed to the public web.
 
-**Miért a Wildcard és miért jó ez a skálázáshoz?**
-*   **Azonnali skálázás:** Ha egy új szolgáltatást indítok (pl. `uj-app.domain.com`), nem kell új tanúsítványt igényelnem vagy várnom a hitelesítésre. A meglévő wildcard cert azonnal védi az új aldomaint is.
-*   **Egyszerűség:** Egyetlen tanúsítványt kell kezelni az összes aldomainhez ahelyett, hogy minden egyes oldalnak sajátja lenne.
-*   **Adatvédelem:** A nyilvános naplókban csak a wildcard bejegyzés látszik, így nem követhető nyomon kívülről, pontosan milyen nevű belső aldomainjeim léteznek.
+**Why Wildcard and how it helps scaling?**
+*   **Instant Scaling:** When deploying a new service (e.g., `app.domain.com`), there is no need to request a new certificate or wait for validation. The existing wildcard cert immediately covers any new subdomain.
+*   **Simplicity:** Managing a single certificate for all subdomains is far more efficient than maintaining individual certificates for every single service.
+*   **Privacy:** Only the wildcard entry (`*.domain.com`) appears in public Certificate Transparency logs. This hides the specific names of my internal subdomains from external observers and automated scanners.
 
 ---
 
