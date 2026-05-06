@@ -22,6 +22,7 @@ Here I present why I chose certain technologies and architectural approaches.
 - [Confusion caused by identical VM/LXC IDs in Proxmox Backup Server](#pbs-id)
 - [My VM/LXC naming convention](#naming)
 - [Docker Runtime Environment: VM vs. LXC](#dockervms)
+- [Traefik Configuration Strategy: Modularity](#traefik-strategy)
 
 ---
 ## Proxmox and VMs initially sharing a 1TB M.2 SSD, later separating them so Proxmox moves to a 250 GB SSD while VMs remain on the fast 1 TB M.2 SSD
@@ -266,6 +267,17 @@ The VM/LXC name refers to the service or role running on it, extended with the l
 
 *   **Security (Isolation):** A VM is a completely separate unit with its own operating system. If a bug or hack occurs inside Docker, it cannot "leak" out to the host server (Proxmox). With LXC, this protection is weaker because the container shares the host's core (kernel).
 *   **Simplicity:** Docker is natively designed to run on full operating systems (VMs). In a VM, all features work out of the box without extra configuration. Running it in LXC often requires granting extra permissions to the container, which creates security risks.
+
+---
+
+## Traefik Configuration Strategy: Modularity
+<a name="traefik-strategy"></a>
+
+**Decision:** Traefik uses internal DNS names instead of IP addresses to reach backends, and the configuration is stored in multiple small files rather than one giant file.
+
+**Why modular file structure (multiple small .yml files)?**
+*   **Clarity:** Instead of a 500-line `external.yml`, every service has its own dedicated file (e.g., `nextcloud.yml`, `jellyfin.yml`). This makes troubleshooting or modifying settings much easier.
+*   **Maintainability:** When removing a service or adding a new one, I only need to delete or create a single file. This eliminates the risk of accidentally breaking other working rules in a large, shared configuration file.
 
 ---
 

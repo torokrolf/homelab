@@ -23,6 +23,8 @@ Itt bemutatom, hogy miért esett a döntésem bizonyos technológiákra és arch
 - [VM/LXC elnevezési konvencióm](#konvenicom)
 - [Docker futtatási környezet: VM vs. LXC](#dockervms)
 - [SSL Tanúsítványkezelés: DNS-01 Challenge és Wildcard előnyei](#ssl-strategy)
+- [Traefik konfigurációs stratégia: Modularitás](#traefik-strategy)
+
 
 ---
 ## 1TB-os M.2 SSD-n Proxmox és VM-ek közösen, később ezt szétválasztom és Proxmox kerül a 250 GB SSD-re míg VM-ek gyors 1 TB-os M.2 SSD-re
@@ -277,6 +279,17 @@ A VM/LXC neve a rajta futó szolgáltatásra vagy szerepkörre utal, kiegészít
 *   **Instant Scaling:** When deploying a new service (e.g., `app.domain.com`), there is no need to request a new certificate or wait for validation. The existing wildcard cert immediately covers any new subdomain.
 *   **Simplicity:** Managing a single certificate for all subdomains is far more efficient than maintaining individual certificates for every single service.
 *   **Privacy:** Only the wildcard entry (`*.domain.com`) appears in public Certificate Transparency logs. This hides the specific names of my internal subdomains from external observers and automated scanners.
+
+---
+
+## Traefik konfigurációs stratégia: Modularitás
+<a name="traefik-strategy"></a>
+
+**Döntés:** A Traefik nem IP-címeket, hanem belső DNS neveket használ a backendek eléréséhez, a konfigurációt pedig több apróbb fájlban tárolom egyetlen óriási fájl helyett.
+
+**Miért a moduláris fájlszerkezet (sok apró .yml)?**
+*   **Áttekinthetőség:** Egy 500 soros `external.yml` helyett külön fájlja van minden szolgáltatásnak (pl. `nextcloud.yml`, `jellyfin.yml`). Így sokkal könnyebb hibát keresni vagy módosítani.
+*   **Karbantarthatóság:** Ha egy szolgáltatást kivezetek vagy újat adok hozzá, csak egy fájlt kell törölnöm/létrehoznom, nem kockáztatom, hogy véletlenül elrontom a többi működő szabályt egy nagy közös fájlban.
 
 ---
 
