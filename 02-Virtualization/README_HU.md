@@ -23,36 +23,27 @@
 | :--- | :--- | :--- | :--- | :--- |
 | 100 | dns-201 | LXC | 192.168.2.201 | Primary DNS |
 | 101 | unbound-223 | LXC | 192.168.2.223 | Recursive DNS |
-| 102 | traefik-224 | LXC | 192.168.2.224 | Reverse Proxy |
 | 103 | adguardhome-222 | LXC | 192.168.2.222 | Ad-blocking |
-| 104 | pi-hole-208 | LXC | 192.168.2.208 | DNS Sinkhole |
-| 105 | nginx-202 | LXC | 192.168.2.202 | Web Server |
+
+**VM Core Infrastructure (ID 500-999)**
+| ID | Name | Type | IP Address | Status/Role |
+| :--- | :--- | :--- | :--- | :--- |
+| 510 | access-core-01-206 | VM | 192.168.2.206 | Remote Access / VPN |
+| 520 | edge-gw-01-230 | VM | 192.168.2.230 | Edge Gateway |
+
 
 **LXC Services (ID 1000-1099)**
 | ID | Name | Type | IP Address | Description |
 | :--- | :--- | :--- | :--- | :--- |
-| 1000 | zabbix-206 | LXC | 192.168.2.206 | Monitoring |
-| 1001 | ansible-semaphore-203 | LXC | 192.168.2.203 | Automation UI |
-| 1002 | nextcloud-204 | LXC | 192.168.2.204 | Cloud Storage |
-| 1003 | homarr-216 | LXC | 192.168.2.216 | Dashboard |
-| 1004 | guacamole-217 | LXC | 192.168.2.217 | Remote Access |
 | 1005 | apt-cacher-ng-207 | LXC | 192.168.2.207 | Package Proxy |
 | 1006 | freeipa-210 | LXC | 192.168.2.210 | Identity Mgmt |
-| 1007 | freeradius-221 | LXC | 192.168.2.221 | Auth Server |
-| 1008 | restic-rclone-215 | LXC | 192.168.2.215 | Backup Agent |
-| 1009 | vaultwarden-212 | LXC | 192.168.2.212 | Password Vault |
 | 1010 | jellyfin-221 | LXC | 192.168.2.221 | Media Server |
-| 1011 | servarr-225 | LXC | 192.168.2.225 | Media Automation |
-| 1012 | gotify-226 | LXC | 192.168.2.226 | Push Notifications |
-| 1013 | portainer-219 | LXC | 192.168.2.219 | Docker Management ||
-| 1015 | changedetection-229 | LXC | 192.168.2.229 | Web Monitoring |
 
 **VM Linux Servers (ID 1100-1199)**
 | ID | Name | Type | IP Address | Description |
 | :--- | :--- | :--- | :--- | :--- |
-| 1100 | crowdsec-218 | LXC | 192.168.2.218 | Security/IDS |
 | 1101 | pxeboot-209 | VM | 192.168.2.209 | Network Boot |
-| 1102 | packetfence-228 | VM | 192.168.2.228 | NAC Service |
+| 1105 | k3s-server-01-225 | VM | 192.168.2.225 | Kubernetes Control Plane |
 
 **VM Linux Clients (ID 1200-1299)**
 | ID | Name | Type | IP Address | Description |
