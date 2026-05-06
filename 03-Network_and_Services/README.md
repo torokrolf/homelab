@@ -176,7 +176,7 @@ I never use static IPs in proxy configurations — only DNS names.
 - **Advantage**: If an IP address changes, the proxy doesn't break; only the internal DNS needs to be updated.
 - **Readability**: Cleaner, more transparent setup.
 
-### 1.5.2 SSL/TLS (Let’s Encrypt) – DNS-01 Wildcard
+### 1.5.2 SSL/TLS (Let’s Encrypt)
 
 - **Security**: Full HTTPS encryption via Let’s Encrypt.
 - **Validation**: DNS-01 challenge via Cloudflare API.

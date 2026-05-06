@@ -175,7 +175,7 @@ Soha nem használok fix IP-ket a proxy konfigokban — kizárólag DNS neveket.
 - **Előny**: IP cím változás esetén nem törik el a proxy, csak a belső DNS-t kell frissíteni.
 - **Olvashatóság**: Tisztább, átláthatóbb setup.
 
-### 1.5.2 SSL/TLS (Let’s Encrypt) – DNS-01 Wildcard
+### 1.5.2 SSL/TLS (Let’s Encrypt)
 
 - **Biztonság**: Teljes HTTPS titkosítás Let’s Encrypt segítségével.
 - **Validálás**: DNS-01 challenge a Cloudflare API-n keresztül.

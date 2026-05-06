@@ -22,6 +22,7 @@ Itt bemutatom, hogy miért esett a döntésem bizonyos technológiákra és arch
 - [Proxmox Backup Server mentésnél azonos VM/LXC ID-k miatti kavarodás](#kavarodas)
 - [VM/LXC elnevezési konvencióm](#konvenicom)
 - [Docker futtatási környezet: VM vs. LXC](#dockervms)
+- [SSL Tanúsítványkezelés: DNS-01 Challenge és Wildcard előnyei](#ssl-strategy)
 
 ---
 ## 1TB-os M.2 SSD-n Proxmox és VM-ek közösen, később ezt szétválasztom és Proxmox kerül a 250 GB SSD-re míg VM-ek gyors 1 TB-os M.2 SSD-re
@@ -251,8 +252,6 @@ A VM/LXC neve a rajta futó szolgáltatásra vagy szerepkörre utal, kiegészít
 
 ---
 
----
-
 ## Docker futtatási környezet: VM vs. LXC
 <a name="dockervms"></a>
 
@@ -262,6 +261,22 @@ A VM/LXC neve a rajta futó szolgáltatásra vagy szerepkörre utal, kiegészít
 
 *   **Biztonság (Elszigetelés):** A VM egy teljesen különálló egység saját operációs rendszerrel. Ha a Dockerben hiba történik vagy feltörik, az nem tud "kilépni" a gazdagépre (Proxmox). Az LXC-nél ez a védelem gyengébb, mert a konténer osztozik a fizikai szerver alapjain (kernel).
 *   **Egyszerűség:** A Docker alapvetően teljes operációs rendszerekre (VM) lett tervezve. VM-ben minden funkció azonnal, extra konfiguráció nélkül működik. LXC-ben gyakran plusz jogosultságokat kell adni a konténernek a működéshez, ami biztonsági kockázatot jelent.
+
+---
+
+## SSL Tanúsítványkezelés: DNS-01 Challenge és Wildcard előnyei
+<a name="ssl-strategy"></a>
+
+**Döntés:** A szolgáltatásaimhoz Let's Encrypt tanúsítványokat használok **DNS-01 challenge** hitelesítéssel és **Wildcard** (`*.domain.com`) formátumban.
+
+**Miért a DNS-01 challenge?**
+*   **Nincs szükség nyitott portokra:** A hitelesítés DNS-szinten történik (Cloudflare API-n keresztül), így nem kell a 80-as portot megnyitnom az internet felé.
+*   **Belső SSL:** Olyan belső szolgáltatásokhoz is tudok valódi tanúsítványt generálni, amik soha nem érhetők el kívülről.
+
+**Miért a Wildcard és miért jó ez a skálázáshoz?**
+*   **Azonnali skálázás:** Ha egy új szolgáltatást indítok (pl. `uj-app.domain.com`), nem kell új tanúsítványt igényelnem vagy várnom a hitelesítésre. A meglévő wildcard cert azonnal védi az új aldomaint is.
+*   **Egyszerűség:** Egyetlen tanúsítványt kell kezelni az összes aldomainhez ahelyett, hogy minden egyes oldalnak sajátja lenne.
+*   **Adatvédelem:** A nyilvános naplókban csak a wildcard bejegyzés látszik, így nem követhető nyomon kívülről, pontosan milyen nevű belső aldomainjeim léteznek.
 
 ---
 
