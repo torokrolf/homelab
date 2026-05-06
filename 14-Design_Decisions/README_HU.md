@@ -21,6 +21,7 @@ Itt bemutatom, hogy miért esett a döntésem bizonyos technológiákra és arch
 - [Ütemezett feladatok (Backup & Karbantartás)](#utemezes)
 - [Proxmox Backup Server mentésnél azonos VM/LXC ID-k miatti kavarodás](#kavarodas)
 - [VM/LXC elnevezési konvencióm](#konvenicom)
+- [Docker futtatási környezet: VM vs. LXC](#dockervms)
 
 ---
 ## 1TB-os M.2 SSD-n Proxmox és VM-ek közösen, később ezt szétválasztom és Proxmox kerül a 250 GB SSD-re míg VM-ek gyors 1 TB-os M.2 SSD-re
@@ -247,6 +248,21 @@ A VM/LXC neve a rajta futó szolgáltatásra vagy szerepkörre utal, kiegészít
 <p align="center">
   <img src="https://github.com/user-attachments/assets/411bfb50-f4b9-4a76-b464-794a79a88299" alt="Description" width="400">
 </p>
+
+---
+
+---
+
+## Docker futtatási környezet: VM vs. LXC
+<a name="dockervms"></a>
+
+**Döntés:** A Docker konténereket kizárólag dedikált Virtuális Gépekben (VM - Ubuntu/Debian Server) futtatom, az LXC konténerekkel szemben.
+
+**Indoklás:**
+- **Enterprise környezet:** Vállalati standardok szerint a Docker izolációja és stabilitása teljes virtualizációs rétegen (VM) garantált.
+- **Biztonsági kockázatok:** Az LXC-n belüli Docker ún. *nested virtualization*-t igényel. Ahhoz, hogy a Docker fusson LXC alatt, gyengíteni kell az LXC izolációját (pl. `nesting=1`, AppArmor profilok kikapcsolása), ami biztonsági rést üthet a host rendszeren.
+- **Stabilitás és Storage:** Az LXC alatti Docker gyakran küzd tárolókezelési problémákkal (pl. Overlay2 storage driver inkompatibilitás a ZFS/LVM vékony rétegekkel), ami kernel-szintű instabilitáshoz vezethet.
+- **Kernel szeparáció:** A VM-ben futtatott Docker saját kernelt használ. Így egy esetleges konténer-szintű hiba vagy támadás nem tud közvetlenül kihatni a Proxmox host kernelére, szemben az LXC-vel, amely osztozik a host kernelén.
 
 ---
 

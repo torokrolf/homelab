@@ -21,6 +21,7 @@ Here I present why I chose certain technologies and architectural approaches.
 - [Scheduled Tasks (Backup & Maintenance)](#scheduled)
 - [Confusion caused by identical VM/LXC IDs in Proxmox Backup Server](#pbs-id)
 - [My VM/LXC naming convention](#naming)
+- [Docker Runtime Environment: VM vs. LXC](#dockervms)
 
 ---
 ## Proxmox and VMs initially sharing a 1TB M.2 SSD, later separating them so Proxmox moves to a 250 GB SSD while VMs remain on the fast 1 TB M.2 SSD
@@ -253,6 +254,19 @@ The VM/LXC name refers to the service or role running on it, extended with the l
 <p align="center">
   <img src="https://github.com/user-attachments/assets/411bfb50-f4b9-4a76-b464-794a79a88299" alt="Description" width="400">
 </p>
+
+---
+
+## Docker Runtime Environment: VM vs. LXC
+<a name="dockervms"></a>
+
+**Decision:** Docker containers are deployed exclusively within dedicated Virtual Machines (VM - Ubuntu/Debian Server) rather than LXC containers.
+
+**Rationale:**
+- **Enterprise Standards:** Following industry best practices, Docker isolation and stability are best guaranteed when running on a full virtualization layer (VM).
+- **Security Risks:** Running Docker inside LXC requires "nested virtualization." To make Docker functional within an LXC, security boundaries must be weakened (e.g., enabling `nesting=1`, disabling or modifying AppArmor profiles), which creates potential security vulnerabilities on the host system.
+- **Stability and Storage:** Docker on LXC often encounters complex storage issues, such as Overlay2 driver incompatibilities with ZFS/LVM thin-provisioned layers. This can lead to kernel-level instability or unexpected container crashes.
+- **Kernel Separation:** A VM-hosted Docker environment utilizes its own dedicated kernel. This ensures that any container-level exploit or system crash remains isolated within the VM and cannot directly impact the Proxmox host kernel, unlike LXC which shares the host's kernel.
 
 ---
 
