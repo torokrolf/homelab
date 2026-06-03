@@ -1,0 +1,25 @@
+---
+- name: Create a user with sudo privileges
+  hosts: gepeim
+  become: true
+  gather_facts: false
+
+  vars:
+    ansiblekliens_username: username
+    ansiblekliens_password: pwd
+
+  tasks:
+    - name: Create ansible user with password
+      user:
+        name: "{{ ansiblekliens_username }}"
+        password: "{{ ansiblekliens_password | password_hash('sha512') }}"
+        shell: /bin/bash
+        create_home: yes
+
+    - name: Grant sudo privileges to user
+      copy:
+        dest: "/etc/sudoers.d/{{ ansiblekliens_username }}"
+        content: "{{ ansiblekliens_username }} ALL=(ALL) ALL"
+        owner: root
+        group: root
+        mode: '0440'
