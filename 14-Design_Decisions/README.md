@@ -159,7 +159,7 @@ Unbound (public DNS)        | msg-cache 64 MB, rrset-cache 128 MB       | 0     
 - **10:00 Deep Verification on the last Saturday of every month:** Having backups alone is not enough — their integrity must also be verified.
 - **22:00 Prune:** Marks outdated backups for deletion based on the configured retention policy, preparing the environment for the next backup cycle.
 - **22:30 Apt-Cacher-NG Maintenance:** Cleans and maintains the proxy cache right before system updates, ensuring that Ansible can later operate from a clean and error-free package source.
-- **23:00 Ansible Update:** Virtual machines and LXC containers are updated when daily usage has already decreased, minimizing disruption in case services need to restart.
+- **23:00 Ansible Update (GitHub Actions):** Ansible playbooks triggered via GitHub Actions automatically update the virtual machines and LXC containers when daily activity has subsided, ensuring that any potential service restarts do not cause disruption.
 
 **The timing diagram is shown in the figure below.** I measured how long each task takes. The job durations were last verified on **2026-02-11**. For Proxmox VM/LXC backups, it is important to note that the first backup takes the longest, while subsequent backups are incremental and therefore significantly faster.
 

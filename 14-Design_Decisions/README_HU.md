@@ -157,7 +157,7 @@ Unbound (public DNS)           | msg-cache 64 MB, rrset-cache 128 MB | 0        
 - **A hónap utolsó szombatján 10:00 (Last Saturday of the month) mély ellenőrzés (Verify):** Nem elég hogy van mentésem, de meg kell győződni róla, hogy épek.
 - **22:00 prune**: A megadott megőrzési policy (retention) alapján jelöli meg a már szükségtelen régi backupokat törlésre, előkészítve a terepet a következő mentési ciklusnak.
 - **22:30 Apt-Cacher-NG Maint**: Közvetlenül a rendszerek frissítése előtt karbantartja és tisztítja a proxy gyorsítótárát, így az Ansible később tiszta forrásból, hibák nélkül tud dolgozni.
-- **23:00 Ansible Update**: Akkor frissítem a virtuális gépeket és LXC konténereket, amikor a napi használat már lecsökkent, így egy esetleges szolgáltatás-újraindulás nem zavar senkit.
+- **23:00 Ansible Update (GitHub Actions):** GitHub Actions-szel futtatott Ansible playbook frissíti automatikusan a virtuális gépeket és LXC konténereket, amikor a napi használat már lecsökkent, így egy esetleges szolgáltatás-újraindulás nem zavar senkit.
 
 **Lenti ábrán látható az időzítési diagram.** Lemértem, hogy melyik mennyi időt vesz igénybe. Utoljára **2026.02.11-én** ellenőriztem a jobok időtartamát. A Proxmox VM/LXC backupnál figyelembe kell venni, hogy az első backup tart a legtovább, utána már inkrementális backupok vannak, amik lényegesen gyorsabbak.
 
