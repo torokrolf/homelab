@@ -21,19 +21,19 @@
 
 A kritikus azonosítási és hálózati rétegek tudatosan a **K3S-en kívül**, dedikált virtuális gépekben (VM) és konténerekben (LXC) futnak, megakadályozva a körkörös függőségek kialakulását.
 
-| Hostnév | Típus | Stackek / Feladatok | Stratégia (Tier) |
-| :--- | :--- | :--- | :--- |
-| **ACCESS-CORE-01** | VM | **Identity:** Authentik, Freeradius <br> **Access:** Teleport, Guacamole | **MARAD (Tier 0):** Kritikus réteg. Ha a K3S-t bütykölöd, az azonosításnak mennie kell. |
+| Hostnév | Típus | Stackek / Feladatok | 
+| :--- | :--- | :--- | 
+| **ACCESS-CORE-01** | VM | **Identity:** Authentik, Freeradius <br> **Access:** Teleport, Guacamole |
 | **FREEIPA-210** | VM | Freeipa | |
 | **EDGE-GW-01** | VM | Cloudflare Tunnel, Traefik | |
-| **MGMT-CORE-01** | VM | Ansible, Terraform, Semaphore, GitHub Runner, management-stack (Portainer) | **MARAD (Tier 2):** Ez a parancsnoki híd, nem futhat abban, amit vezérel. |
+| **MGMT-CORE-01** | VM | Ansible, Terraform, Semaphore, GitHub Runner, management-stack (Portainer) | 
 | **WAZUH-SERVER-01-203** | VM | Wazuh | |
-| **K3S-SERVER-01** | VM (ÚJ) | identity-stack (Vaultwarden) monitoring-stack (Prometheus, Grafana, Uptime Kuma) storage-stack (Nextcloud) media-stack (Sonarr, Radarr, qBit, Prowlarr, Bazarr, Seerr) notifications-stack (Gotify) dashboard-stack (Homarr) admin-stack (Renovate) | **ÖSSZEVONT:** Itt fut minden Docker konténer Namespace-ekre bontva. |
-| **DNS-201** | LXC | Bind9 (Internal DNS) | **MARAD (Tier 0):** Alapvető hálózati szolgáltatás. |
-| **UNBOUND-223** | LXC | Unbound (Recursive DNS) | **MARAD (Tier 0):** Kell a biztonságos névfeloldáshoz. |
-| **ADGUARDHOME-222** | LXC | AdGuard Home (Filtering) | **MARAD (Tier 0):** Hogy ne haljon meg a net, ha a K3S épp frissül. |
-| **JELLYFIN-221** | LXC | Jellyfin (GPU Passthrough) | **MARAD (Tier 5):** A hardveres gyorsítás LXC-ben a legegyszerűbb. |
-| **APT-CACHER-NG-207** | LXC | APT Cacher NG | **MARAD (Tier 3):** Kiszolgálja az összes VM-et és LXC-t. |
+| **K3S-SERVER-01** | VM (ÚJ) | identity-stack (Vaultwarden) monitoring-stack (Prometheus, Grafana, Uptime Kuma) storage-stack (Nextcloud) media-stack (Sonarr, Radarr, qBit, Prowlarr, Bazarr, Seerr) notifications-stack (Gotify) dashboard-stack (Homarr) admin-stack (Renovate) 
+| **DNS-201** | LXC | Bind9 (Internal DNS) 
+| **UNBOUND-223** | LXC | Unbound (Recursive DNS) 
+| **ADGUARDHOME-222** | LXC | AdGuard Home (Filtering) 
+| **JELLYFIN-221** | LXC | Jellyfin (GPU Passthrough) 
+| **APT-CACHER-NG-207** | LXC | APT Cacher NG 
 
 ### Failure Domain Separation (Hiba-szeparáció)
 A hálózati alapréteg (DNS, Gateway) és az Identity réteg (Authentik, Teleport) különálló virtuális gépeken fut. Ez garantálja, hogy egy esetleges Kubernetes frissítési hiba vagy egy rosszul konfigurált YAML fájl nem okoz teljes hálózati sötétséget (blackout).
