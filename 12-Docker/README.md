@@ -23,19 +23,19 @@
 
 Critical identity and networking layers are intentionally separated from **K3S**, running in dedicated virtual machines (VMs) and LXC containers to avoid circular dependencies.
 
-| Hostname | Type | Stack / Role | Strategy (Tier) |
-| :--- | :--- | :--- | :--- |
-| **ACCESS-CORE-01** | VM | **Identity:** Authentik, FreeRADIUS <br> **Access:** Teleport, Guacamole | **PERSIST (Tier 0):** Critical layer. Identity services must remain operational even if K3S is being updated or fails. |
+| Hostname | Type | Stack / Role |
+| :--- | :--- | :--- | 
+| **ACCESS-CORE-01** | VM | **Identity:** Authentik, FreeRADIUS <br> **Access:** Teleport, Guacamole | 
 | **FREEIPA-210** | VM | FreeIPA | |
 | **EDGE-GW-01** | VM | Cloudflare Tunnel, Traefik | |
-| **MGMT-CORE-01** | VM | Ansible, Terraform, Semaphore, GitHub Runner, management stack (Portainer) | **PERSIST (Tier 2):** Control plane. Must not depend on the infrastructure it manages. |
+| **MGMT-CORE-01** | VM | Ansible, Terraform, Semaphore, GitHub Runner, management stack (Portainer) | 
 | **WAZUH-SERVER-01-203** | VM | Wazuh | |
-| **K3S-SERVER-01** | VM (NEW) | identity-stack (Vaultwarden), monitoring-stack (Prometheus, Grafana, Uptime Kuma), storage-stack (Nextcloud), media-stack (Sonarr, Radarr, qBittorrent, Prowlarr, Bazarr, Seerr), notification-stack (Gotify), dashboard-stack (Homarr), admin-stack (Renovate) | **CONSOLIDATED:** All containerized workloads run here, separated into Kubernetes namespaces. |
-| **DNS-201** | LXC | Bind9 (Internal DNS) | **PERSIST (Tier 0):** Core network dependency. |
-| **UNBOUND-223** | LXC | Unbound (Recursive DNS) | **PERSIST (Tier 0):** Secure name resolution. |
-| **ADGUARDHOME-222** | LXC | AdGuard Home (Filtering) | **PERSIST (Tier 0):** Ensures internet access remains functional even during Kubernetes maintenance. |
-| **JELLYFIN-221** | LXC | Jellyfin (GPU Passthrough) | **PERSIST (Tier 5):** LXC preferred for straightforward GPU access via host kernel. |
-| **APT-CACHER-NG-207** | LXC | APT Cacher NG | **PERSIST (Tier 3):** Package caching layer for all VMs and LXCs. |
+| **K3S-SERVER-01** | VM (NEW) | identity-stack (Vaultwarden), monitoring-stack (Prometheus, Grafana, Uptime Kuma), storage-stack (Nextcloud), media-stack (Sonarr, Radarr, qBittorrent, Prowlarr, Bazarr, Seerr), notification-stack (Gotify), dashboard-stack (Homarr), admin-stack (Renovate) | 
+| **DNS-201** | LXC | Bind9 (Internal DNS) | 
+| **UNBOUND-223** | LXC | Unbound (Recursive DNS) | 
+| **ADGUARDHOME-222** | LXC | AdGuard Home (Filtering) | 
+| **JELLYFIN-221** | LXC | Jellyfin (GPU Passthrough) | 
+| **APT-CACHER-NG-207** | LXC | APT Cacher NG | 
 
 ---
 
