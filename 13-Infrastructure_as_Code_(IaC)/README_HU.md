@@ -146,6 +146,8 @@ Ez a megoldás lehetővé teszi, hogy gyorsan újraépítsem bármelyik VM-et, m
 
 A VM-eket egy általam előkészített **Golden Image** (Ubuntu 22.04, Proxmox cloud-init template) alapján hozom létre Full Clone módszerrel — az új VM-ek teljesen függetlenek az alap sablontól. A Terraform deklaratív módon definiálja az eltérő terhelésű csomópontok hardveres paramétereit (CPU, RAM, Disk). A Terraform **manuálisan, parancssorból kerül futtatásra** a `mgmt-core-01-204` menedzsment gépen, ahol CLI-ból vezérlem (init, plan, apply).
 
+A Terraform konfigurációkat nem nulláról írtam meg: először a Proxmoxon kézzel elkészített Ubuntu template-et **importáltam** a Terraform state-be (`terraform import`), így a már létező erőforrás Terraform felügyelete alá került. Ezt az alap konfigurációt adaptáltam és bővítettem a különböző VM-típusokhoz (`k3s-server-01-225`, `access-core-01-206`, `edge-gw-01-230`), az eltérő hardverigények és szerepkörök szerint.
+
 Kezelt VM-ek:
 
 - `k3s-server-01-225` — K3s node

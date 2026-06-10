@@ -144,14 +144,16 @@ This allows me to rebuild any VM quickly, while all application data and configu
 
 ### Phase 1 — VM Provisioning (Terraform)
 
-VMs are created as Full Clones from a **Golden Image** I prepared (Ubuntu 22.04, Proxmox cloud-init template). Terraform declaratively defines hardware parameters (CPU, RAM, Disk) for each node. **Terraform is run manually from the CLI** on the `mgmt-core-01-204` management machine (init, plan, apply).
+VMs are created as Full Clones from a **Golden Image** I prepared (Ubuntu 22.04, Proxmox cloud-init template) — new VMs are completely independent from the base template. Terraform declaratively defines hardware parameters (CPU, RAM, Disk) for each node. **Terraform is run manually from the CLI** on the `mgmt-core-01-204` management machine (init, plan, apply).
+
+The Terraform configurations were not written from scratch: I first **imported** the manually created Ubuntu template from Proxmox into the Terraform state (`terraform import`), bringing the existing resource under Terraform management. I then adapted and extended this base configuration for each VM type (`k3s-server-01-225`, `access-core-01-206`, `edge-gw-01-230`), adjusting hardware parameters and roles accordingly.
 
 Managed VMs:
 
 - `k3s-server-01-225` — K3s node
 - `access-core-01-206` — Identity & Access layer (Teleport, Authentik, FreeRADIUS)
-- `edge-gw-01-230` — Edge gateway (Traefik, Cloudflare Tunnel)
-- `mgmt-core-01-204` — Management node (GitHub Runner, Ansible, Terraform, Portainer)
+- `edge-gw-01-230` — Edge gateway (Traefik reverse proxy, Cloudflare Tunnel)
+- `mgmt-core-01-204` — Management node (Self-hosted GitHub Runner, Ansible, Terraform, Portainer)
 
 SSH keys and the Ansible user are injected via the Terraform `initialization` block — the VM is ready for Ansible immediately after first boot, no manual steps required:
 
@@ -179,13 +181,13 @@ Runs on every machine as the first step of the GitHub Actions-triggered pipeline
 | User & SSH | User creation, SSH key upload, `PermitRootLogin no`, `PasswordAuthentication no` |
 | SSH hardening | Login banner, 900s shell timeout (`TMOUT`) |
 | Timezone | `Europe/Budapest` |
-| Node Exporter | Auto-start + enable — every machine is monitored |
+| Node Exporter (Prometheus) | Auto-start + enable — every machine is monitored |
 
 ---
 
 ### Phase 3 — NAS Mounts (`mounts` role)
 
-K3s workloads and backup processes depend on the NAS. Ansible handles this on every affected machine before K3s/Docker installation:
+K3s workloads and backup processes depend on NAS availability. Ansible handles this on every affected machine before K3s/Docker installation:
 
 - **NFS:** `/mnt/torrent` ← `192.168.2.220:/mnt/ssdpool/torrent`
 - **SMB:** `/mnt/backup` ← `//192.168.2.220/backup` (config backup source)
@@ -252,11 +254,20 @@ ArgoCD registers the private GitHub repo and creates Application objects. Each s
 
 ### Phase 6 — GitHub Actions + Self-hosted Runner
 
-The **self-hosted GitHub Actions runner** runs on `mgmt-core-01-204`. Pipeline trigger:
+The **self-hosted GitHub Actions runner** runs on `mgmt-core-01-204`. The pipeline is called **Ansible Dispatcher** and has two triggers:
 
-- Manual `workflow_dispatch`
+- **Automatic (schedule):** runs `system_update.yml` against all nodes every day at 23:00 (UTC+2).
+- **Manual (`workflow_dispatch`):** launched from the GitHub Actions UI with three parameters:
 
-The workflow runs `ansible-playbook site.yml` on the self-hosted runner, which has direct access to the internal network — no VPN or external agent needed. The SOPS+AGE private key is passed in from GitHub Actions Secrets.
+| Parameter | Description |
+|---|---|
+| `playbook` | Which playbook to run — e.g. `full_site`, `k3s_full`, `common`, `argocd`, `system_update`, etc. |
+| `target_hosts` | Which machine(s) to target — e.g. `all_nodes`, `host_k3s`, `host_edge`, `host_dns`, `lxc_nodes`, etc. |
+| `dry_run` | If enabled, runs in `--check --diff` mode — makes no changes, only shows what would change |
+
+The workflow runs on the self-hosted runner with direct access to the internal network — no VPN or external agent required. A **Gotify notification** is sent after every run: ✅ on success, ❌ on failure.
+
+**SOPS+AGE encryption in the pipeline:** The `secrets.enc.yaml` file is stored encrypted in version control. At runtime, the workflow creates the AGE key file from the `SOPS_AGE_KEY` GitHub Actions Secret, decrypts the secrets file, passes it to Ansible, then deletes both files at the end of the run.
 
 ---
 
@@ -299,9 +310,11 @@ The workflow runs `ansible-playbook site.yml` on the self-hosted runner, which h
 
 | Tool | What it stores |
 |---|---|
-| **SOPS+AGE** (`secrets.enc.yaml`) | SMB passwords, user password hashes, SSH keys, API tokens |
+| **SOPS+AGE** (`secrets.enc.yaml`) | SMB passwords, user password hashes, SSH keys, API tokens — stored encrypted in version control |
 | **Terraform `.tfvars`** (not version-controlled) | Proxmox API token, MAC addresses, user passwords |
-| **GitHub Actions Secrets** | SOPS+AGE private key, Proxmox credentials |
+| **GitHub Actions Secrets** (`SOPS_AGE_KEY`) | The AGE private key — used by the pipeline to decrypt `secrets.enc.yaml` at runtime |
+
+The flow: the pipeline creates the key file from the Secret → `sops -d` decrypts the secrets → Ansible receives them via `-e "@/tmp/secrets_dec.yaml"` → both the key file and decrypted file are deleted at the end of the run.
 
 ---
 
