@@ -10,6 +10,17 @@ The goal is to continuously evolve my homelab as a learning environment for impl
 
 ---
 
+## Quick Navigation
+The project code is organized into the following main directories:
+
+- [**Terraform**](./terraform/) – VM provisioning and infrastructure definitions.
+- [**Ansible**](./ansible/) – Configuration management, roles, and deployment processes.
+- [**Kubernetes**](./kubernetes/) – GitOps-based applications (ArgoCD manifests).
+- [**Secrets**](./secrets/) – SOPS + AGE encrypted variables and key management.
+- [**Renovate**](./renovate.json) – Automated dependency update configuration.
+
+---
+
 ## 📚 Table of Contents
 
 - [Project Philosophy & Approach](#philosophy)

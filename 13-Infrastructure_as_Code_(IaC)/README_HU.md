@@ -10,6 +10,16 @@ A cél, hogy a homelabom egy folyamatosan fejlődő tanulókörnyezetként szolg
 
 ---
 
+## Gyorsnavigáció
+A projekt kódja az alábbi főbb mappákban található:
+- [**Terraform**](./terraform/) – VM-ek létrehozása és infrastruktúra definíciók.
+- [**Ansible**](./ansible/) – Konfigurációs menedzsment, szerepkörök és telepítési folyamatok.
+- [**Kubernetes**](./kubernetes/) – GitOps alapú applikációk (ArgoCD manifest-ek).
+- [**Secrets**](./secrets/) – SOPS + AGE titkosított változók és kulcskezelés.
+- [**Renovate**](./renovate.json) – Automatikus függőségfrissítési konfiguráció.
+
+---
+
 ## 📚 Tartalomjegyzék
 
 - [Projektfilozófia & Megközelítés](#filo)
