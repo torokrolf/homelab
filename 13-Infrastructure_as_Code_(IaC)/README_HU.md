@@ -6,7 +6,7 @@
 
 # IaC
 
-A cél  folyamatosan átalakítani a homelabom, amelyen keresztül az Infrastructure as Code (IaC) megvalósítását tanulom és dokumentálom.
+A cél, hogy a homelabom egy folyamatosan fejlődő tanulókörnyezetként szolgáljon, amelyen keresztül az Infrastructure as Code (IaC) megvalósítását tanulom és dokumentálom.
 
 ---
 
@@ -28,14 +28,14 @@ A cél  folyamatosan átalakítani a homelabom, amelyen keresztül az Infrastruc
 
 ## Projektfilozófia & Megközelítés
 
-**Hibrid megközelítést** alkalmazok.
+**Hibrid megközelítést** alkalmazok — szándékosan.
 
-- **Automatizált platform:** A VM-ek létrehozása, az OS konfigurációja, programok telepítése automatizált (Terraform + Ansible).
+- **Automatizált platform:** A VM-ek létrehozása, az OS konfigurációja, a szoftverek telepítése és a K3s cluster felállítása teljesen automatizált (Terraform + Ansible).
 - **Hibrid konfigurációs modell:** A Kubernetes applikációk beállításait, konfigfájlokat NAS-ról szinkronizálom, hogy a környezet konzisztenciáját megőrizzem, miközben folyamatosan fejlesztem a rendszert tisztán GitOps-alapú kezelés irányába.
 
-Ez a megoldás lehetővé teszi, hogy gyorsan újraépítsem a VM-eket, miközben a működő alkalmazásokhoz szükséges adatok és beállítások azonnal rendelkezésre állnak.
+Ez a megoldás lehetővé teszi, hogy gyorsan újraépítsem bármelyik VM-et, miközben a működő alkalmazásokhoz szükséges adatok és beállítások azonnal rendelkezésre állnak.
 
-**Kontextus:** Jelenleg **1 Proxmox fizikai szerver** fut, a K3s **single-node** (nem HA-klaszter), a persistent storage **local-path** (nem Longhorn/NAS-ra mountolt PVC). Az appok konfigurációját **nem GitOps-ból állítom elő nulláról**, hanem a kézzel beállított, NAS-ra mentett konfigfájlokat állítja vissza a pipeline.
+**Kontextus:** Jelenleg **1 Proxmox fizikai szerver** fut, a K3s **single-node** (nem HA-klaszter), a persistent storage **local-path** (nem Longhorn/NAS-ra mountolt PVC). Az appok konfigurációját **nem GitOps-ból állítom elő nulláról**, hanem a kézzel beállított, NAS-ra mentett konfigfájlokat állítja vissza a pipeline. Ez tudatos döntés.
 
 ---
 
@@ -124,7 +124,7 @@ Ez a megoldás lehetővé teszi, hogy gyorsan újraépítsem a VM-eket, miközbe
 │   │   └── edge_gw_01/     # Traefik reverse proxy (Docker Compose)
 │   └── secrets.enc.yaml    # SOPS+AGE titkosított változók
 ├── kubernetes/
-│   └── apps/               # K8s (ArgoCD olvassa)
+│   └── apps/               # K8s manifest-ek (ArgoCD olvassa)
 │       ├── media/          # Sonarr, Radarr, Prowlarr, Bazarr, qBittorrent, Seerr
 │       ├── monitoring/     # Prometheus, Grafana, Uptime-Kuma
 │       ├── storage/        # Nextcloud
@@ -144,11 +144,11 @@ Ez a megoldás lehetővé teszi, hogy gyorsan újraépítsem a VM-eket, miközbe
 
 ### 1. fázis — VM-ek létrehozása (Terraform)
 
-A VM-eket egy általam előkészített **Golden Image** (Ubuntu 22.04, Proxmox cloud-init template) alapján hozom létre Full Clone módszerrel — az új VM-ek teljesen függetlenek az alap sablontól. A Terraform deklaratív módon definiálja az eltérő terhelésű csomópontok hardveres paramétereit (CPU, RAM, Disk). A Terraform **manuálisan, parancssorból kerül futtatásra** a `mgmt-core-01-206` menedzsment gépen, ahol CLI-ból vezérlem (init, plan, apply).
+A VM-eket egy általam előkészített **Golden Image** (Ubuntu 22.04, Proxmox cloud-init template) alapján hozom létre Full Clone módszerrel — az új VM-ek teljesen függetlenek az alap sablontól. A Terraform deklaratív módon definiálja az eltérő terhelésű csomópontok hardveres paramétereit (CPU, RAM, Disk). A Terraform **manuálisan, parancssorból kerül futtatásra** a `mgmt-core-01-204` menedzsment gépen, ahol CLI-ból vezérlem (init, plan, apply).
 
 Kezelt VM-ek:
 
-- `k3s-server-01-225` — K3s node 
+- `k3s-server-01-225` — K3s node
 - `access-core-01-206` — Identity & Access layer (Teleport, Authentik, FreeRADIUS)
 - `edge-gw-01-230` — Edge gateway (Traefik reverse proxy, Cloudflare Tunnel)
 - `mgmt-core-01-204` — Management node (Self-hosted GitHub Runner, Ansible, Terraform, Portainer)
@@ -163,7 +163,7 @@ user_account {
 }
 ```
 
-A MAC-cím rögzítéssel biztosítom a statikus IP kiosztást a DHCP szerveren. Titkos értékek (Proxmox API token, jelszavak) `.tfvars` fájlban.
+A MAC-cím rögzítéssel biztosítom a statikus IP kiosztást a DHCP szerveren. Titkos értékek (Proxmox API token, jelszavak) `.tfvars` fájlban, verziókövetésen kívül tárolva.
 
 ---
 
@@ -185,7 +185,7 @@ Minden gépen lefut a GitHub Actions által indított pipeline első lépéseké
 
 ### 3. fázis — NAS csatolások (`mounts` role)
 
-A K3s workload-ok és a backup folyamatok feltételezik a NAS-t. Az Ansible ezt a K3s/Docker telepítés előtt végzi el minden érintett gépen:
+A K3s workload-ok és a backup folyamatok feltételezik a NAS elérhetőségét. Az Ansible ezt a K3s/Docker telepítés előtt végzi el minden érintett gépen:
 
 - **NFS:** `/mnt/torrent` ← `192.168.2.220:/mnt/ssdpool/torrent`
 - **SMB:** `/mnt/backup` ← `//192.168.2.220/backup` (konfig-backup forrás)
@@ -221,15 +221,15 @@ Az Ansible előkészíti a gépet (swap ki, szükséges kernel modulok be), majd
 
 #### ArgoCD (`argocd` role)
 
-Helm-mel települ a saját namespace-be. A jelszó hash átadásával az ArgoCD első indulásakor már az előre beállított jelszóval rendelkezik.
+Helm-mel települ a saját namespace-be. A jelszó hash átadásával az ArgoCD első indulásakor már az előre beállított jelszóval rendelkezik — nincs szükség manuális resetelésre.
 
-#### Konfig visszaállítás (`app_restore` role) 
+#### Konfig visszaállítás (`app_restore` role)
 
 Az appok (Sonarr, Radarr, Prowlarr, Grafana, stb.) **nem üres állapotból indulnak**, hanem a NAS-ra korábban elmentett konfigurációjukból. A folyamat:
 
 1. K3s leállítása (hogy ne írja felül a visszaállítandó adatokat)
 2. Célkönyvtárak létrehozása a K3s node-on
-3. `rsync` a NAS `/mnt/backup/app-configs-backup/` mappájából a lokális `/opt/app-data/` alá:
+3. `rsync` a NAS `/mnt/backup/app-configs-backup/` mappájából a lokális `/opt/app-data/` alá
 4. Jogosultságok helyreállítása
 5. K3s visszaindítása
 
@@ -252,11 +252,20 @@ Az ArgoCD regisztrálja a privát GitHub repót, majd létrehozza az Application
 
 ### 6. fázis — GitHub Actions + Self-hosted Runner
 
-A `mgmt-core-01-204` VM-en fut a **self-hosted GitHub Actions runner**. A pipeline triggerei:
+A `mgmt-core-01-204` VM-en fut a **self-hosted GitHub Actions runner**. A pipeline neve **Ansible Dispatcher**, és két triggerrel rendelkezik:
 
-- Manuális `workflow_dispatch`
+- **Automatikus (schedule):** minden nap 23:00-kor (UTC+2) lefuttatja a `system_update.yml` playbook-ot az összes node-ra.
+- **Manuális (`workflow_dispatch`):** GitHub Actions felületéről indítható, három paraméterrel:
 
-A workflow lefuttatja az `ansible-playbook site.yml`-t a self-hosted runneren, ami közvetlenül éri el a belső hálózatot — nincs szükség VPN-re vagy külső agent-re. A SOPS+AGE privát kulcs GitHub Actions Secret-ből kerül a futtatásba.
+| Paraméter | Leírás |
+|---|---|
+| `playbook` | Melyik playbook fusson — pl. `full_site`, `k3s_full`, `common`, `argocd`, `system_update`, stb. |
+| `target_hosts` | Melyik gép(ek)re fusson — pl. `all_nodes`, `host_k3s`, `host_edge`, `host_dns`, `lxc_nodes`, stb. |
+| `dry_run` | Ha be van kapcsolva, `--check --diff` módban fut — nem változtat semmit, csak megmutatja mi változna |
+
+A workflow a self-hosted runneren közvetlenül éri el a belső hálózatot — nincs szükség VPN-re vagy külső agent-re. Futás végén minden esetben **Gotify értesítés** megy: siker esetén ✅, hiba esetén ❌.
+
+**SOPS+AGE titkosítás a pipeline-ban:** A `secrets.enc.yaml` fájl titkosítva van verziókövetésben. A workflow futáskor a `SOPS_AGE_KEY` GitHub Actions Secret-ből hozza létre az AGE kulcsfájlt (`keys.txt`), dekódolja a secrets fájlt, átadja az Ansible-nek, majd a futás végén mindkét fájlt törli.
 
 ---
 
@@ -266,21 +275,21 @@ A workflow lefuttatja az `ansible-playbook site.yml`-t a self-hosted runneren, a
 
 ### K3s (single-node, local-path storage)
 
-| Stack | App | 
+| Stack | App |
 |---|---|
-| media | Sonarr, Radarr | 
-| media | Prowlarr, Bazarr | 
-| media | qBittorrent | 
-| media | Seerr | 
-| monitoring | Prometheus | 
-| monitoring | Grafana | 
-| monitoring | Uptime-Kuma | 
-| storage | Nextcloud + DB |  
-| identity | Vaultwarden |  
-| notification | Gotify |  
-| dashboard | Homarr |  
-| access | Guacamole + DB |  
-| automation | Renovate |  
+| media | Sonarr, Radarr |
+| media | Prowlarr, Bazarr |
+| media | qBittorrent |
+| media | Seerr |
+| monitoring | Prometheus |
+| monitoring | Grafana |
+| monitoring | Uptime-Kuma |
+| storage | Nextcloud + DB |
+| identity | Vaultwarden |
+| notification | Gotify |
+| dashboard | Homarr |
+| access | Guacamole + DB |
+| automation | Renovate |
 
 > **Storage:** Jelenleg `local-path` provisioner — a PVC-k a K3s node lokális lemezére kerülnek. A konfig adat a NAS-ról visszaállított rsync-másolat. Longhorn / NAS-alapú PVC migrációt tervezem a jövőre nézve.
 
@@ -299,9 +308,11 @@ A workflow lefuttatja az `ansible-playbook site.yml`-t a self-hosted runneren, a
 
 | Eszköz | Mit tárol |
 |---|---|
-| **SOPS+SGE** (`secrets.enc.yaml`) | SMB jelszó, user jelszó hash, SSH kulcsok, API tokenek |
+| **SOPS+AGE** (`secrets.enc.yaml`) | SMB jelszó, user jelszó hash, SSH kulcsok, API tokenek — titkosítva verziókövetésben |
 | **Terraform `.tfvars`** (nincs verziókövetésben) | Proxmox API token, MAC-címek, user jelszavak |
-| **GitHub Actions Secrets** | SOPS+AGE publikus jelszó, Proxmox credentials |
+| **GitHub Actions Secrets** (`SOPS_AGE_KEY`) | Az AGE privát kulcs — ebből dekódolja a pipeline a `secrets.enc.yaml`-t futáskor |
+
+A folyamat: a pipeline létrehozza a kulcsfájlt a Secretből → `sops -d` dekódolja a titkokat → Ansible megkapja `-e "@/tmp/secrets_dec.yaml"` formában → futás végén a kulcsfájl és a dekódolt fájl törlésre kerül.
 
 ---
 
