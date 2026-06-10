@@ -1,0 +1,73 @@
+name: identity-authentik
+
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: authentik-db
+    environment:
+      POSTGRES_DB: authentik
+      POSTGRES_USER: authentik
+      POSTGRES_PASSWORD: authentikpassword
+    volumes:
+      - /opt/app-data/identity-stack/authentik/db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d authentik -U authentik"]
+      start_period: 20s
+      interval: 30s
+      retries: 5
+    restart: always
+
+  redis:
+    image: redis:8-alpine
+    container_name: authentik-redis
+    command: --save 60 1 --loglevel warning
+    restart: always
+
+  authentik-server:
+    image: ghcr.io/goauthentik/server:2026.5.2
+    container_name: authentik-server
+    command: server
+    environment:
+      AUTHENTIK_REDIS__HOST: redis
+      AUTHENTIK_POSTGRESQL__HOST: db
+      AUTHENTIK_POSTGRESQL__USER: authentik
+      AUTHENTIK_POSTGRESQL__NAME: authentik
+      AUTHENTIK_POSTGRESQL__PASSWORD: "{{ authentik_postgresql_password }}"
+      # Ezt a kulcsot generáld le egyszer (pl: openssl rand -base64 36) vagy írj be bármi hosszút!
+      AUTHENTIK_SECRET_KEY: "{{ authentik_secret_key }}"
+      AUTHENTIK_ERROR_REPORTING__ENABLED: "true"
+    volumes:
+      - /opt/app-data/identity-stack/authentik/config/media:/media
+      - /opt/app-data/identity-stack/authentik/config/custom-templates:/templates
+    ports:
+      - "9001:8000"
+      - "9444:9443"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    restart: always
+
+  authentik-worker:
+    image: ghcr.io/goauthentik/server:2026.5.2
+    container_name: authentik-worker
+    command: worker
+    environment:
+      AUTHENTIK_REDIS__HOST: redis
+      AUTHENTIK_POSTGRESQL__HOST: db
+      AUTHENTIK_POSTGRESQL__USER: authentik
+      AUTHENTIK_POSTGRESQL__NAME: authentik
+      AUTHENTIK_POSTGRESQL__PASSWORD: "{{ authentik_postgresql_password }}"
+      AUTHENTIK_SECRET_KEY: "{{ authentik_secret_key }}"
+    user: root
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /opt/app-data/identity-stack/authentik/config/media:/media
+      - /opt/app-data/identity-stack/authentik/config/custom-templates:/templates
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    restart: always

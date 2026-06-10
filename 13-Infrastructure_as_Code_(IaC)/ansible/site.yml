@@ -1,0 +1,4 @@
+---
+- import_playbook: edge-core_full.yml
+- import_playbook: access_core_full.yml
+- import_playbook: k3s_full.yml

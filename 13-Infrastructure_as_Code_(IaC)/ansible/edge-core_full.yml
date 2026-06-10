@@ -1,0 +1,37 @@
+---
+- name: system_update
+  hosts: edge-gw-01-230          
+  become: true
+  roles:
+    - role: system_update
+    
+- name: Common setup
+  hosts: edge-gw-01-230          
+  become: true
+  roles:
+    - role: common
+
+- name: Mounts
+  hosts: edge-gw-01-230          
+  become: true
+  roles:
+    - role: mounts
+    
+- name: docker
+  hosts: edge-gw-01-230          
+  become: true
+  roles:
+    - role: docker
+
+- name: portainer_agent
+  hosts: edge-gw-01-230          
+  become: true
+  roles:
+    - role: portainer_agent
+
+- name: edge_gw_01
+  hosts: edge-gw-01-230         
+  become: true
+  roles:
+    - role: edge_gw_01
+

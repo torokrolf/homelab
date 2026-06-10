@@ -1,0 +1,142 @@
+name: Ansible Dispatcher
+on:
+  schedule:
+    - cron: '00 18 * * *'
+# 23:00 magyar idő (UTC+2 nyár)
+  workflow_dispatch:
+    inputs:
+      playbook:
+        description: "Melyik playbook fusson?"
+        required: true
+        type: choice
+        options:
+          - full_site
+          - k3s_full
+          - access_core_full
+          - edge-core_full
+          - access_core_01
+          - edge_gw_01
+          - system_update
+          - common
+          - mounts
+          - docker
+          - portainer_agent
+          - k3s_setup
+          - argocd
+          - argocd_apps
+          - app_restore
+          - backup
+      target_hosts:
+        description: "Célgép(ek)"
+        required: true
+        type: choice
+        options:
+          - all_nodes
+          - mount_targets
+          - docker_hosts
+          - lxc_nodes
+          - host_k3s
+          - host_wazuh
+          - host_access
+          - host_edge
+          - host_dns
+          - host_adguard
+          - host_unbound
+          - host_aptcacher
+          - host_jelly
+          - host_mgmt
+      dry_run:
+        description: "Dry run? (--check mód, nem változtat semmit)"
+        type: boolean
+        default: false
+jobs:
+  run-ansible:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ansible futtatása (Dinamikus kulcsfájllal és paraméterekkel)
+        run: |
+          # 1. Kulcsfájl létrehozása
+          mkdir -p /home/ansible/.config/sops/age
+          echo "${{ secrets.SOPS_AGE_KEY }}" > /home/ansible/.config/sops/age/keys.txt
+          chmod 600 /home/ansible/.config/sops/age/keys.txt
+
+          # 2. Playbook és target meghatározása (schedule vs kézi)
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            PLAYBOOK="ansible/system_update.yml"
+            INVENTORY_TARGET="all_nodes"
+            TRIGGER="⏰ Automatikus (schedule)"
+          else
+            TRIGGER="🖱️ Kézi futtatás"
+            if [ "${{ inputs.playbook }}" = "full_site" ]; then
+              PLAYBOOK="ansible/site.yml"
+            else
+              PLAYBOOK="ansible/${{ inputs.playbook }}.yml"
+            fi
+            case "${{ inputs.target_hosts }}" in
+              all_nodes)      INVENTORY_TARGET="all_nodes" ;;
+              mount_targets)  INVENTORY_TARGET="mount_targets" ;;
+              docker_hosts)   INVENTORY_TARGET="docker_hosts" ;;
+              lxc_nodes)      INVENTORY_TARGET="lxc_nodes" ;;
+              host_k3s)       INVENTORY_TARGET="k3s_server_01_225_host" ;;
+              host_wazuh)     INVENTORY_TARGET="wazuh_server_01_203_host" ;;
+              host_access)    INVENTORY_TARGET="access_core_01_206_host" ;;
+              host_edge)      INVENTORY_TARGET="edge_gw_01_230_host" ;;
+              host_dns)       INVENTORY_TARGET="dns_201_host" ;;
+              host_adguard)   INVENTORY_TARGET="adguard_222_host" ;;
+              host_unbound)   INVENTORY_TARGET="unbound_223_host" ;;
+              host_aptcacher) INVENTORY_TARGET="apt_cacher_ng_207_host" ;;
+              host_jelly)     INVENTORY_TARGET="jellyfin_221_host" ;;
+              host_mgmt)      INVENTORY_TARGET="mgmt-core-01-204" ;;
+              *)              INVENTORY_TARGET="all_nodes" ;;
+            esac
+          fi
+
+          FLAGS="-e target=${INVENTORY_TARGET}"
+
+          # 3. Dry run
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            FLAGS="$FLAGS --check --diff"
+            TRIGGER="$TRIGGER (dry run)"
+          fi
+
+          # 4. Titkok dekódolása
+          sops -d secrets/secrets.enc.yaml > /tmp/secrets_dec.yaml
+
+          # 5. Ansible futtatása
+          ansible-playbook $PLAYBOOK $FLAGS \
+            -i ansible/inventory.ini \
+            -e "@/tmp/secrets_dec.yaml" \
+            --private-key ~/.ssh/ansible_target_key
+          ANSIBLE_EXIT=$?
+
+          # 6. Takarítás
+          rm -f /tmp/secrets_dec.yaml
+          rm -f /home/ansible/.config/sops/age/keys.txt
+
+          # 7. Gotify értesítés (mindig)
+          if [ $ANSIBLE_EXIT -eq 0 ]; then
+            TITLE="Ansible Kész ✅"
+            PRIORITY=5
+          else
+            TITLE="Ansible HIBÁS ❌"
+            PRIORITY=9
+          fi
+          
+          # A curl-t külön futtatjuk, és biztosítjuk, hogy ne okozzon hibát
+          curl -s -X POST "$GOTIFY_URL/message?token=$GOTIFY_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"title\":\"$TITLE\",\"message\":\"$MESSAGE\",\"priority\":$PRIORITY}" || echo "Gotify hiba történt!"
+
+          # 8. EXIT LOGIKA: 
+          # Ha 0 (siker), lépjünk ki 0-val.
+          # Ha 3 (vagy egyéb), de a rendszer "ok" vagy "changed" lett, akkor is 0-val lépjünk ki.
+          # CSAK akkor lépjünk ki hibával (1), ha tényleg unreachable vagy súlyos hiba volt.
+          
+          if [ $ANSIBLE_EXIT -eq 0 ] || [ $ANSIBLE_EXIT -eq 3 ]; then
+            echo "Ansible befejeződött (kód: $ANSIBLE_EXIT), sikeres konfiguráció."
+            exit 0
+          else
+            echo "Valódi hiba történt az Ansible futtatásakor: $ANSIBLE_EXIT"
+            exit 1
+          fi

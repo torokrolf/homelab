@@ -1,0 +1,26 @@
+teleport:
+  nodename: {{ ansible_hostname }}
+  data_dir: /opt/app-data/identity-stack/teleport/data
+  log:
+    output: stderr
+    severity: INFO
+
+auth_service:
+  enabled: "yes"
+  listen_addr: 0.0.0.0:3025
+  cluster_name: "homelab-access"
+  # Kezdetnek proxy-n keresztül kapja a certet, vagy generál self-signed-ot
+  proxy_listener_mode: multiplex
+
+proxy_service:
+  enabled: "yes"
+  listen_addr: 0.0.0.0:3023
+  web_listen_addr: 0.0.0.0:3080
+  tunnel_listen_addr: 0.0.0.0:3024
+  public_addr: "teleport.trkrolf.com:443"
+
+ssh_service:
+  enabled: "yes"
+  labels:
+    env: production
+    role: access-core

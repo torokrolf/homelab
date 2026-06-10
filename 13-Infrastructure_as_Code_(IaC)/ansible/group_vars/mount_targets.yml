@@ -1,0 +1,14 @@
+# host_vars/gepneve.yml
+nfs_mounts:
+  - path: "/mnt/torrent"
+    src: "192.168.2.220:/mnt/ssdpool/torrent"
+    opts: "nfsvers=4.1,soft,intr,noatime,rsize=1048576,wsize=1048576,timeo=50,retrans=2,_netdev,nofail"
+
+smb_mounts:
+  - path: "/mnt/backup"
+    src: "//192.168.2.220/backup"
+    opts: "username=rolf,password={{ smb_password }},soft,iocharset=utf8,rw,uid=1000,gid=1000,file_mode=0770,dir_mode=0770,_netdev,nofail"
+
+  - path: "/mnt/pxeiso"
+    src: "//192.168.2.220/pxeiso"
+    opts: "username=rolf,password={{ smb_password }},soft,iocharset=utf8,rw,uid=1000,gid=1000,file_mode=0770,dir_mode=0770,_netdev,nofail"

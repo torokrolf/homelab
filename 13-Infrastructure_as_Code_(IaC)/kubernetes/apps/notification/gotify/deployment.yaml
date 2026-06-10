@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gotify
+  namespace: notification
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gotify
+  template:
+    metadata:
+      labels:
+        app: gotify
+    spec:
+      securityContext:
+        fsGroup: 1000   
+
+      containers:
+      - name: gotify
+        image: gotify/server:2.9.1
+        ports:
+        - containerPort: 80
+        env:
+        - name: GOTIFY_DEFAULTUSER_PASS
+          valueFrom:
+            secretKeyRef:
+              name: gotify-secrets
+              key: GOTIFY_DEFAULTUSER_PASS
+        volumeMounts:
+        - name: gotify-config
+          mountPath: /app/data
+
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
+
+      volumes:
+      - name: gotify-config
+        hostPath:
+          path: /opt/app-data/notification-stack/gotify/config
+          type: DirectoryOrCreate

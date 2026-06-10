@@ -1,0 +1,51 @@
+- name: Python függőségek telepítése (hogy a kubernetes modulok működjenek)
+  shell: |
+    pip3 install kubernetes pyyaml jsonpatch --break-system-packages || pip3 install kubernetes pyyaml jsonpatch
+  args:
+    executable: /bin/bash
+
+- name: Helm ellenőrzése és telepítése
+  shell: |
+    if ! command -v helm &> /dev/null; then
+      curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+    fi
+  args:
+    creates: /usr/local/bin/helm
+
+- name: ArgoCD repo hozzáadása
+  kubernetes.core.helm_repository:
+    name: argo
+    repo_url: "https://argoproj.github.io/argo-helm"
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/usr/local/bin"
+
+- name: ArgoCD telepítése és jelszó/port konfigurálása
+  kubernetes.core.helm:
+    name: argocd
+    chart_ref: argo/argo-cd
+    release_namespace: argocd
+    create_namespace: true
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    binary_path: /usr/local/bin/helm
+    wait: yes
+    values:
+      server:
+        service:
+          type: NodePort
+          ports:
+            - name: https
+              port: 443
+              targetPort: 8080
+              nodePort: 30007 
+      configs:
+        secret:
+          argocd.admin.password: '{{ argocd_admin_pwd_hash }}'
+          # Kényszerítjük a frissítést az aktuális idővel
+          argocd.admin.passwordMtime: "{{ lookup('pipe', 'date -u +%Y-%m-%dT%H:%M:%SZ') }}"
+
+- name: Kényszerített port és jelszó felülírás (Patch), ha a Helm nem vinné át
+  shell: |
+    kubectl -n argocd patch svc argocd-server -p '{"spec": {"type": "NodePort", "ports": [{"name": "https", "port": 443, "targetPort": 8080, "nodePort": 30007}]}}' --type=merge || true
+    kubectl -n argocd patch secret argocd-secret -p '{"stringData": {"admin.password": "{{ argocd_admin_pwd_hash }}", "admin.passwordMtime": "'$(date +%FT%T%Z)'"}}' --type=merge || true
+- name: ArgoCD szerver újraindítása az új jelszó érvényesítéséhez
+  shell: kubectl rollout restart deployment argocd-server -n argocd

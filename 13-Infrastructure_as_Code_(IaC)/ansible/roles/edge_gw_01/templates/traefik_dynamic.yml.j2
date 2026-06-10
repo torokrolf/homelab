@@ -1,0 +1,13 @@
+http:
+  routers:
+    dashboard-router:
+      rule: "Host(`traefik.trkrolf.com`)"
+      entryPoints:
+        - websecure
+      service: api@internal
+      tls:
+        certResolver: cloudflare
+        domains:
+          - main: "trkrolf.com"
+            sans:
+              - "*.trkrolf.com"

@@ -1,0 +1,6 @@
+---
+- name: argocd_install
+  hosts: "{{ target | default('all_nodes') }}"
+  become: true
+  roles:
+    - role: argocd

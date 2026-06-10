@@ -1,0 +1,6 @@
+---
+- name: Common setup
+  hosts: "{{ target | default('all_nodes') }}"
+  become: true
+  roles:
+    - role: common

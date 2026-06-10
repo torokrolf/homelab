@@ -1,0 +1,49 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: renovate-bot
+  namespace: automation
+spec:
+  schedule: "0 8 * * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          securityContext:
+            fsGroup: 1000
+            runAsUser: 1000
+          nodeSelector:
+            kubernetes.io/hostname: k3s-server-01-225
+          containers:
+          - name: renovate
+            image: renovate/renovate:43.216
+            env:
+            - name: RENOVATE_PLATFORM
+              value: "github"
+            - name: RENOVATE_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: renovate-secrets
+                  key: RENOVATE_TOKEN
+            - name: RENOVATE_REPOSITORIES
+              value: '["torokrolf/homelab-infra"]'
+            - name: RENOVATE_AUTODISCOVER
+              value: "false"
+            - name: LOG_LEVEL
+              value: "debug"
+            - name: RENOVATE_CACHE_DIR
+              value: "/tmp/renovate/cache"
+            volumeMounts:
+            - name: workdir
+              mountPath: /tmp/renovate
+            - name: cache-storage
+              mountPath: /tmp/renovate/cache
+          restartPolicy: OnFailure
+          volumes:
+          - name: workdir
+            emptyDir: {}
+          - name: cache-storage
+            hostPath:
+              path: /opt/app-data/admin-stack/renovate/config 
+              type: Directory

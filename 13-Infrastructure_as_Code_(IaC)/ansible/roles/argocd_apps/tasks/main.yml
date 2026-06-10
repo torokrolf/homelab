@@ -1,0 +1,59 @@
+# Ez a feladat hozza létre az ArgoCD "Application" objektumokat. 
+# Összeköti a GitHub repó adott mappáit (pl. kubernetes/apps/media) 
+# a K3s névtéreivel (pl. media namespace), és bekapcsolja az automatikus szinkronizációt.
+---
+- name: GitHub Privát Repo hitelesítés (Secret)
+  kubernetes.core.k8s:
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: github-repo-auth
+        namespace: argocd
+        labels:
+          argocd.argoproj.io/secret-type: repository
+      stringData:
+        type: git
+        url: "https://github.com/torokrolf/homelab-infra.git"
+        username: "torokrolf"
+        password: '{{ github_pat_argocd }}'
+
+- name: ArgoCD Application-ök létrehozása (Összes Stack)
+  kubernetes.core.k8s:
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    state: present
+    definition:
+      apiVersion: argoproj.io/v1alpha1
+      kind: Application
+      metadata:
+        name: "{{ item.name }}"
+        namespace: argocd
+      spec:
+        project: default
+        source:
+          repoURL: 'https://github.com/torokrolf/homelab-infra.git'
+          targetRevision: HEAD
+          path: "{{ item.path }}"
+          directory:
+            recurse: true
+        destination:
+          server: 'https://kubernetes.default.svc'
+          namespace: "{{ item.namespace }}"
+        syncPolicy:
+          automated: { prune: true, selfHeal: true }
+          syncOptions: [ CreateNamespace=true ]
+  loop:
+    - { name: 'media-stack', path: 'kubernetes/apps/media', namespace: 'media' }
+    - { name: 'storage-stack', path: 'kubernetes/apps/storage', namespace: 'storage' }
+    - { name: 'monitoring-stack', path: 'kubernetes/apps/monitoring', namespace: 'monitoring' }
+    - { name: 'notification-stack', path: 'kubernetes/apps/notification', namespace: 'notification' }
+    - { name: 'identity-stack', path: 'kubernetes/apps/identity', namespace: 'identity' }
+    - { name: 'automation-stack', path: 'kubernetes/apps/automation', namespace: 'automation' }
+    - { name: 'dashboard-stack', path: 'kubernetes/apps/dashboard', namespace: 'dashboard' }
+    - { name: 'access-stack', path: 'kubernetes/apps/access', namespace: 'access' }
+
+- name: Várakozás a rollout elindulására (45 mp)
+  pause:
+    seconds: 45

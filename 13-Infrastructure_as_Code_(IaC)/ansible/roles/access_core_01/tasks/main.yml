@@ -1,0 +1,448 @@
+# ────────────────────────────────────────────────────────────
+# 1. KÖZÖS MAPPÁK
+# ────────────────────────────────────────────────────────────
+- name: Identity stack alapkönyvtárak létrehozása
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  loop:
+    - "/opt/app-data/identity-stack/teleport/config"
+    - "/opt/app-data/identity-stack/teleport/data"
+    - "/opt/app-data/identity-stack/authentik/db_data"
+    - "/opt/app-data/identity-stack/authentik/config/media"
+    - "/opt/app-data/identity-stack/authentik/config/custom-templates"
+  
+# ────────────────────────────────────────────────────────────
+# 2. TELEPORT 
+# ────────────────────────────────────────────────────────────
+- name: Teleport GPG kulcs és Repo hozzáadása
+  shell: |
+    curl -fsSL https://apt.releases.teleport.dev/gpg | gpg --dearmor -o /usr/share/keyrings/teleport-archive-keyring.gpg --yes
+    echo "deb [signed-by=/usr/share/keyrings/teleport-archive-keyring.gpg] https://apt.releases.teleport.dev/ubuntu {{ ansible_distribution_release }} stable/v18" > /etc/apt/sources.list.d/teleport.list
+  args:
+    creates: /etc/apt/sources.list.d/teleport.list
+
+- name: Teleport telepítése APT-val
+  apt:
+    name: teleport=18.7.4
+    state: present
+    update_cache: yes
+    allow_downgrade: yes
+
+- name: Teleport adatok visszaállítása backupból (rsync)
+  shell: |
+    if [ -d "/mnt/backup/app-configs-backup/identity-stack/teleport/data/" ]; then
+      rsync -av --no-links --exclude='*.sock' /mnt/backup/app-configs-backup/identity-stack/teleport/data/ /opt/app-data/identity-stack/teleport/data/
+    fi
+    sync
+  become: yes
+
+- name: Teleport config generálása
+  template:
+    src: teleport.yaml.j2
+    dest: /opt/app-data/identity-stack/teleport/config/teleport.yaml
+    mode: '0600'
+
+- name: Teleport adatkönyvtár jogosultságok fixálása (VISSZAÁLLÍTÁS UTÁN)
+  file:
+    path: "/opt/app-data/identity-stack/teleport/data"
+    owner: root
+    group: root
+    mode: '0700'
+    recurse: yes
+
+- name: Systemd service beállítása
+  template:
+    src: teleport.service.j2
+    dest: /etc/systemd/system/teleport.service
+    mode: '0644'
+
+- name: Teleport engedélyezése és indítása
+  systemd:
+    name: teleport
+    state: started
+    enabled: yes
+    daemon_reload: yes
+
+# ────────────────────────────────────────────────────────────
+# 3. AUTHENTIK 
+# ────────────────────────────────────────────────────────────
+- name: Authentik adatok visszaállítása (rsync)
+  shell: |
+    rsync -av --delete /mnt/backup/app-configs-backup/identity-stack/authentik/db_data/ /opt/app-data/identity-stack/authentik/db_data/
+    rsync -av --delete /mnt/backup/app-configs-backup/identity-stack/authentik/config/ /opt/app-data/identity-stack/authentik/config/
+    sync
+  become: yes
+
+- name: Authentik adatbázis jogosultságok fixálása (VISSZAÁLLÍTÁS UTÁN)
+  file:
+    path: "/opt/app-data/identity-stack/authentik/db_data"
+    owner: "999"
+    group: "999"
+    mode: '0700'
+    recurse: yes
+  become: yes
+
+- name: Authentik Docker Compose fájl kihelyezése
+  template:
+    src: authentik-compose.yml.j2
+    dest: /opt/app-data/identity-stack/authentik/docker-compose.yml
+    mode: '0644'
+
+- name: Authentik stack elindítása
+  community.docker.docker_compose_v2:
+    project_src: /opt/app-data/identity-stack/authentik
+    state: present
+    pull: always
+    recreate: always
+
+# ────────────────────────────────────────────────────────────
+# 4. FREERADIUS + DALORADIUS 
+# ────────────────────────────────────────────────────────────
+
+# -- Függőségek --
+- name: RADIUS stack – rendszerfrissítés
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Apache + PHP telepítése
+  apt:
+    name:
+      - apache2
+      - vim
+      - php
+      - libapache2-mod-php
+      - php-gd
+      - php-common
+      - php-mail
+      - php-mail-mime
+      - php-mysql
+      - php-pear
+      - php-db
+      - php-mbstring
+      - php-xml
+      - php-curl
+      - php-zip
+    state: present
+
+- name: MariaDB telepítése
+  apt:
+    name:
+      - mariadb-server
+      - python3-pymysql
+    state: present
+
+- name: MariaDB elindítása és engedélyezése
+  systemd:
+    name: mariadb
+    state: started
+    enabled: yes
+
+- name: FreeRADIUS, MySQL és LDAP modulok telepítése
+  apt:
+    name:
+      - freeradius
+      - freeradius-mysql
+      - freeradius-ldap
+      - freeradius-utils
+      - git
+    state: present
+
+- name: LDAP modul symlink létrehozása (mods-enabled)
+  file:
+    src: "/etc/freeradius/3.0/mods-available/ldap"
+    dest: "/etc/freeradius/3.0/mods-enabled/ldap"
+    state: link
+
+# -- Adatbázis alapok --
+- name: RADIUS adatbázis létrehozása
+  community.mysql.mysql_db:
+    name: "radius"
+    state: present
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+- name: RADIUS DB felhasználó létrehozása
+  community.mysql.mysql_user:
+    name: "radius"
+    password: "{{ radius_db_password }}"
+    priv: "radius.*:ALL"
+    host: localhost
+    state: present
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+# -- ADATBÁZIS VISSZAÁLLÍTÁS --
+- name: Megnézzük van-e SQL dump mentés
+  stat:
+    path: /mnt/backup/app-configs-backup/identity-stack/freeradius/db/radius_db_backup.sql
+  register: db_backup_file
+
+- name: Létező RADIUS adatbázis visszaállítása a mysqldump-ból
+  community.mysql.mysql_db:
+    name: "radius"
+    state: import
+    target: /mnt/backup/app-configs-backup/identity-stack/freeradius/db/radius_db_backup.sql
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+  when: db_backup_file.stat.exists
+
+# -- VISSZAÁLLÍTÁS TAR.GZ ALAPJÁN --
+- name: Megnézzük van-e tar.gz konfig mentés
+  stat:
+    path: /mnt/backup/app-configs-backup/identity-stack/freeradius/radius_configs_backup.tar.gz
+  register: tar_backup_file
+
+- name: FreeRADIUS, daloRADIUS és Apache konfigok visszaállítása a tar.gz-ből
+  unarchive:
+    src: /mnt/backup/app-configs-backup/identity-stack/freeradius/radius_configs_backup.tar.gz
+    dest: /
+    remote_src: yes
+  when: tar_backup_file.stat.exists
+
+# -- FreeRADIUS FRISS konfig (CSAK ha nincs sem tar.gz, sem DB mentés!) --
+- name: FreeRADIUS adatbázis séma importálása (csak friss telepítésnél)
+  community.mysql.mysql_db:
+    name: "radius"
+    state: import
+    target: "/etc/freeradius/3.0/mods-config/sql/main/mysql/schema.sql"
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+  when: not tar_backup_file.stat.exists and not db_backup_file.stat.exists
+
+- name: SQL modul symlink létrehozása (mods-enabled)
+  file:
+    src: "/etc/freeradius/3.0/mods-available/sql"
+    dest: "/etc/freeradius/3.0/mods-enabled/sql"
+    state: link
+  when: not tar_backup_file.stat.exists and not db_backup_file.stat.exists
+
+- name: FreeRADIUS SQL modul konfig írása (csak friss telepítésnél)
+  copy:
+    dest: "/etc/freeradius/3.0/mods-enabled/sql"
+    owner: freerad
+    group: freerad
+    mode: '0640'
+    content: |
+      sql {
+              dialect = "mysql"
+              driver = "rlm_sql_mysql"
+              server = "localhost"
+              port = 3306
+              login = "radius"
+              password = "{{ radius_db_password }}"
+              radius_db = "radius"
+              read_clients = yes
+              client_table = "nas"
+              mysql {
+                      warnings = auto
+              }
+              pool {
+                      start = 5
+                      min = 3
+                      max = 10
+                      spare = 3
+                      uses = 0
+                      retry_delay = 30
+                      lifetime = 0
+                      idle_timeout = 60
+              }
+              acct_table1 = "radacct"
+              acct_table2 = "radacct"
+              postauth_table = "radpostauth"
+              authcheck_table = "radcheck"
+              groupcheck_table = "radgroupcheck"
+              authreply_table = "radreply"
+              groupreply_table = "radgroupreply"
+              usergroup_table = "radusergroup"
+              read_groups = yes
+              read_profiles = yes
+              delete_stale_sessions = yes
+              group_attribute = "SQL-Group"
+              $INCLUDE ${modconfdir}/${.:name}/main/mysql/queries.conf
+      }
+  when: not tar_backup_file.stat.exists and not db_backup_file.stat.exists
+
+- name: FreeRADIUS config jogosultságok fixálása
+  file:
+    path: "/etc/freeradius/3.0"
+    owner: freerad
+    group: freerad
+    recurse: yes
+
+- name: FreeRADIUS elindítása és engedélyezése
+  systemd:
+    name: freeradius
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+
+# -- daloRADIUS Telepítés --
+- name: daloRADIUS repo klónozása (csak ha nincs mentésből visszanyert mappa)
+  git:
+    repo: "https://github.com/lirantal/daloradius.git"
+    dest: /var/www/daloradius
+    force: yes
+  when: not tar_backup_file.stat.exists
+
+# -- daloRADIUS ALAP SÉMÁK (Csak ha egyáltalán nincs DB mentésünk) --
+- name: FreeRADIUS 3 daloRADIUS alap-séma importálása (csak ha nincs DB mentés)
+  community.mysql.mysql_db:
+    name: "radius"
+    state: import
+    target: "/var/www/daloradius/contrib/db/fr3-mariadb-freeradius.sql"
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+  when: not db_backup_file.stat.exists
+
+- name: daloRADIUS sématisztítása és importálása (csak ha nincs DB mentés)
+  shell: |
+    sed -i '/INSERT INTO `operators` VALUES/d' /var/www/daloradius/contrib/db/mariadb-daloradius.sql
+    mysql --skip-ssl --socket=/var/run/mysqld/mysqld.sock -u root radius < /var/www/daloradius/contrib/db/mariadb-daloradius.sql
+  when: not db_backup_file.stat.exists
+
+- name: Alapértelmezett daloRADIUS administrator létrehozása explicit módon (csak ha nincs DB mentés)
+  community.mysql.mysql_query:
+    login_db: radius
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    query: >
+      INSERT INTO `operators` (`id`, `username`, `password`, `firstname`, `lastname`) 
+      VALUES (1, 'administrator', '{{ daloradius_admin_password }}', 'Admin', 'User')
+      ON DUPLICATE KEY UPDATE username=username;
+  when: not db_backup_file.stat.exists
+
+# -- daloRADIUS config fájl utólagos kezelése (csak ha NEM volt tar.gz) --
+- name: daloRADIUS konfig fájl létrehozása sampleből (csak ha nincs mentés)
+  copy:
+    src: /var/www/daloradius/app/common/includes/daloradius.conf.php.sample
+    dest: /var/www/daloradius/app/common/includes/daloradius.conf.php
+    owner: www-data
+    group: www-data
+    mode: '0640'
+    remote_src: yes
+  when: not tar_backup_file.stat.exists
+
+- name: daloRADIUS konfig – DB adatok beírása (csak ha nincs mentés)
+  replace:
+    path: /var/www/daloradius/app/common/includes/daloradius.conf.php
+    regexp: "{{ item.regexp }}"
+    replace: "{{ item.replace }}"
+  loop:
+    - { regexp: "\\$configValues\\['CONFIG_DB_USER'\\]\\s*=\\s*'[^']*'", replace: "$configValues['CONFIG_DB_USER'] = 'radius'" }
+    - { regexp: "\\$configValues\\['CONFIG_DB_PASS'\\]\\s*=\\s*'[^']*'", replace: "$configValues['CONFIG_DB_PASS'] = '{{ radius_db_password }}'" } 
+    - { regexp: "\\$configValues\\['CONFIG_DB_NAME'\\]\\s*=\\s*'[^']*'", replace: "$configValues['CONFIG_DB_NAME'] = 'radius'" }
+  when: not tar_backup_file.stat.exists
+
+- name: daloRADIUS teljes mappa jogosultságok kényszerítése
+  file:
+    path: "/var/www/daloradius"
+    owner: www-data
+    group: www-data
+    mode: '0755'
+    recurse: yes
+
+# -- Apache konfigurálása és Vhost kezelés --
+- name: Apache log könyvtárak létrehozása
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+  loop:
+    - /var/log/apache2/daloradius/operators
+    - /var/log/apache2/daloradius/users
+
+- name: Apache ports.conf beállítása
+  copy:
+    dest: /etc/apache2/ports.conf
+    content: |
+      Listen 80
+      Listen 8000
+      <IfModule ssl_module>
+          Listen 443
+      </IfModule>
+      <IfModule mod_gnutls.c>
+          Listen 443
+      </IfModule>
+
+- name: Apache operators vhost konfig
+  copy:
+    dest: /etc/apache2/sites-available/operators.conf
+    content: |
+      <VirtualHost *:8000>
+          ServerAdmin operators@localhost
+          DocumentRoot /var/www/daloradius/app/operators
+          <Directory /var/www/daloradius/app/operators>
+              Options -Indexes +FollowSymLinks
+              AllowOverride All
+              Require all granted
+          </Directory>
+          <Directory /var/www/daloradius>
+              Options -Indexes +FollowSymLinks
+              AllowOverride None
+              Require all granted
+          </Directory>
+          ErrorLog ${APACHE_LOG_DIR}/daloradius/operators/error.log
+          CustomLog ${APACHE_LOG_DIR}/daloradius/operators/access.log combined
+      </VirtualHost>
+
+- name: Apache users vhost konfig
+  copy:
+    dest: /etc/apache2/sites-available/users.conf
+    content: |
+      <VirtualHost *:80>
+          ServerAdmin users@localhost
+          DocumentRoot /var/www/daloradius/app/users
+          <Directory /var/www/daloradius/app/users>
+              Options -Indexes +FollowSymLinks
+              AllowOverride All
+              Require all granted
+          </Directory>
+          <Directory /var/www/daloradius>
+              Options -Indexes +FollowSymLinks
+              AllowOverride None
+              Require all granted
+          </Directory>
+          ErrorLog ${APACHE_LOG_DIR}/daloradius/users/error.log
+          CustomLog ${APACHE_LOG_DIR}/daloradius/users/access.log combined
+      </VirtualHost>
+
+- name: daloRADIUS site-ok engedélyezése
+  command: a2ensite users.conf operators.conf
+  changed_when: false
+
+- name: Alapértelmezett Apache site letiltása
+  command: a2dissite 000-default.conf
+  failed_when: false
+  changed_when: false
+
+- name: Apache elindítása és engedélyezése
+  systemd:
+    name: apache2
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+
+# ────────────────────────────────────────────────────────────
+# 5. AUTOMATIKUS SNAPSHOTOZÁS A FUTÁS VÉGÉN
+# ────────────────────────────────────────────────────────────
+- name: Biztonsági mentési célmappák kényszerítése
+  file:
+    path: /mnt/backup/app-configs-backup/identity-stack/freeradius/db
+    state: directory
+    mode: '0755'
+
+- name: Konfigurációk automatikus becsomagolása a tar.gz-be (teljes mentés)
+  shell: |
+    tar -czf /mnt/backup/app-configs-backup/identity-stack/freeradius/radius_configs_backup.tar.gz \
+      /etc/freeradius/3.0/ \
+      /var/www/daloradius/ \
+      /etc/apache2/sites-available/ \
+      /etc/apache2/ports.conf 2>/dev/null || true
+  become: yes
+
+- name: Adatbázis automatikus mentése helyi socketen keresztül
+  shell: |
+    mysqldump -u root radius --skip-ssl > /mnt/backup/app-configs-backup/identity-stack/freeradius/db/radius_db_backup.sql 2>/dev/null
+    sync
+  become: yes

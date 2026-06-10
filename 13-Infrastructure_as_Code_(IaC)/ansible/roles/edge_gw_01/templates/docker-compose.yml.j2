@@ -1,0 +1,38 @@
+name: edge-stack
+
+services:
+  traefik:
+    image: traefik:v3.7
+    container_name: traefik
+    restart: always
+    dns:
+      - 192.168.2.222
+    networks:
+      - proxy
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8082:8080"
+    environment:
+      - CF_DNS_API_TOKEN={{ cloudflare_dns_api_token }}
+      - CF_ZONE_API_TOKEN={{ cloudflare_dns_api_token }}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /opt/app-data/edge-stack/traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - /opt/app-data/edge-stack/traefik/config:/etc/traefik/config:ro
+      - /opt/app-data/edge-stack/traefik/letsencrypt:/letsencrypt
+
+  home-edge-ingress:
+    image: cloudflare/cloudflared:latest
+    container_name: home-edge-ingress
+    restart: always
+    environment:
+      - TUNNEL_TOKEN={{ cloudflare_tunnel_token }}
+    command: tunnel run
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    name: proxy
+    driver: bridge

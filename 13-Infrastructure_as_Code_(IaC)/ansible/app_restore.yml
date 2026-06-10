@@ -1,0 +1,6 @@
+---
+- name: app_restore
+  hosts: "{{ target | default('all_nodes') }}"
+  become: true
+  roles:
+    - role: app_restore

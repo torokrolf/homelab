@@ -1,0 +1,325 @@
+# 1. Változók definiálása
+- name: Változók definiálása
+  set_fact:
+    argocd_apps:
+      - media-stack
+      - storage-stack
+      - monitoring-stack
+      - notification-stack
+      - identity-stack
+      - dashboard-stack
+      - access-stack
+      - automation-stack
+    restore_apps:
+      - { app: 'sonarr',        namespace: 'media',        kind: 'Deployment',  src_path: 'media-stack/sonarr/config/',           dst_path: 'media-stack/sonarr/config/' }
+      - { app: 'radarr',        namespace: 'media',        kind: 'Deployment',  src_path: 'media-stack/radarr/config/',           dst_path: 'media-stack/radarr/config/' }
+      - { app: 'prowlarr',      namespace: 'media',        kind: 'Deployment',  src_path: 'media-stack/prowlarr/config/',         dst_path: 'media-stack/prowlarr/config/' }
+      - { app: 'bazarr',        namespace: 'media',        kind: 'Deployment',  src_path: 'media-stack/bazarr/config/',           dst_path: 'media-stack/bazarr/config/' }
+      - { app: 'qbittorrent',   namespace: 'media',        kind: 'Deployment',  src_path: 'media-stack/qbittorrent/config/',      dst_path: 'media-stack/qbittorrent/config/' }
+      - { app: 'seerr',         namespace: 'media',        kind: 'Deployment',  src_path: 'media-stack/seerr/config/',            dst_path: 'media-stack/seerr/config/' }
+      - { app: 'vaultwarden',   namespace: 'identity',     kind: 'Deployment',  src_path: 'identity-stack/vaultwarden/config/',   dst_path: 'identity-stack/vaultwarden/config/' }
+      - { app: 'gotify',        namespace: 'notification', kind: 'Deployment',  src_path: 'notification-stack/gotify/config/',    dst_path: 'notification-stack/gotify/config/' }
+      - { app: 'grafana',       namespace: 'monitoring',   kind: 'Deployment',  src_path: 'monitoring-stack/grafana/config/',     dst_path: 'monitoring-stack/grafana/config/' }
+      - { app: 'prometheus',    namespace: 'monitoring',   kind: 'Deployment',  src_path: 'monitoring-stack/prometheus/config/',  dst_path: 'monitoring-stack/prometheus/config/' }
+      - { app: 'uptime-kuma',   namespace: 'monitoring',   kind: 'StatefulSet', src_path: 'monitoring-stack/uptime-kuma/config/', dst_path: 'monitoring-stack/uptime-kuma/config/' }
+      - { app: 'homarr',        namespace: 'dashboard',    kind: 'Deployment',  src_path: 'dashboard-stack/homarr/config/',       dst_path: 'dashboard-stack/homarr/config/' }
+      - { app: 'nextcloud-app', namespace: 'storage',      kind: 'Deployment',  src_path: 'storage-stack/nextcloud/config/',      dst_path: 'storage-stack/nextcloud/config/' }
+      - { app: 'nextcloud-app', namespace: 'storage',      kind: 'Deployment',  src_path: 'storage-stack/nextcloud/data/',        dst_path: 'storage-stack/nextcloud/data/' }
+      - { app: 'nextcloud-db',  namespace: 'storage',      kind: 'Deployment',  src_path: 'storage-stack/nextcloud/db/',          dst_path: 'storage-stack/nextcloud/db/' }
+      - { app: 'guacamole',     namespace: 'access',       kind: 'Deployment',  src_path: 'access-stack/guacamole/db/',           dst_path: 'access-stack/guacamole/db/' }
+      
+# A Secret létrehozása KÜLÖN feladatként
+- name: Nextcloud Secret létrehozása
+  kubernetes.core.k8s:
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: nextcloud-db-secrets
+        namespace: storage
+      type: Opaque
+      stringData:
+        MYSQL_ROOT_PASSWORD: "{{ nextcloud_mysql_root_pwd }}"
+        MYSQL_PASSWORD: "{{ nextcloud_mysql_pwd }}"
+        CLIENT_ID: "{{ nextcloud_oidc_client_id }}"
+        CLIENT_SECRET: "{{ nextcloud_oidc_client_secret }}"
+
+- name: Gotify Secret létrehozása
+  kubernetes.core.k8s:
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: gotify-secrets
+        namespace: notification
+      type: Opaque
+      stringData:
+        GOTIFY_DEFAULTUSER_PASS: "{{ gotify_defaultuser_pass }}"
+        
+- name: grafana Secret létrehozása
+  kubernetes.core.k8s:
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: grafana-secrets
+        namespace: monitoring
+      type: Opaque
+      stringData:
+        GF_AUTH_GENERIC_OAUTH_CLIENT_ID: "{{ gf_auth_generic_oauth_client_id }}"
+        GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET: "{{ gf_auth_generic_oauth_client_secret }}"
+
+- name: homarr Secret létrehozása
+  kubernetes.core.k8s:
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: homarr-secrets
+        namespace: dashboard
+      type: Opaque
+      stringData:
+        SECRET_ENCRYPTION_KEY: "{{ homarr_secret_encryption_key }}"
+        AUTH_OIDC_CLIENT_ID: "{{ homarr_auth_oidc_client_id }}"
+        AUTH_OIDC_CLIENT_SECRET: "{{ homarr_auth_oidc_client_secret }}"
+        AUTH_SECRET: "{{ homarr_auth_secret }}"
+
+- name: renovate Secret létrehozása
+  kubernetes.core.k8s:
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: renovate-secrets
+        namespace: automation
+      type: Opaque
+      stringData:
+        RENOVATE_TOKEN: "{{ github_pat_renovate }}"
+
+- name: guacamole Secret létrehozása
+  kubernetes.core.k8s:
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: guacamole-secrets
+        namespace: access
+      type: Opaque
+      stringData:
+        POSTGRES_PASSWORD: "{{ guacamole_postgres_password }}"
+
+# 2. ArgoCD sync letiltása
+- name: ArgoCD automated sync letiltása
+  kubernetes.core.k8s:
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    api_version: argoproj.io/v1alpha1
+    kind: Application
+    name: "{{ item }}"
+    namespace: argocd
+    definition:
+      spec:
+        syncPolicy:
+          automated: null
+    merge_type: merge
+  loop: "{{ argocd_apps }}"
+  become: yes
+
+# 3. Appok leállítása
+- name: Appok leállítása (replicas 0)
+  kubernetes.core.k8s_scale:
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    kind: "{{ item.kind }}"
+    name: "{{ item.app }}"
+    namespace: "{{ item.namespace }}"
+    replicas: 0
+    wait: yes
+    wait_timeout: 120
+  loop: "{{ restore_apps }}"
+  ignore_errors: yes
+
+# 4. Várakozás hogy minden pod tényleg leállt
+- name: Podok leállásának ellenőrzése
+  kubernetes.core.k8s_info:
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    kind: Pod
+    namespace: "{{ item }}"
+    label_selectors:
+      - "app.kubernetes.io/managed-by=Helm"
+  register: pod_info
+  until: pod_info.resources | length == 0
+  retries: 12
+  delay: 10
+  loop:
+    - media
+    - storage
+    - monitoring
+    - notification
+    - identity
+    - dashboard
+    - access
+    - automation
+  ignore_errors: yes
+
+# 5. Adatok visszaállítása
+- name: Mappák létrehozása és rsync
+  ansible.builtin.copy:
+    src: "/mnt/backup/app-configs-backup/{{ item.src_path }}"
+    dest: "/opt/app-data/{{ item.dst_path | dirname }}/"
+    remote_src: yes
+  loop: "{{ restore_apps }}"
+  become: yes
+  ignore_errors: yes
+
+# 6. qbit és guacamole külön tisztítással (ezeknek kell rm)
+- name: qbittorrent és guacamole célmappa tisztítása
+  ansible.builtin.file:
+    path: "/opt/app-data/{{ item }}/"
+    state: absent
+  loop:
+    - media-stack/qbittorrent/config
+    - access-stack/guacamole/db
+  become: yes
+
+- name: qbittorrent és guacamole rsync
+  ansible.builtin.synchronize:
+    src: "/mnt/backup/app-configs-backup/{{ item.src_path }}"
+    dest: "/opt/app-data/{{ item.dst_path }}"
+    delete: yes
+    recursive: yes
+  loop:
+    - { src_path: 'media-stack/qbittorrent/config/', dst_path: 'media-stack/qbittorrent/config/' }
+    - { src_path: 'access-stack/guacamole/db/',      dst_path: 'access-stack/guacamole/db/' }
+  become: yes
+
+- name: Renovate bot cache mappájának tiszta létrehozása
+  ansible.builtin.file:
+    path: /opt/app-data/admin-stack/renovate/config
+    state: directory
+    owner: "1000"
+    group: "1000"
+    mode: '0775'
+  become: yes
+
+# 7. Jogosultságok beállítása
+- name: Általános jogosultságok (1000:1000)
+  ansible.builtin.file:
+    path: "/opt/app-data/{{ item }}"
+    owner: "1000"
+    group: "1000"
+    recurse: yes
+  loop:
+    - media-stack
+    - identity-stack
+    - notification-stack
+    - dashboard-stack
+    - admin-stack
+    - access-stack
+    - storage-stack
+  become: yes
+
+- name: Alap chmod könyvtárakra
+  ansible.builtin.command:
+    cmd: find /opt/app-data -type d -exec chmod 775 {} +
+  become: yes
+  changed_when: false
+
+- name: Alap chmod fájlokra
+  ansible.builtin.command:
+    cmd: find /opt/app-data -type f -exec chmod 664 {} +
+  become: yes
+  changed_when: false
+
+- name: Gotify különleges jogok
+  ansible.builtin.file:
+    path: /opt/app-data/notification-stack/gotify/config
+    mode: '0777'
+    recurse: yes
+  become: yes
+
+- name: Nextcloud config jogok
+  ansible.builtin.file:
+    path: "/opt/app-data/storage-stack/nextcloud/{{ item.path }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.owner }}"
+    mode: "{{ item.mode }}"
+    recurse: yes
+  loop:
+    - { path: 'config', owner: '33',  mode: '0750' }
+    - { path: 'data',   owner: '33',  mode: '0750' }
+    - { path: 'db',     owner: '999', mode: '0700' }
+  become: yes
+
+- name: Monitoring jogok
+  ansible.builtin.file:
+    path: "/opt/app-data/monitoring-stack/{{ item.path }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.owner }}"
+    recurse: yes
+  loop:
+    - { path: 'grafana/config',    owner: '472'   }
+    - { path: 'prometheus/config', owner: '65534' }
+    - { path: 'uptime-kuma',       owner: '1000'  }
+  become: yes
+
+- name: Guacamole DB jogok
+  ansible.builtin.file:
+    path: /opt/app-data/access-stack/guacamole/db
+    owner: "999"
+    group: "999"
+    mode: '0700'
+    recurse: yes
+  become: yes
+
+# 8. Appok újraindítása
+- name: Appok újraindítása (replicas 1)
+  kubernetes.core.k8s_scale:
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    kind: "{{ item.kind }}"
+    name: "{{ item.app }}"
+    namespace: "{{ item.namespace }}"
+    replicas: 1
+    wait: yes
+    wait_timeout: 120
+  loop: "{{ restore_apps }}"
+  ignore_errors: yes
+
+# 9. ArgoCD sync visszakapcsolása
+- name: ArgoCD automated sync visszakapcsolása
+  kubernetes.core.k8s:
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    api_version: argoproj.io/v1alpha1
+    kind: Application
+    name: "{{ item }}"
+    namespace: argocd
+    definition:
+      spec:
+        syncPolicy:
+          automated:
+            prune: true
+            selfHeal: true
+    merge_type: merge
+  loop: "{{ argocd_apps }}"
+  become: yes
+
+  # 10. Rollout restart minden appra
+- name: Rollout restart – minden namespace, minden workload
+  shell: |
+    for ns in $(kubectl get ns -o jsonpath='{.items[*].metadata.name}'); do
+      kubectl rollout restart deployment,statefulset,daemonset -n $ns 2>/dev/null || true
+    done
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  become: yes
+  ignore_errors: yes

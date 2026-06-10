@@ -1,0 +1,12 @@
+---
+# SSH újraindítása
+- name: Restart SSH
+  service:
+    name: ssh
+    state: restarted
+
+# Rendszer újraindítása apt frissítés után
+- name: Rendszer ujrainditasa
+  reboot:
+    reboot_timeout: 600
+  when: reboot_required.stat.exists

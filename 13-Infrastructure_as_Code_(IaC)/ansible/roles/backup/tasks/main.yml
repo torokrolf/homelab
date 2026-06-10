@@ -1,0 +1,12 @@
+---
+- name: Edge-GW mentési feladatok betöltése
+  include_tasks: edge_gw.yml
+  when: inventory_hostname == 'edge-gw-01-230'
+
+- name: Access-Core mentési feladatok betöltése
+  include_tasks: access_core.yml
+  when: inventory_hostname == 'access-core-01-206'
+
+- name: K3s-Server mentési feladatok betöltése
+  include_tasks: k3s_server.yml
+  when: inventory_hostname == 'k3s-server-01-225'

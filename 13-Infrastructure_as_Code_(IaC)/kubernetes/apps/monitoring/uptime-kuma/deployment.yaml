@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: uptime-kuma
+  namespace: monitoring
+spec:
+  serviceName: "uptime-kuma"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: uptime-kuma
+  template:
+    metadata:
+      labels:
+        app: uptime-kuma
+    spec:
+      containers:
+      - name: uptime-kuma
+        image: louislam/uptime-kuma:2.4.0
+        ports:
+          - containerPort: 3001
+            name: http
+        volumeMounts:
+          - name: kuma-data
+            mountPath: /app/data
+        resources:
+          limits:
+            memory: 512Mi
+            cpu: "500m"
+          requests:
+            memory: 256Mi
+            cpu: "100m"
+      volumes:
+        - name: kuma-data
+          hostPath:
+            path: /opt/app-data/monitoring-stack/uptime-kuma/config
+            type: DirectoryOrCreate

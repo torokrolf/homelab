@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qbittorrent
+  namespace: media
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qbittorrent
+  template:
+    metadata:
+      labels:
+        app: qbittorrent
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: k3s-server-01-225
+      hostNetwork: true
+      containers:
+        - name: qbittorrent
+          image: lscr.io/linuxserver/qbittorrent:5.2.1-libtorrentv1
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: Europe/Budapest
+            - name: WEBUI_PORT
+              value: "8080"
+            - name: QBT_Preferences__WebUI__AuthSubnetWhitelistEnabled
+              value: "false"  
+            - name: QBT_Preferences__WebUI__AuthSubnetWhitelist
+              value: ""      
+            - name: QBT_Preferences__WebUI__LocalHostAuthenticationEnabled
+              value: "true"   
+            - name: QBT_Preferences__WebUI__HostHeaderValidation
+              value: "true"   
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: downloads
+              mountPath: /data
+      volumes:
+        - name: config
+          hostPath:
+            path: /opt/app-data/media-stack/qbittorrent/config
+            type: DirectoryOrCreate
+        - name: downloads
+          hostPath:
+            path: /mnt/torrent/data
+            type: Directory
+

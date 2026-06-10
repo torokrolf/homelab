@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vaultwarden
+  namespace: identity
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vaultwarden
+  template:
+    metadata:
+      labels:
+        app: vaultwarden
+    spec:
+      containers:
+      - name: vaultwarden
+        image: vaultwarden/server:1.36.0
+        env:
+        - name: WEBSOCKET_ENABLED
+          value: "true"
+        - name: SIGNUPS_ALLOWED
+          value: "true"
+        - name: TZ
+          value: "Europe/Budapest"
+        ports:
+        - containerPort: 80
+        - containerPort: 3012
+        volumeMounts:
+        - name: vault-data
+          mountPath: /data
+      volumes:
+      - name: vault-data
+        hostPath:
+          path: /opt/app-data/identity-stack/vaultwarden/config 
+          type: DirectoryOrCreate
