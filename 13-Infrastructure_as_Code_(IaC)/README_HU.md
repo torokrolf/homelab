@@ -119,7 +119,7 @@ Ez a megoldás lehetővé teszi, hogy gyorsan újraépítsem bármelyik VM-et, m
 ├── ansible/
 │   ├── site.yml            # Fő playbook — fázisokra bontva
 │   ├── roles/
-│   │   ├── common/         # Alapozás: csomagok, user, SSH, időzóna
+│   │   ├── common/         # Alapozás: apt cacher ng beállítása, csomagok telepítése, user létrehozás, SSH beállítás, időzóna beállítás, node-exporter telepítés 
 │   │   ├── mounts/         # NFS/SMB csatolások
 │   │   ├── docker/         # Docker telepítése
 │   │   ├── portainer_agent/# Portainer Agent (Docker hostokra)
