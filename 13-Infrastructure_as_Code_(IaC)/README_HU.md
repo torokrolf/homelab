@@ -155,7 +155,7 @@ Ez a megoldás lehetővé teszi, hogy gyorsan újraépítsem bármelyik VM-et, m
 
 A VM-eket egy általam előkészített **Golden Image** (Ubuntu 22.04, Proxmox cloud-init template) alapján hozom létre Full Clone módszerrel — az új VM-ek teljesen függetlenek az alap sablontól. A Terraform deklaratív módon definiálja az eltérő terhelésű csomópontok hardveres paramétereit (CPU, RAM, Disk). A Terraform **manuálisan, parancssorból kerül futtatásra** a `mgmt-core-01-204` menedzsment gépen, ahol CLI-ból vezérlem (init, plan, apply).
 
-A Terraform konfigurációkat nem nulláról írtam meg: először a Proxmoxon kézzel elkészített Ubuntu template-et **importáltam** a Terraform state-be (`terraform import`), így a már létező erőforrás Terraform felügyelete alá került. Ezt az alap konfigurációt adaptáltam és bővítettem a különböző VM-típusokhoz (`k3s-server-01-225`, `access-core-01-206`, `edge-gw-01-230`), az eltérő hardverigények és szerepkörök szerint.
+A Terraform konfigurációkat nem nulláról írtam meg: először a Proxmoxon kézzel elkészített Ubuntu template-et **importáltam** a Terraform state-be (`terraform import`), így a már létező erőforrás Terraform felügyelete alá került. Ezt az alap konfigurációt szerkesztettem a különböző VM-típusokhoz (`k3s-server-01-225`, `access-core-01-206`, `edge-gw-01-230`), az eltérő hardverigények és szerepkörök szerint.
 
 Kezelt VM-ek:
 
@@ -174,7 +174,7 @@ user_account {
 }
 ```
 
-A MAC-cím rögzítéssel biztosítom a statikus IP kiosztást a DHCP szerveren. Titkos értékek (Proxmox API token, jelszavak) `.tfvars` fájlban, verziókövetésen kívül tárolva.
+A MAC-cím rögzítéssel biztosítom a statikus IP kiosztást a pfSense DHCP szerveren. Titkos értékek (Proxmox API token, jelszavak) `.tfvars` fájlban tárolva.
 
 ---
 
@@ -204,7 +204,7 @@ A K3s workload-ok és a backup folyamatok feltételezik a NAS elérhetőségét.
 
 ---
 
-### 4. fázis — Réteg-specifikus telepítések
+### 4. fázis — Specifikus telepítések
 
 #### 4a. Edge Layer (`edge-gw-01-230`)
 
@@ -216,11 +216,26 @@ A Traefik **Docker Compose**-ban fut (nem K3s-en). Az Ansible:
 
 #### 4b. Identity & Access Layer (`access-core-01-206`)
 
-Szintén **Docker Compose** (Teleport + Authentik). Az Ansible:
-1. Teleport GPG kulcs + APT repo hozzáadása, v18.7.4 telepítése
-2. `rsync` a NAS-ról: Teleport state, Authentik DB + media
-3. Systemd service konfigurálása, Teleport indítása
-4. Authentik Docker Compose stack elindítása
+**Docker Compose** (Authentik) + **systemd** (Teleport) + **natív APT** (FreeRADIUS + daloRADIUS). Az Ansible:
+
+**Teleport:**
+1. GPG kulcs + APT repo hozzáadása, v18.7.4 telepítése
+2. `rsync` a NAS-ról: Teleport `data/` visszaállítása (`.sock` fájlok kizárva)
+3. Jinja2 template alapján config generálása, systemd service beállítása, Teleport indítása
+
+**Authentik:**
+1. `rsync` a NAS-ról: PostgreSQL `db_data/` + `config/` (media, custom-templates) visszaállítása
+2. Jogosultságok fixálása (DB: `999:999`, `0700`)
+3. Docker Compose stack elindítása (`pull: always`, `recreate: always`)
+
+**FreeRADIUS + daloRADIUS:**
+1. APT függőségek telepítése: Apache2, PHP, MariaDB, FreeRADIUS (MySQL + LDAP modulokkal)
+2. **Smart visszaállítás** — sorrendben ellenőrzi mi érhető el a NAS-on:
+   - Ha van `radius_configs_backup.tar.gz` → teljes konfig visszaállítás (`unarchive`)
+   - Ha van `radius_db_backup.sql` → adatbázis visszaállítás (`mysqldump` importból)
+   - Ha egyik sem létezik → friss telepítés: séma importálás, SQL modul konfigurálása, daloRADIUS repo klónozása GitHubról
+3. Apache vhostok beállítása: operators felület (`:8000`), users felület (`:80`)
+4. **Automatikus mentés a futás végén:** a role befejezésekor `tar.gz`-be csomagolja a FreeRADIUS + daloRADIUS + Apache konfigokat, és `mysqldump`-pal menti az adatbázist a NAS-ra — így a következő futásnál már mindig van miből visszaállítani
 
 #### 4c. K3s Node (`k3s-server-01-225`)
 
