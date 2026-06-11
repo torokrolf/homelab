@@ -119,16 +119,16 @@ Ez a megoldás lehetővé teszi, hogy gyorsan újraépítsem bármelyik VM-et, m
 ├── ansible/
 │   ├── site.yml            # Fő playbook — fázisokra bontva
 │   ├── roles/
-│   │   ├── common/         # Alapozás: apt cacher ng beállítása, csomagok telepítése, user létrehozás, SSH beállítás, időzóna beállítás, node-exporter telepítés 
+│   │   ├── common/         # Alapozás: apt cacher ng, csomagok, user, SSH, időzóna, node-exporter
+│   │   ├── backup/         # Automatizált rsync/dump alapú mentési rutinok (Docker & K3s).
 │   │   ├── mounts/         # NFS/SMB csatolások
 │   │   ├── docker/         # Docker telepítése
 │   │   ├── portainer_agent/# Portainer Agent (Docker hostokra)
-│   │   ├── k3s_prep/       # K3s előkészítés: swap off, kernel modulok
-│   │   ├── k3s_install/    # K3s binary + cluster init
+│   │   ├── k3s_setup/       # K3s előkészítés + telepítés: swap off, kernel modulok
 │   │   ├── argocd/         # ArgoCD telepítése Helm-mel
 │   │   ├── argocd_apps/    # ArgoCD Application-ök regisztrálása
 │   │   ├── app_restore/    # Konfig visszaállítás NAS-ról (rsync)
-│   │   ├── access_core_01/ # Teleport + Authentik (Docker Compose)
+│   │   ├── access_core_01/ # Teleport + Authentik (Docker Compose), Freeradius + daloRADIUS install
 │   │   └── edge_gw_01/     # Traefik reverse proxy (Docker Compose)
 │   └── secrets.enc.yaml    # SOPS+AGE titkosított változók
 ├── kubernetes/
