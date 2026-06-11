@@ -6,15 +6,7 @@
 
 # IaC
 
----
-
-## Gyorsnavigáció
-A projekt kódja az alábbi főbb mappákban található:
-- [**Terraform**](./terraform/) – VM-ek létrehozása Proxmoxon.
-- [**Ansible**](./ansible/) – Konfigurációs menedzsment, szerepkörök és telepítési folyamatok.
-- [**Kubernetes**](./kubernetes/) – GitOps alapú konténer-vezérlés és automatizált deployment (K3s, ArgoCD).
-- [**Secrets**](./secrets/) – SOPS + AGE titkosított változók és kulcskezelés.
-- [**Renovate**](./renovate.json) – Infrastruktúra és függőségek automatizált verziókövetése, Pull Request alapú frissítéskezelés (Docker, K3s).
+A cél, hogy a homelabom egy folyamatosan fejlődő tanulókörnyezetként szolgáljon, amelyen keresztül az Infrastructure as Code (IaC) megvalósítását tanulom és dokumentálom.
 
 ---
 
@@ -38,12 +30,12 @@ A projekt kódja az alábbi főbb mappákban található:
 
 **Hibrid megközelítést** alkalmazok — szándékosan.
 
-- **Automatizált platform:** A VM-ek egy részének létrehozása, az OS konfigurációja, a szoftverek telepítése és a K3s cluster felállítása teljesen automatizált (Terraform + Ansible).
+- **Automatizált platform:** A VM-ek létrehozása, az OS konfigurációja, a szoftverek telepítése és a K3s cluster felállítása teljesen automatizált (Terraform + Ansible).
 - **Hibrid konfigurációs modell:** A Kubernetes applikációk beállításait, konfigfájlokat NAS-ról szinkronizálom, hogy a környezet konzisztenciáját megőrizzem, miközben folyamatosan fejlesztem a rendszert tisztán GitOps-alapú kezelés irányába.
 
 Ez a megoldás lehetővé teszi, hogy gyorsan újraépítsem bármelyik VM-et, miközben a működő alkalmazásokhoz szükséges adatok és beállítások azonnal rendelkezésre állnak.
 
-**Kontextus:** Jelenleg **1 Proxmox fizikai szerver** fut, a K3s **single-node** (tehát nem HA-klaszter), a persistent storage **local-path** (nem Longhorn/NAS-ra mountolt PVC). Az appok konfigurációját **nem GitOps-ból állítom elő nulláról**, hanem a kézzel beállított, NAS-ra mentett konfigfájlokat állítja vissza a workflow. Ez tudatos döntés, de később változtatni kívánok rajta.
+**Kontextus:** Jelenleg **1 Proxmox fizikai szerver** fut, a K3s **single-node** (nem HA-klaszter), a persistent storage **local-path** (nem Longhorn/NAS-ra mountolt PVC). Az appok konfigurációját **nem GitOps-ból állítom elő nulláról**, hanem a kézzel beállított, NAS-ra mentett konfigfájlokat állítja vissza a pipeline. Ez tudatos döntés.
 
 ---
 
@@ -75,8 +67,8 @@ Ez a megoldás lehetővé teszi, hogy gyorsan újraépítsem bármelyik VM-et, m
 │  │ mgmt-core-01-204    │  │ k3s-server-01-225  (K3s single-node) │  │
 │  │                     │  │                                      │  │
 │  │ Ansible, Terraform  │  │ ArgoCD                               │  │
-│  │ Semaphore (Docker), │  │ identity-stack  (Vaultwarden)        │  │
-│  │ GitHub Runner,      │  │ monitoring-stack(Prometheus, Grafana,│  │
+│  │ Semaphore (Docker)  │  │ identity-stack  (Vaultwarden)        │  │
+│  │ GitHub Runner       │  │ monitoring-stack(Prometheus, Grafana,│  │
 │  │ Portainer (Docker)  │  │                 Uptime-Kuma)         │  │
 │  │                     │  │ storage-stack   (Nextcloud)          │  │
 │  └─────────────────────┘  │ media-stack     (Sonarr, Radarr,     │  │
@@ -93,14 +85,14 @@ Ez a megoldás lehetővé teszi, hogy gyorsan újraépítsem bármelyik VM-et, m
 │                           │ edge-gw-01-230                       │  │
 │                           │                                      │  │
 │                           │ Traefik (Docker)                     │  │
-│                           │ Cloudflare Tunnel (Docker)           │  │
+│                           │ Cloudflare Tunnel                    │  │
 │                           │ Portainer Agent                      │  │
 │                           │                                      │  │
 │                           └──────────────────────────────────────┘  │
 │                                                                     │
 │  ┌──────────────────────────────────────────────────────────────┐   │
 │  │  NAS (192.168.2.220)  — NFS + SMB                            │   │
-│  │  /mnt/backup/app-configs-backup/  ← mentett konfigok fájlok  │   │
+│  │  /mnt/backup/app-configs-backup/  ← mentett konfigok         │   │
 │  │  /mnt/torrent,  /mnt/pxeiso                                  │   │
 │  └──────────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────────┘
@@ -119,29 +111,28 @@ Ez a megoldás lehetővé teszi, hogy gyorsan újraépítsem bármelyik VM-et, m
 ├── ansible/
 │   ├── site.yml            # Fő playbook — fázisokra bontva
 │   ├── roles/
-│       ├── common/          # Alapozás: apt cacher ng, csomagok, user, SSH, időzóna, node-exporter
-│       ├── backup/          # Automatizált rsync/dump alapú mentési rutinok (Docker & K3s).
-│       ├── mounts/          # NFS/SMB csatolások
-│       ├── docker/          # Docker telepítése
-│       ├── portainer_agent/ # Portainer Agent (Docker hostokra)
-│       ├── k3s_setup/       # K3s előkészítés + telepítés: swap off, kernel modulok
-│       ├── argocd/          # ArgoCD telepítése Helm-mel
-│       ├── argocd_apps/     # ArgoCD Application-ök regisztrálása
-│       ├── app_restore/     # Konfig visszaállítás NAS-ról (rsync)
-│       ├── access_core_01/  # Teleport + Authentik (Docker Compose), Freeradius + daloRADIUS install
-│       └── edge_gw_01/      # Traefik reverse proxy (Docker Compose)
+│   │   ├── common/         # Alapozás: csomagok, user, SSH, időzóna
+│   │   ├── mounts/         # NFS/SMB csatolások
+│   │   ├── docker/         # Docker telepítése
+│   │   ├── portainer_agent/# Portainer Agent (Docker hostokra)
+│   │   ├── k3s_prep/       # K3s előkészítés: swap off, kernel modulok
+│   │   ├── k3s_install/    # K3s binary + cluster init
+│   │   ├── argocd/         # ArgoCD telepítése Helm-mel
+│   │   ├── argocd_apps/    # ArgoCD Application-ök regisztrálása
+│   │   ├── app_restore/    # Konfig visszaállítás NAS-ról (rsync)
+│   │   ├── access_core_01/ # Teleport + Authentik (Docker Compose)
+│   │   └── edge_gw_01/     # Traefik reverse proxy (Docker Compose)
+│   └── secrets.enc.yaml    # SOPS+AGE titkosított változók
 ├── kubernetes/
-│   └── apps/                # K8s manifest-ek (ArgoCD olvassa)
-│       ├── media/           # Sonarr, Radarr, Prowlarr, Bazarr, qBittorrent, Seerr
-│       ├── monitoring/      # Prometheus, Grafana, Uptime-Kuma
-│       ├── storage/         # Nextcloud
-│       ├── identity/        # Vaultwarden
-│       ├── notification/    # Gotify
-│       ├── dashboard/       # Homarr
-│       ├── access/          # Guacamole
-│       └── automation/      # Renovate (CronJob-al időzítve)
-├── secrets/
-│   ├── secrets.enc.yaml     # SOPS+AGE titkosított változók
+│   └── apps/               # K8s manifest-ek (ArgoCD olvassa)
+│       ├── media/          # Sonarr, Radarr, Prowlarr, Bazarr, qBittorrent, Seerr
+│       ├── monitoring/     # Prometheus, Grafana, Uptime-Kuma
+│       ├── storage/        # Nextcloud
+│       ├── identity/       # Vaultwarden
+│       ├── notification/   # Gotify
+│       ├── dashboard/      # Homarr
+│       ├── access/         # Guacamole
+│       └── automation/     # Renovate (CronJob-al időzítve)
 └── README.md
 ```
 
@@ -155,7 +146,7 @@ Ez a megoldás lehetővé teszi, hogy gyorsan újraépítsem bármelyik VM-et, m
 
 A VM-eket egy általam előkészített **Golden Image** (Ubuntu 22.04, Proxmox cloud-init template) alapján hozom létre Full Clone módszerrel — az új VM-ek teljesen függetlenek az alap sablontól. A Terraform deklaratív módon definiálja az eltérő terhelésű csomópontok hardveres paramétereit (CPU, RAM, Disk). A Terraform **manuálisan, parancssorból kerül futtatásra** a `mgmt-core-01-204` menedzsment gépen, ahol CLI-ból vezérlem (init, plan, apply).
 
-A Terraform konfigurációkat nem nulláról írtam meg: először a Proxmoxon kézzel elkészített Ubuntu template-et **importáltam** a Terraform state-be (`terraform import`), így a már létező erőforrás Terraform felügyelete alá került. Ezt az alap konfigurációt szerkesztettem a különböző VM-típusokhoz (`k3s-server-01-225`, `access-core-01-206`, `edge-gw-01-230`), az eltérő hardverigények és szerepkörök szerint.
+A Terraform konfigurációkat nem nulláról írtam meg: először a Proxmoxon kézzel elkészített Ubuntu template-et **importáltam** a Terraform state-be (`terraform import`), így a már létező erőforrás Terraform felügyelete alá került. Ezt az alap konfigurációt adaptáltam és bővítettem a különböző VM-típusokhoz (`k3s-server-01-225`, `access-core-01-206`, `edge-gw-01-230`), az eltérő hardverigények és szerepkörök szerint.
 
 Kezelt VM-ek:
 
@@ -174,7 +165,7 @@ user_account {
 }
 ```
 
-A MAC-cím rögzítéssel biztosítom a statikus IP kiosztást a pfSense DHCP szerveren. Titkos értékek (Proxmox API token, jelszavak) `.tfvars` fájlban tárolva.
+A MAC-cím rögzítéssel biztosítom a statikus IP kiosztást a DHCP szerveren. Titkos értékek (Proxmox API token, jelszavak) `.tfvars` fájlban, verziókövetésen kívül tárolva.
 
 ---
 
@@ -204,7 +195,7 @@ A K3s workload-ok és a backup folyamatok feltételezik a NAS elérhetőségét.
 
 ---
 
-### 4. fázis — Specifikus telepítések
+### 4. fázis — Réteg-specifikus telepítések
 
 #### 4a. Edge Layer (`edge-gw-01-230`)
 
@@ -295,6 +286,33 @@ A workflow a self-hosted runneren közvetlenül éri el a belső hálózatot —
 
 ---
 
+### 7. fázis — Backup (`backup` role)
+
+A `backup` role önállóan is futtatható a Dispatcher-ből (`playbook: backup`, célgép kiválasztásával), és géptípusonként más logikát futtat — a `main.yml` az `inventory_hostname` alapján dönti el melyik task fájl töltődik be.
+
+#### `access-core-01-206`
+1. Docker konténerek leállítása
+2. `/opt/app-data/` **dátumozott mappába** mentése rsync-kel (`app-configs-backup-YYYY-MM-DD/`)
+3. Docker konténerek újraindítása
+4. FreeRADIUS + daloRADIUS + Apache konfigok becsomagolása `tar.gz`-be a dátumozott mappába
+5. RADIUS adatbázis mentése `mysqldump`-pal
+
+#### `edge-gw-01-230`
+1. Docker konténerek leállítása
+2. `/opt/app-data/` **dátumozott mappába** mentése rsync-kel (`app-configs-backup-YYYY-MM-DD/`)
+3. Docker konténerek visszaindítása
+
+#### `k3s-server-01-225`
+A K3s esetében nem elég leállítani a Dockert — a podokat graceful módon kell lekapcsolni, hogy az adatok konzisztensen menthetők legyenek:
+1. Összes alkalmazás namespace összegyűjtése (rendszer namespace-ek kizárva)
+2. Minden Deployment és StatefulSet `replicas=0`-ra skálázása
+3. Podok teljes leállásának megvárása (`kubectl wait`)
+4. `/opt/app-data/` **dátumozott mappába** mentése rsync-kel (`.sock` és `admin-stack/` kizárva)
+5. Deploymentek és StatefulSetek visszaskálázása `replicas=1`-re
+6. Podok `Ready` állapotának megvárása (`kubectl wait --for=condition=Ready`)
+
+---
+
 <a name="wrkld"></a>
 
 ## Futó workload-ok
@@ -324,7 +342,7 @@ A workflow a self-hosted runneren közvetlenül éri el a belső hálózatot —
 | VM | App |
 |---|---|
 | `edge-gw-01-230` | Traefik (reverse proxy, Let's Encrypt) |
-| `access-core-01-206` | Teleport (SSH/RDP proxy), Authentik (SSO/IdP), FreeRADIUS (RADIUS server), daloRADIUS (webes admin UI) |
+| `access-core-01-206` | Teleport (SSH/RDP proxy), Authentik (SSO/IdP) |
 
 ---
 
