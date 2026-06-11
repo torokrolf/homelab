@@ -119,28 +119,29 @@ Ez a megoldás lehetővé teszi, hogy gyorsan újraépítsem bármelyik VM-et, m
 ├── ansible/
 │   ├── site.yml            # Fő playbook — fázisokra bontva
 │   ├── roles/
-│   │   ├── common/         # Alapozás: apt cacher ng, csomagok, user, SSH, időzóna, node-exporter
-│   │   ├── backup/         # Automatizált rsync/dump alapú mentési rutinok (Docker & K3s).
-│   │   ├── mounts/         # NFS/SMB csatolások
-│   │   ├── docker/         # Docker telepítése
-│   │   ├── portainer_agent/# Portainer Agent (Docker hostokra)
-│   │   ├── k3s_setup/       # K3s előkészítés + telepítés: swap off, kernel modulok
-│   │   ├── argocd/         # ArgoCD telepítése Helm-mel
-│   │   ├── argocd_apps/    # ArgoCD Application-ök regisztrálása
-│   │   ├── app_restore/    # Konfig visszaállítás NAS-ról (rsync)
-│   │   ├── access_core_01/ # Teleport + Authentik (Docker Compose), Freeradius + daloRADIUS install
-│   │   └── edge_gw_01/     # Traefik reverse proxy (Docker Compose)
-│   └── secrets.enc.yaml    # SOPS+AGE titkosított változók
+│       ├── common/          # Alapozás: apt cacher ng, csomagok, user, SSH, időzóna, node-exporter
+│       ├── backup/          # Automatizált rsync/dump alapú mentési rutinok (Docker & K3s).
+│       ├── mounts/          # NFS/SMB csatolások
+│       ├── docker/          # Docker telepítése
+│       ├── portainer_agent/ # Portainer Agent (Docker hostokra)
+│       ├── k3s_setup/       # K3s előkészítés + telepítés: swap off, kernel modulok
+│       ├── argocd/          # ArgoCD telepítése Helm-mel
+│       ├── argocd_apps/     # ArgoCD Application-ök regisztrálása
+│       ├── app_restore/     # Konfig visszaállítás NAS-ról (rsync)
+│       ├── access_core_01/  # Teleport + Authentik (Docker Compose), Freeradius + daloRADIUS install
+│       └── edge_gw_01/      # Traefik reverse proxy (Docker Compose)
 ├── kubernetes/
-│   └── apps/               # K8s manifest-ek (ArgoCD olvassa)
-│       ├── media/          # Sonarr, Radarr, Prowlarr, Bazarr, qBittorrent, Seerr
-│       ├── monitoring/     # Prometheus, Grafana, Uptime-Kuma
-│       ├── storage/        # Nextcloud
-│       ├── identity/       # Vaultwarden
-│       ├── notification/   # Gotify
-│       ├── dashboard/      # Homarr
-│       ├── access/         # Guacamole
-│       └── automation/     # Renovate (CronJob-al időzítve)
+│   └── apps/                # K8s manifest-ek (ArgoCD olvassa)
+│       ├── media/           # Sonarr, Radarr, Prowlarr, Bazarr, qBittorrent, Seerr
+│       ├── monitoring/      # Prometheus, Grafana, Uptime-Kuma
+│       ├── storage/         # Nextcloud
+│       ├── identity/        # Vaultwarden
+│       ├── notification/    # Gotify
+│       ├── dashboard/       # Homarr
+│       ├── access/          # Guacamole
+│       └── automation/      # Renovate (CronJob-al időzítve)
+├── secrets/
+│   ├── secrets.enc.yaml     # SOPS+AGE titkosított változók
 └── README.md
 ```
 
