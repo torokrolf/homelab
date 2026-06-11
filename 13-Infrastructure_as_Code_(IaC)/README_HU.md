@@ -6,8 +6,6 @@
 
 # IaC
 
-A cél, hogy a homelabom egy folyamatosan fejlődő tanulókörnyezetként szolgáljon, amelyen keresztül az Infrastructure as Code (IaC) megvalósítását tanulom és dokumentálom.
-
 ---
 
 ## Gyorsnavigáció
