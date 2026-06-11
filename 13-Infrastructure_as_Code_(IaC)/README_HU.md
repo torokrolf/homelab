@@ -324,7 +324,7 @@ A workflow a self-hosted runneren közvetlenül éri el a belső hálózatot —
 | VM | App |
 |---|---|
 | `edge-gw-01-230` | Traefik (reverse proxy, Let's Encrypt) |
-| `access-core-01-206` | Teleport (SSH/RDP proxy), Authentik (SSO/IdP) |
+| `access-core-01-206` | Teleport (SSH/RDP proxy), Authentik (SSO/IdP), FreeRADIUS (RADIUS server), daloRADIUS (webes admin UI) |
 
 ---
 
