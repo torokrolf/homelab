@@ -74,13 +74,90 @@
   community.general.timezone:
     name: "{{ system_timezone }}"
 
+# 1. APT PROXY BEÁLLÍTÁSA
+- name: Set APT proxy
+  copy:
+    dest: /etc/apt/apt.conf.d/01proxy
+    content: |
+      Acquire::http::Proxy "http://192.168.2.207:3142";
+    owner: root
+    group: root
+    mode: '0644'
+  when: ansible_host != "192.168.2.207"
+
+# 2. ALAPCSOMAGOK TELEPÍTÉSE
+- name: Alapcsomagok, MC és Node Exporter telepítése
+  tags: [programtelepitesek]
+  apt:
+    name:
+      - python3
+      - python3-pip
+      - curl
+      - git
+      - mc
+      - prometheus-node-exporter
+    state: present
+    update_cache: yes
+    cache_valid_time: 3600
+  register: apt_result
+  until: apt_result is success
+  retries: 3
+  delay: 5
+  become: yes
+  async: 600
+  poll: 10
+
+# 3. FELHASZNÁLÓ ÉS SSH BEÁLLÍTÁSOK
+- name: "{{ target_username }} felhasználó beállítása"
+  user:
+    name: "{{ target_username }}"
+    shell: /bin/bash
+    groups: sudo
+    append: yes
+    password: "{{ target_password_hash }}"
+
+- name: SSH kulcsok felmásolása
+  authorized_key:
+    user: "{{ target_username }}"
+    key: "{{ item }}"
+  loop: "{{ ssh_public_keys }}"
+
+- name: SSH Hardening és Banner
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "{{ item.reg }}"
+    line: "{{ item.line }}"
+  loop:
+    - { reg: '^#?PermitRootLogin',        line: 'PermitRootLogin no' }
+    - { reg: '^#?PasswordAuthentication', line: 'PasswordAuthentication no' }
+    - { reg: '^#?PubkeyAuthentication',   line: 'PubkeyAuthentication yes' }
+    - { reg: '^#?Banner',                 line: 'Banner /etc/issue.net' }
+  notify: Restart SSH
+
+- name: Jogi figyelmeztetes (Banner) beallitasa
+  copy:
+    dest: /etc/issue.net
+    content: "FIGYELEM! Csak jogosult felhasznaloknak! Minden tevekenyseg naplozva van.\n"
+
+- name: Shell Timeout (TMOUT)
+  lineinfile:
+    path: /etc/profile
+    regexp: '^export TMOUT='
+    line: 'export TMOUT=900'
+
+# 4. IDŐZÓNA
+- name: Rendszer időzóna beállítása
+  community.general.timezone:
+    name: "{{ system_timezone }}"
+
+# 5. PROMETHEUS NODE EXPORTER
 - name: Node Exporter inditasa es engedelyezese
   systemd:
     name: prometheus-node-exporter
     state: started
     enabled: yes
 
-# 5. REBOOT ELLENŐRZÉS
+# 6. REBOOT ELLENŐRZÉS
 - name: Reboot ellenőrzése
   stat:
     path: /var/run/reboot-required
