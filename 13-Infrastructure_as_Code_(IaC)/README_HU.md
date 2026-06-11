@@ -38,7 +38,7 @@ A projekt kódja az alábbi főbb mappákban található:
 
 **Hibrid megközelítést** alkalmazok — szándékosan.
 
-- **Automatizált platform:** A VM-ek létrehozása, az OS konfigurációja, a szoftverek telepítése és a K3s cluster felállítása teljesen automatizált (Terraform + Ansible).
+- **Automatizált platform:** A VM-ek egy részének létrehozása, az OS konfigurációja, a szoftverek telepítése és a K3s cluster felállítása teljesen automatizált (Terraform + Ansible).
 - **Hibrid konfigurációs modell:** A Kubernetes applikációk beállításait, konfigfájlokat NAS-ról szinkronizálom, hogy a környezet konzisztenciáját megőrizzem, miközben folyamatosan fejlesztem a rendszert tisztán GitOps-alapú kezelés irányába.
 
 Ez a megoldás lehetővé teszi, hogy gyorsan újraépítsem bármelyik VM-et, miközben a működő alkalmazásokhoz szükséges adatok és beállítások azonnal rendelkezésre állnak.
