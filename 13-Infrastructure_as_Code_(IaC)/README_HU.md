@@ -75,8 +75,8 @@ Ez a megoldás lehetővé teszi, hogy gyorsan újraépítsem bármelyik VM-et, m
 │  │ mgmt-core-01-204    │  │ k3s-server-01-225  (K3s single-node) │  │
 │  │                     │  │                                      │  │
 │  │ Ansible, Terraform  │  │ ArgoCD                               │  │
-│  │ Semaphore (Docker)  │  │ identity-stack  (Vaultwarden)        │  │
-│  │ GitHub Runner       │  │ monitoring-stack(Prometheus, Grafana,│  │
+│  │ Semaphore (Docker), │  │ identity-stack  (Vaultwarden)        │  │
+│  │ GitHub Runner,      │  │ monitoring-stack(Prometheus, Grafana,│  │
 │  │ Portainer (Docker)  │  │                 Uptime-Kuma)         │  │
 │  │                     │  │ storage-stack   (Nextcloud)          │  │
 │  └─────────────────────┘  │ media-stack     (Sonarr, Radarr,     │  │
@@ -93,14 +93,14 @@ Ez a megoldás lehetővé teszi, hogy gyorsan újraépítsem bármelyik VM-et, m
 │                           │ edge-gw-01-230                       │  │
 │                           │                                      │  │
 │                           │ Traefik (Docker)                     │  │
-│                           │ Cloudflare Tunnel                    │  │
+│                           │ Cloudflare Tunnel (Docker)           │  │
 │                           │ Portainer Agent                      │  │
 │                           │                                      │  │
 │                           └──────────────────────────────────────┘  │
 │                                                                     │
 │  ┌──────────────────────────────────────────────────────────────┐   │
 │  │  NAS (192.168.2.220)  — NFS + SMB                            │   │
-│  │  /mnt/backup/app-configs-backup/  ← mentett konfigok         │   │
+│  │  /mnt/backup/app-configs-backup/  ← mentett konfigok fájlok  │   │
 │  │  /mnt/torrent,  /mnt/pxeiso                                  │   │
 │  └──────────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────────┘
