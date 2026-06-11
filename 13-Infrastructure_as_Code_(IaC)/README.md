@@ -6,18 +6,15 @@
 
 # IaC
 
-The goal is to continuously evolve my homelab as a learning environment for implementing and documenting Infrastructure as Code (IaC) practices.
-
 ---
 
 ## Quick Navigation
-The project code is organized into the following main directories:
-
-- [**Terraform**](./terraform/) – VM provisioning and infrastructure definitions.
-- [**Ansible**](./ansible/) – Configuration management, roles, and deployment processes.
-- [**Kubernetes**](./kubernetes/) – GitOps-based applications (ArgoCD manifests).
+The project code is organized into the following main folders:
+- [**Terraform**](./terraform/) – VM provisioning on Proxmox.
+- [**Ansible**](./ansible/) – Configuration management, roles and deployment workflows.
+- [**Kubernetes**](./kubernetes/) – GitOps-based container orchestration and automated deployment (K3s, ArgoCD).
 - [**Secrets**](./secrets/) – SOPS + AGE encrypted variables and key management.
-- [**Renovate**](./renovate.json) – Automated dependency update configuration.
+- [**Renovate**](./renovate.json) – Automated version tracking and Pull Request-based update management for infrastructure and dependencies (Docker, K3s).
 
 ---
 
@@ -41,12 +38,12 @@ The project code is organized into the following main directories:
 
 I use a **hybrid approach** — intentionally.
 
-- **Automated platform:** VM provisioning, OS configuration, software installation and K3s cluster setup are fully automated (Terraform + Ansible).
+- **Automated platform:** Provisioning of some VMs, OS configuration, software installation and K3s cluster setup are fully automated (Terraform + Ansible).
 - **Hybrid config model:** Application configs are synced from NAS to maintain environment consistency, while I gradually migrate everything toward a pure GitOps-managed state.
 
 This allows me to rebuild any VM quickly, while all application data and configurations are immediately available.
 
-**Context:** Currently running **1 Proxmox physical server**, K3s is **single-node** (not HA), persistent storage is **local-path** (not Longhorn/NAS-backed PVC). Application configs are **not provisioned from scratch via GitOps** — instead, the pipeline restores previously saved configs from the NAS. This is a deliberate decision.
+**Context:** Currently running **1 Proxmox physical server**, K3s is **single-node** (not HA), persistent storage is **local-path** (not Longhorn/NAS-backed PVC). Application configs are **not provisioned from scratch via GitOps** — instead, the pipeline restores previously saved configs from the NAS. This is a deliberate decision, but one I intend to change later.
 
 ---
 
@@ -78,8 +75,8 @@ This allows me to rebuild any VM quickly, while all application data and configu
 │  │ mgmt-core-01-204    │  │ k3s-server-01-225  (K3s single-node) │  │
 │  │                     │  │                                      │  │
 │  │ Ansible, Terraform  │  │ ArgoCD                               │  │
-│  │ Semaphore (Docker)  │  │ identity-stack  (Vaultwarden)        │  │
-│  │ GitHub Runner       │  │ monitoring-stack(Prometheus, Grafana,│  │
+│  │ Semaphore (Docker), │  │ identity-stack  (Vaultwarden)        │  │
+│  │ GitHub Runner,      │  │ monitoring-stack(Prometheus, Grafana,│  │
 │  │ Portainer (Docker)  │  │                 Uptime-Kuma)         │  │
 │  │                     │  │ storage-stack   (Nextcloud)          │  │
 │  └─────────────────────┘  │ media-stack     (Sonarr, Radarr,     │  │
@@ -96,14 +93,14 @@ This allows me to rebuild any VM quickly, while all application data and configu
 │                           │ edge-gw-01-230                       │  │
 │                           │                                      │  │
 │                           │ Traefik (Docker)                     │  │
-│                           │ Cloudflare Tunnel                    │  │
+│                           │ Cloudflare Tunnel (Docker)           │  │
 │                           │ Portainer Agent                      │  │
 │                           │                                      │  │
 │                           └──────────────────────────────────────┘  │
 │                                                                     │
 │  ┌──────────────────────────────────────────────────────────────┐   │
 │  │  NAS (192.168.2.220)  — NFS + SMB                            │   │
-│  │  /mnt/backup/app-configs-backup/  ← saved configs            │   │
+│  │  /mnt/backup/app-configs-backup/  ← saved config files       │   │
 │  │  /mnt/torrent,  /mnt/pxeiso                                  │   │
 │  └──────────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────────┘
@@ -118,32 +115,33 @@ This allows me to rebuild any VM quickly, while all application data and configu
 ```
 .
 ├── terraform/
-│   └── proxmox-deploy/     # VM provisioning / cloning on Proxmox
+│   └── proxmox-deploy/      # VM provisioning / cloning on Proxmox
 ├── ansible/
-│   ├── site.yml            # Main playbook — split into phases
+│   ├── site.yml             # Main playbook — split into phases
 │   ├── roles/
-│   │   ├── common/         # Base setup: packages, user, SSH, timezone
-│   │   ├── mounts/         # NFS/SMB mounts
-│   │   ├── docker/         # Docker installation
-│   │   ├── portainer_agent/# Portainer Agent (for Docker hosts)
-│   │   ├── k3s_prep/       # K3s prep: swap off, kernel modules
-│   │   ├── k3s_install/    # K3s binary + cluster init
-│   │   ├── argocd/         # ArgoCD installation via Helm
-│   │   ├── argocd_apps/    # ArgoCD Application registration
-│   │   ├── app_restore/    # Config restore from NAS (rsync)
-│   │   ├── access_core_01/ # Teleport + Authentik (Docker Compose)
-│   │   └── edge_gw_01/     # Traefik reverse proxy (Docker Compose)
-│   └── secrets.enc.yaml    # SOPS+AGE encrypted variables
+│       ├── common/          # Base setup: apt-cacher-ng, packages, user, SSH, timezone, node-exporter
+│       ├── backup/          # Automated rsync/dump-based backup routines (Docker & K3s)
+│       ├── mounts/          # NFS/SMB mounts
+│       ├── docker/          # Docker installation
+│       ├── portainer_agent/ # Portainer Agent (for Docker hosts)
+│       ├── k3s_setup/       # K3s prep + install: swap off, kernel modules
+│       ├── argocd/          # ArgoCD installation via Helm
+│       ├── argocd_apps/     # ArgoCD Application registration
+│       ├── app_restore/     # Config restore from NAS (rsync)
+│       ├── access_core_01/  # Teleport + Authentik (Docker Compose), FreeRADIUS + daloRADIUS install
+│       └── edge_gw_01/      # Traefik reverse proxy (Docker Compose)
 ├── kubernetes/
-│   └── apps/               # K8s manifests (read by ArgoCD)
-│       ├── media/          # Sonarr, Radarr, Prowlarr, Bazarr, qBittorrent, Seerr
-│       ├── monitoring/     # Prometheus, Grafana, Uptime-Kuma
-│       ├── storage/        # Nextcloud
-│       ├── identity/       # Vaultwarden
-│       ├── notification/   # Gotify
-│       ├── dashboard/      # Homarr
-│       ├── access/         # Guacamole
-│       └── automation/     # Renovate (scheduled via CronJob)
+│   └── apps/                # K8s manifests (read by ArgoCD)
+│       ├── media/           # Sonarr, Radarr, Prowlarr, Bazarr, qBittorrent, Seerr
+│       ├── monitoring/      # Prometheus, Grafana, Uptime-Kuma
+│       ├── storage/         # Nextcloud
+│       ├── identity/        # Vaultwarden
+│       ├── notification/    # Gotify
+│       ├── dashboard/       # Homarr
+│       ├── access/          # Guacamole
+│       └── automation/      # Renovate (scheduled via CronJob)
+├── secrets/
+│   ├── secrets.enc.yaml     # SOPS+AGE encrypted variables
 └── README.md
 ```
 
@@ -157,7 +155,7 @@ This allows me to rebuild any VM quickly, while all application data and configu
 
 VMs are created as Full Clones from a **Golden Image** I prepared (Ubuntu 22.04, Proxmox cloud-init template) — new VMs are completely independent from the base template. Terraform declaratively defines hardware parameters (CPU, RAM, Disk) for each node. **Terraform is run manually from the CLI** on the `mgmt-core-01-204` management machine (init, plan, apply).
 
-The Terraform configurations were not written from scratch: I first **imported** the manually created Ubuntu template from Proxmox into the Terraform state (`terraform import`), bringing the existing resource under Terraform management. I then adapted and extended this base configuration for each VM type (`k3s-server-01-225`, `access-core-01-206`, `edge-gw-01-230`), adjusting hardware parameters and roles accordingly.
+The Terraform configurations were not written from scratch: I first **imported** the manually created Ubuntu template from Proxmox into the Terraform state (`terraform import`), bringing the existing resource under Terraform management. I then edited this base configuration for each VM type (`k3s-server-01-225`, `access-core-01-206`, `edge-gw-01-230`), adjusting hardware parameters and roles accordingly.
 
 Managed VMs:
 
@@ -176,7 +174,7 @@ user_account {
 }
 ```
 
-Static IP assignment is guaranteed by pinning MAC addresses on the DHCP server. Secrets (Proxmox API token, passwords) are stored in a `.tfvars` file outside version control.
+Static IP assignment is guaranteed by pinning MAC addresses on the pfSense DHCP server. Secrets (Proxmox API token, passwords) are stored in a `.tfvars` file.
 
 ---
 
@@ -218,11 +216,26 @@ Traefik runs in **Docker Compose** (not on K3s). Ansible:
 
 #### 4b. Identity & Access Layer (`access-core-01-206`)
 
-Also **Docker Compose** (Teleport + Authentik). Ansible:
-1. Adds Teleport GPG key + APT repo, installs v18.7.4
-2. `rsync` from NAS: Teleport state, Authentik DB + media
-3. Configures systemd service, starts Teleport
-4. Starts the Authentik Docker Compose stack
+**Docker Compose** (Authentik) + **systemd** (Teleport) + **native APT** (FreeRADIUS + daloRADIUS). Ansible handles:
+
+**Teleport:**
+1. GPG key + APT repo added, v18.7.4 installed
+2. `rsync` from NAS: `data/` restored (`.sock` files excluded)
+3. Config generated from Jinja2 template, systemd service configured, Teleport started
+
+**Authentik:**
+1. `rsync` from NAS: PostgreSQL `db_data/` + `config/` (media, custom-templates) restored
+2. Permissions fixed (DB: `999:999`, `0700`)
+3. Docker Compose stack started (`pull: always`, `recreate: always`)
+
+**FreeRADIUS + daloRADIUS:**
+1. APT dependencies installed: Apache2, PHP, MariaDB, FreeRADIUS (with MySQL + LDAP modules)
+2. **Smart restore** — checks in order what's available on the NAS:
+   - If `radius_configs_backup.tar.gz` exists → full config restore (`unarchive`)
+   - If `radius_db_backup.sql` exists → database restore (imported from `mysqldump`)
+   - If neither exists → fresh install: schema import, SQL module config, daloRADIUS repo cloned from GitHub
+3. Apache vhosts configured: operators interface (`:8000`), users interface (`:80`)
+4. **Auto-backup at the end of the run:** the role finishes by packing FreeRADIUS + daloRADIUS + Apache configs into a `tar.gz` and dumping the database via `mysqldump` to the NAS — so there's always a restore point for the next run
 
 #### 4c. K3s Node (`k3s-server-01-225`)
 
@@ -311,7 +324,7 @@ The workflow runs on the self-hosted runner with direct access to the internal n
 | VM | App |
 |---|---|
 | `edge-gw-01-230` | Traefik (reverse proxy, Let's Encrypt) |
-| `access-core-01-206` | Teleport (SSH/RDP proxy), Authentik (SSO/IdP) |
+| `access-core-01-206` | Teleport (SSH/RDP proxy), Authentik (SSO/IdP), FreeRADIUS (RADIUS server), daloRADIUS (web admin UI) |
 
 ---
 
