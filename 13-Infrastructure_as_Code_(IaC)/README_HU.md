@@ -10,11 +10,11 @@
 
 ## Gyorsnavigáció
 A projekt kódja az alábbi főbb mappákban található:
-- [**Terraform**](./terraform/) – VM-ek létrehozása és infrastruktúra definíciók.
+- [**Terraform**](./terraform/) – VM-ek létrehozása Proxmoxon.
 - [**Ansible**](./ansible/) – Konfigurációs menedzsment, szerepkörök és telepítési folyamatok.
-- [**Kubernetes**](./kubernetes/) – GitOps alapú applikációk (ArgoCD manifest-ek).
+- [**Kubernetes**](./kubernetes/) – GitOps alapú konténer-vezérlés és automatizált deployment (K3s, ArgoCD).
 - [**Secrets**](./secrets/) – SOPS + AGE titkosított változók és kulcskezelés.
-- [**Renovate**](./renovate.json) – Automatikus függőségfrissítési konfiguráció.
+- [**Renovate**](./renovate.json) – Infrastruktúra és függőségek automatizált verziókövetése, Pull Request alapú frissítéskezelés (Docker, K3s).
 
 ---
 
