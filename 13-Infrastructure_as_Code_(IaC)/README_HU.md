@@ -43,7 +43,7 @@ A projekt kódja az alábbi főbb mappákban található:
 
 Ez a megoldás lehetővé teszi, hogy gyorsan újraépítsem bármelyik VM-et, miközben a működő alkalmazásokhoz szükséges adatok és beállítások azonnal rendelkezésre állnak.
 
-**Kontextus:** Jelenleg **1 Proxmox fizikai szerver** fut, a K3s **single-node** (nem HA-klaszter), a persistent storage **local-path** (nem Longhorn/NAS-ra mountolt PVC). Az appok konfigurációját **nem GitOps-ból állítom elő nulláról**, hanem a kézzel beállított, NAS-ra mentett konfigfájlokat állítja vissza a pipeline. Ez tudatos döntés.
+**Kontextus:** Jelenleg **1 Proxmox fizikai szerver** fut, a K3s **single-node** (tehát nem HA-klaszter), a persistent storage **local-path** (nem Longhorn/NAS-ra mountolt PVC). Az appok konfigurációját **nem GitOps-ból állítom elő nulláról**, hanem a kézzel beállított, NAS-ra mentett konfigfájlokat állítja vissza a pipeline. Ez tudatos döntés.
 
 ---
 
