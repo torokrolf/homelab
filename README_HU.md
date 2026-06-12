@@ -4,6 +4,12 @@
 
 ---
 
+👤 Kapcsolat 
+
+🔗 [LinkedIn](https://www.linkedin.com/in/rolf-krisztián-török-529aa436a/)
+
+---
+
 # 📚 Tartalomjegyzék
 
 - [00. Homelab hardver](./00-Homelab_Hardware/README_HU.md)

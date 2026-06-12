@@ -4,6 +4,12 @@
 
 ---
 
+👤 Contact
+
+🔗 [LinkedIn](https://www.linkedin.com/in/rolf-krisztián-török-529aa436a/)
+
+---
+
 # 📚 Table of Contents
 
 - [00. Homelab Hardware](./00-Homelab_Hardware/README.md)
