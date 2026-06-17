@@ -66,13 +66,13 @@ A beépített szabálykészlet alapján a következő rule ID-kat azonosítottam
 Mindegyik eseményt valós teszttel validáltam (létező/nem létező felhasználónévvel SSH-zás, helyes és helytelen sudo jelszó megadása, 3x egymás után hibás jelszó), és a dashboardon ellenőriztem, hogy a megfelelő rule ID-val jelenik-e meg.
 
 Nem létező userrel belépési kísérlet ssh-n. Wazuh eseményeknél ezt kaptam. 
-<img width="945" height="47" alt="kép" src="https://github.com/user-attachments/assets/d905b73b-a8c8-4457-b2fd-1b1a0b401152" />
+<img width="612" height="53" alt="kép" src="https://github.com/user-attachments/assets/9a2115b5-c2ac-475e-baeb-d66226d951fa" />
 
 Létező userrel ssh bejelentkezésnél ezt kaptam Wazuh eseményeknél.
-<img width="945" height="40" alt="kép" src="https://github.com/user-attachments/assets/6eb94218-1e63-41af-8dd8-12e3aaa46eae" />
+<img width="623" height="59" alt="kép" src="https://github.com/user-attachments/assets/518ed23d-d3d0-4d08-8ff9-180eeaed195b" />
 
 Létező userrel, de rossz jelszóval ssh belépésnél ezt az eseményt generálta.
-<img width="945" height="45" alt="kép" src="https://github.com/user-attachments/assets/11f67c81-6efc-4ef9-b8b7-ec01848c8270" />
+<img width="629" height="54" alt="kép" src="https://github.com/user-attachments/assets/ccc8b52d-ecd4-47fc-9ee9-fe06e9530574" />
 
 Rendszer életében első sikeres root-ba lépésnél ezt írja.
 <img width="945" height="58" alt="kép" src="https://github.com/user-attachments/assets/17b3ecb1-006e-44bf-a11b-6b018e9966e7" />
