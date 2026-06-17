@@ -17,9 +17,7 @@
 - [Fájlintegritás-monitoring (FIM)](#fim)
 - [Malware detektálás (FIM + VirusTotal)](#virustotal)
 - [Sebezhetőség-kezelés (Vulnerability Detection)](#vuln)
-- [Biztonsági megfelelőség-vizsgálat (CIS Benchmark)](#cis)
 - [Log retenció](#logretention)
-- [Jelenlegi állapot & további tervek](#tervek)
 
 ---
 
@@ -146,7 +144,6 @@ A `100005` minden kiemelt root parancsot 7-es szinten riaszt, a `100006` pedig �
 Most már ha netstat-ot futtatom kliensen, akkor nem ugrik fel sok más hozzátartozó parancs, csak a netstat.
 <img width="1203" height="91" alt="kép" src="https://github.com/user-attachments/assets/5c4ab93c-41e0-4c70-89d2-1612f5ec7e4f" />
 
-
 ---
 
 <a name="bruteforce"></a>
@@ -174,8 +171,6 @@ sudo gunzip /usr/share/wordlists/rockyou.txt.gz
 hydra -t 4 -l root -P /usr/share/wordlists/rockyou.txt 192.168.2.200 ssh
 ```
 
-
-
 **3. Detekció:** a beépített logika 120 másodpercen belüli 8 sikertelen bejelentkezést azonosít be brute force-ként (rule 5763, level 10). A riasztás után 60 másodperces "ignore" időszak akadályozza meg, hogy minden további próbálkozás újra-riasszon.
 
 **4. Automatikus válasz:** a riasztás triggereli az Active Response-t, amely a célgép tűzfalán (iptables) blokkolja a támadó IP-jét. A teszt ideje alatt a támadó gépről sem ping, sem SSH nem volt elérhető a célpont felé.
@@ -186,8 +181,6 @@ sudo iptables -L INPUT -v -n --line-numbers
 
 **5. Automatikus feloldás:** a beállított 180 másodperces timeout lejártával a Wazuh önműködően eltávolítja a tűzfalszabályt.
 
-**Fontos technikai részlet:** a `firewall-drop` script közvetlenül `iptables`-t használ, így a védelem akkor is működik, ha az `ufw` ki van kapcsolva — az `ufw` valójában csak egy wrapper az `iptables` köré.
-
 ---
 
 <a name="fim"></a>
@@ -196,17 +189,11 @@ sudo iptables -L INPUT -v -n --line-numbers
 
 Az alapértelmezett FIM konfiguráció 12 óránként (`<frequency>43200</frequency>`) ellenőrzi a kijelölt könyvtárakat (`/etc`, `/usr/bin`, `/usr/sbin`, `/bin`, `/sbin`, `/boot`), ami nem valós idejű, de kíméli az erőforrásokat.
 
-A `/root` könyvtárra — mint a rendszer legérzékenyebb pontja — valós idejű, teljes körű figyelést állítottam be:
+A `/root` könyvtárra valós idejű, teljes körű figyelést állítottam be a kliensen:
 
 ```xml
 <directories check_all="yes" report_changes="yes" realtime="yes">/root</directories>
 ```
-
-| Paraméter | Hatás |
-|---|---|
-| `realtime="yes"` | azonnali észlelés, nem kell várni a következő scan-ciklusra |
-| `report_changes="yes"` | nem csak azt jelzi, hogy változott valami, hanem azt is, *mi* változott |
-| `check_all="yes"` | méret, jogosultság, tulajdonos és tartalom-hash egyaránt vizsgálva |
 
 **Tesztelt és validált eseménytípusok:**
 
@@ -216,7 +203,7 @@ A `/root` könyvtárra — mint a rendszer legérzékenyebb pontja — valós id
 | 550 | Fájl tartalmának módosítása (checksum változás) |
 | 553 | Fájl törlése |
 
-Minden esetet valós teszttel igazoltam: fájl létrehozása (`touch`), tartalom módosítása, jogosultság-változtatás és tulajdonos-váltás — minden alkalommal a dashboard pontosan megmutatta a régi és az új értéket (pl. `rw-r--r--` → módosított jogosultság, vagy `root` → `rolf` tulajdonosváltás).
+Minden esetet valós teszttel igazoltam: fájl létrehozása a figyelt könyvtárban, tartalom módosítása, jogosultság-változtatás és tulajdonos-váltás — minden alkalommal a dashboard pontosan megmutatta a régi és az új értéket, ami változott.
 
 ---
 
@@ -224,7 +211,7 @@ Minden esetet valós teszttel igazoltam: fájl létrehozása (`touch`), tartalom
 
 ## Malware detektálás (FIM + VirusTotal)
 
-A FIM-re épülő, automatizált malware-szűrési folyamat: ha egy figyelt könyvtárban (jelen esetben `/root`) új fájl jelenik meg vagy módosul, a Wazuh kiszámolja a fájl hash-ét, és a **VirusTotal API**-n keresztül lekérdezi, hogy a hash ismert kártékony fájlhoz tartozik-e.
+A fájl integritás monitorozásra épülő, automatizált malware-szűrési folyamat: ha egy figyelt könyvtárban (jelen esetben `/root`) új fájl jelenik meg vagy módosul, a Wazuh kiszámolja a fájl hash-ét, és a **VirusTotal API**-n keresztül lekérdezi, hogy a hash ismert kártékony fájlhoz tartozik-e.
 
 **1. Célzott szabályok** a `/root`-ban történő FIM eseményekre (öröklődve az 550/554 alap szabályokból):
 
@@ -283,14 +270,6 @@ A saját rendszerem az érintett verziótartományba esett (149.0.7827.102), a C
 
 ---
 
-<a name="cis"></a>
-
-## Biztonsági megfelelőség-vizsgálat (CIS Benchmark)
-
-A **Configuration Assessment** modul a CIS (Center for Internet Security) iparági szabvány alapján auditálja a rendszerkonfigurációt. Egy Windows 11 Enterprise kliensen futtatott vizsgálat a **CIS Microsoft Windows 11 Enterprise Benchmark v3.0.0** ellen 23%-os megfelelést mutatott (113 ellenőrzés sikeres, 360 sikertelen), részletes bontással arról, mely beállítások térnek el az ajánlott biztonsági konfigurációtól.
-
----
-
 <a name="logretention"></a>
 
 ## Log retenció
@@ -320,26 +299,6 @@ Az alert/archive logok (`*.gz`) 30 napnál régebbi tételeinek takarítását e
 0 0 * * * find /var/ossec/logs/alerts/ -name "*.gz" -type f -mtime +30 -exec rm -f {} \;
 0 0 * * * find /var/ossec/logs/archives/ -name "*.gz" -type f -mtime +30 -exec rm -f {} \;
 ```
-
----
-
-<a name="tervek"></a>
-
-## Jelenlegi állapot & további tervek
-
-- [x] Wazuh manager natív telepítése, agentek Linux és Windows kliensekre
-- [x] Decoder/Rule logika és hierarchia megértése, gyakorlati tesztelés
-- [x] SSH és sudo autentikációs események azonosítása valós teszttel
-- [x] Auditd integráció root parancsvégrehajtás figyelésére, egyedi zajszűrő szabállyal
-- [x] SSH brute force end-to-end demonstráció (támadás → detekció → Active Response → automatikus feloldás)
-- [x] Fájlintegritás-monitoring valós idejű figyeléssel és validált eseménytípusokkal
-- [x] Malware detektálás FIM + VirusTotal API integrációval, EICAR teszttel validálva
-- [x] Vulnerability Detection valós CVE-vel demonstrálva
-- [x] CIS Benchmark alapú Configuration Assessment
-- [ ] Suricata (IDS/IPS) integrálása a pfSense-en, alertek továbbítása Wazuh-ba
-- [ ] Nessus Essentials alapú sebezhetőség-szkennelés, before/after összevetéssel
-- [ ] Wazuh + Suricata közös incidens-korreláció (SOC use case)
-- [ ] Egyedi incidens-riport sablon kialakítása valós eseményekhez
 
 ---
 
