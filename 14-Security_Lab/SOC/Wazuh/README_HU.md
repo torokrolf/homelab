@@ -28,18 +28,16 @@
 
 ## Architektúra & Telepítés
 
-A **Wazuh manager** natív, szkriptalapú telepítéssel került fel egy dedikált Ubuntu VM-re (4.14-es verzió), agentek pedig minden monitorozni kívánt Linux és Windows gépre.
+A **Wazuh manager** natív, szkriptalapú telepítéssel került fel egy dedikált Ubuntu VM-re, agentek pedig minden monitorozni kívánt Linux és Windows gépre.
 
 ```bash
 curl -sO https://packages.wazuh.com/4.14/wazuh-install.sh
 sudo bash wazuh-install.sh -a
 ```
 
-A telepítés sikerét a generált admin jelszó visszaigazolása jelzi, amit biztonságosan elmentettem. Agent oldalon a Wazuh dashboard generál egyedi telepítő parancsot gép- és platform-specifikusan (Linux esetén shell parancs, Windows esetén admin PowerShell), ami tartalmazza a manager IP-jét és az agent nevét.
+A telepítés után a generált admin jelszóvalé tudok belépni a webes felületre. Agent oldalon a Wazuh dashboard generál egyedi telepítő parancsot gép- és platform-specifikusan.
 
-> **Megjegyzés a telepítésről:** sikertelen/megszakadt telepítés esetén (jellemzően helyhiány miatt — minimum 10 GB szabad terület szükséges) a manager maradék fájljait manuálisan kell eltávolítani újratelepítés előtt (`dpkg` cache, `/var/ossec`, `wazuh-install-files`), különben a script hibára fut.
-
-A manager és agent konfigurációs fájlja egységesen: `/var/ossec/etc/ossec.conf`
+<img width="945" height="413" alt="kép" src="https://github.com/user-attachments/assets/d6d00d4e-ce43-4886-b610-c8340428fa3d" />
 
 ---
 
