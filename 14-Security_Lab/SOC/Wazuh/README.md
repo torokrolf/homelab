@@ -1,6 +1,6 @@
 ← [Back to Homelab main page](../README.md)
 
-[🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
+[🇬🇧 English](README.md) | [🇭🇺 Magyar](../../../README.md)
 
 ---
 
@@ -362,4 +362,4 @@ Cleanup of alert/archive logs (`*.gz`) older than 30 days is handled by a cron j
 
 ---
 
-← [Back to Homelab main page](../README.md)
+← [Back to Homelab main page](../../../README.md)
