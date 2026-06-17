@@ -26,8 +26,9 @@
 - [11. Scripts](./11-Scripts/README.md)
 - [12. Docker](./12-Docker/README.md)
 - [13. Infrastructure as Code (IaC)](./13-Infrastructure_as_Code_(IaC)/README.md)
-- [14. Design Decisions](./14-Design_Decisions/README.md)
-- [15. Errors and Troubleshooting](./15-Errors/README.md)
+- [14. Security_Lab](./14-Security_Lab/README.md)
+- [15. Design Decisions](./14-Design_Decisions/README.md)
+- [16. Errors and Troubleshooting](./15-Errors/README.md)
 
 ---
 
