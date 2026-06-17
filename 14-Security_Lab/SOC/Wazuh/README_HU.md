@@ -109,7 +109,7 @@ Az agent konfigjához hozzáadva a log forrást:
 </localfile>
 ```
 
-Egyedi audit szabály, amely minden root által indított process-execution eseményt logol (64 és 32 bites parancsokra egyaránt):
+Egyedi audit szabály a kliensen, amely minden root által indított process-execution eseményt logol (64 és 32 bites parancsokra egyaránt):
 
 ```
 -a exit,always -F euid=0 -F arch=b64 -S execve -k audit-wazuh-c
@@ -120,7 +120,11 @@ Betöltés: `sudo augenrules --load`
 
 ### Zajszűrés saját rule-lal
 
-Az auditd minden root execve hívást naplóz, beleértve a háttérben automatikusan lefutó, nem releváns parancsokat is (`sed`, `df`, `systemctl`, stb.). Ezt két egymásra épülő saját szabállyal szűrtem:
+Az auditd minden root execve hívást naplóz, beleértve a háttérben automatikusan lefutó, nem releváns parancsokat is (`sed`, `df`, `systemctl`, stb.).
+A képen is látható hogy noha kliensen csak netstat parancsot futtattam, mégis rengeteg más parancsot is megjelenít.
+<img width="1207" height="587" alt="kép" src="https://github.com/user-attachments/assets/fec136e8-5a71-4986-aac8-40fb40dfb131" />
+
+Ezt két egymásra épülő saját szabállyal szűrtem szerveren:
 
 ```xml
 <rule id="100005" level="7">
@@ -138,6 +142,10 @@ Az auditd minden root execve hívást naplóz, beleértve a háttérben automati
 ```
 
 A `100005` minden kiemelt root parancsot 7-es szinten riaszt, a `100006` pedig — ami a `100005`-ön örökölve fut — a whitelistben szereplő, ártalmatlan parancsokat 0 szintre állítja, így azok nem jelennek meg riasztásként a dashboardon, de a naplóból visszakereshetők maradnak.
+
+Most már ha netstat-ot futtatom kliensen, akkor nem ugrik fel sok más hozzátartozó parancs, csak a netstat.
+<img width="1203" height="91" alt="kép" src="https://github.com/user-attachments/assets/5c4ab93c-41e0-4c70-89d2-1612f5ec7e4f" />
+
 
 ---
 
@@ -165,6 +173,8 @@ Ez a teszt a teljes detekciós láncot mutatja be, a támadás szimulálásátó
 sudo gunzip /usr/share/wordlists/rockyou.txt.gz
 hydra -t 4 -l root -P /usr/share/wordlists/rockyou.txt 192.168.2.200 ssh
 ```
+
+
 
 **3. Detekció:** a beépített logika 120 másodpercen belüli 8 sikertelen bejelentkezést azonosít be brute force-ként (rule 5763, level 10). A riasztás után 60 másodperces "ignore" időszak akadályozza meg, hogy minden további próbálkozás újra-riasszon.
 
