@@ -6,8 +6,6 @@
 
 # Security Operations (SIEM & Detection)
 
-A cél egy működő Security Operations Center (SOC) alapfolyamatainak gyakorlása: log-alapú behatolásészlelés, szabályírás, incidens kivizsgálás és automatizált védelmi reakció kiépítése **Wazuh** SIEM/XDR platformmal.
-
 ---
 
 ## 📚 Tartalomjegyzék

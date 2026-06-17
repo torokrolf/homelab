@@ -6,8 +6,6 @@
 
 # Security Operations (SIEM & Detection)
 
-The goal is to practice the core workflows of a Security Operations Center (SOC): log-based intrusion detection, rule writing, incident investigation, and automated defensive response, built on the **Wazuh** SIEM/XDR platform.
-
 ---
 
 ## 📚 Table of Contents
