@@ -1,6 +1,6 @@
-← [Back to Homelab main page](../README.md)
+← [Back to Homelab main page(../../../README_HU.md)
 
-[🇬🇧 English](README.md) | [🇭🇺 Magyar](../../../README.md)
+[🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
 
 ---
 
