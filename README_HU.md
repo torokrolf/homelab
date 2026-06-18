@@ -62,6 +62,8 @@ Ez a projekt egy saját tervezésű, vállalati környezet szerű homelabot muta
 | PXE boot | iVentoy |
 | Hibakeresés | Wireshark |
 
+<img width="1904" height="844" alt="kép" src="https://github.com/user-attachments/assets/79814e0c-454f-4582-b802-8888103f927d" />
+
 ---
 
 ## 🎯 Hogyan segíti ez a homelab a fejlődésem?:
