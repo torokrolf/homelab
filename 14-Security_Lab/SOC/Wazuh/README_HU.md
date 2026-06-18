@@ -64,24 +64,31 @@ A beépített szabálykészlet alapján a következő rule ID-kat azonosítottam
 Mindegyik eseményt valós teszttel validáltam (létező/nem létező felhasználónévvel SSH-zás, helyes és helytelen sudo jelszó megadása, 3x egymás után hibás jelszó), és a dashboardon ellenőriztem, hogy a megfelelő rule ID-val jelenik-e meg.
 
 Nem létező userrel belépési kísérlet ssh-n. Wazuh eseményeknél ezt kaptam. 
+
 <img width="612" height="53" alt="kép" src="https://github.com/user-attachments/assets/9a2115b5-c2ac-475e-baeb-d66226d951fa" />
 
 Létező userrel ssh bejelentkezésnél ezt kaptam Wazuh eseményeknél.
+
 <img width="623" height="59" alt="kép" src="https://github.com/user-attachments/assets/518ed23d-d3d0-4d08-8ff9-180eeaed195b" />
 
 Létező userrel, de rossz jelszóval ssh belépésnél ezt az eseményt generálta.
+
 <img width="629" height="54" alt="kép" src="https://github.com/user-attachments/assets/ccc8b52d-ecd4-47fc-9ee9-fe06e9530574" />
 
 Rendszer életében első sikeres root-ba lépésnél ezt írja.
+
 <img width="945" height="58" alt="kép" src="https://github.com/user-attachments/assets/17b3ecb1-006e-44bf-a11b-6b018e9966e7" />
 
 További sikeres root-ba lépésnél már ezt fogom látni.
+
 <img width="945" height="52" alt="kép" src="https://github.com/user-attachments/assets/61162a41-351b-4b2b-9d3c-de1aee91f71c" />
 
 Egy vagy két sikertelen jelszónál ezt az eseményt generálja.
+
 <img width="945" height="51" alt="kép" src="https://github.com/user-attachments/assets/995ef402-6ac5-48c7-8a22-b7cb173e74a4" />
 
 Három sikertelen jelszónál az alábbi eseményt kapom.
+
 <img width="945" height="50" alt="kép" src="https://github.com/user-attachments/assets/dcfd5217-6236-4e2c-bb22-a071ba758e62" />
 
 ---
@@ -142,6 +149,7 @@ Ezt két egymásra épülő saját szabállyal szűrtem szerveren:
 A `100005` minden kiemelt root parancsot 7-es szinten riaszt, a `100006` pedig — ami a `100005`-ön örökölve fut — a whitelistben szereplő, ártalmatlan parancsokat 0 szintre állítja, így azok nem jelennek meg riasztásként a dashboardon, de a naplóból visszakereshetők maradnak.
 
 Most már ha netstat-ot futtatom kliensen, akkor nem ugrik fel sok más hozzátartozó parancs, csak a netstat.
+
 <img width="1203" height="91" alt="kép" src="https://github.com/user-attachments/assets/5c4ab93c-41e0-4c70-89d2-1612f5ec7e4f" />
 
 ---
@@ -210,18 +218,23 @@ A `/root` könyvtárra valós idejű, teljes körű figyelést állítottam be a
 Minden esetet valós teszttel igazoltam: fájl létrehozása a figyelt könyvtárban, tartalom módosítása, jogosultság-változtatás és tulajdonos-váltás — minden alkalommal a dashboard pontosan megmutatta a régi és az új értéket, ami változott.
 
 Létrehozom a fájlt.
+
 <img width="671" height="737" alt="kép" src="https://github.com/user-attachments/assets/869e5857-2b99-4cf9-8f75-904a4120ab30" />
 
 Fájlt tartalmát módosítottam.
+
 <img width="808" height="565" alt="kép" src="https://github.com/user-attachments/assets/d49c503d-0773-4046-a2e0-ddabfc04a470" />
 
 Jogosultságot változtattam.
+
 <img width="625" height="280" alt="kép" src="https://github.com/user-attachments/assets/14fb2996-6ced-4d36-bb3d-225db6166e8a" />
 
 Tulajdonost változtattam.
+
 <img width="599" height="354" alt="kép" src="https://github.com/user-attachments/assets/3bdb83b7-9fe5-4de6-bd96-c74753168f5e" />
 
 Törlöm a fájlt.
+
 <img width="862" height="218" alt="kép" src="https://github.com/user-attachments/assets/dd5c1da7-50a0-496a-860e-d73e3fc2767f" />
 
 ---
@@ -264,10 +277,12 @@ A fájl integritás monitorozásra épülő, automatizált malware-szűrési fol
 ```bash
 curl -Lo eicar.com https://secure.eicar.org/eicar.com
 ```
+
 <img width="945" height="187" alt="kép" src="https://github.com/user-attachments/assets/7b0abb22-0b5e-4317-83d8-b460de07e75d" />
 
 
 A Wazuh detektálta az új fájlt, lekérdezte a VirusTotal API-n, és riasztást generált arra, hogy a fájl ismert kártékony kód.
+
 <img width="945" height="21" alt="kép" src="https://github.com/user-attachments/assets/bb20ee4d-8275-4f95-a294-cfecacb17934" />
 
 ---
