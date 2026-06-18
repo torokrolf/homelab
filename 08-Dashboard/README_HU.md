@@ -16,7 +16,7 @@
 - Erre a célra a **Homarr**-t használom, amely lehetővé teszi, hogy minden szolgáltatást **egyetlen felületről**, gyorsan és egyszerűen érjek el.
 - Külön előnye, hogy **telefonon is kifejezetten jól használható**, így mobilról is könnyen menedzselhető a teljes homelab.
 
-![Kép leírása](https://github.com/user-attachments/assets/7508a075-fa1c-4dcb-82d5-00855fa0ec99)
+<img width="1904" height="844" alt="kép" src="https://github.com/user-attachments/assets/84a21c25-d1df-490d-993a-e510fbced519" />
 
 ---
 
