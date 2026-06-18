@@ -173,6 +173,8 @@ hydra -t 4 -l root -P /usr/share/wordlists/rockyou.txt 192.168.2.200 ssh
 
 **3. Detekció:** a beépített logika 120 másodpercen belüli 8 sikertelen bejelentkezést azonosít be brute force-ként (rule 5763, level 10). A riasztás után 60 másodperces "ignore" időszak akadályozza meg, hogy minden további próbálkozás újra-riasszon.
 
+<img width="945" height="286" alt="kép" src="https://github.com/user-attachments/assets/e03e0386-985a-4e0e-b425-0bb1fbcb3de1" />
+
 **4. Automatikus válasz:** a riasztás triggereli az Active Response-t, amely a célgép tűzfalán (iptables) blokkolja a támadó IP-jét. A teszt ideje alatt a támadó gépről sem ping, sem SSH nem volt elérhető a célpont felé.
 
 ```bash
@@ -180,6 +182,8 @@ sudo iptables -L INPUT -v -n --line-numbers
 ```
 
 **5. Automatikus feloldás:** a beállított 180 másodperces timeout lejártával a Wazuh önműködően eltávolítja a tűzfalszabályt.
+
+<img width="945" height="236" alt="kép" src="https://github.com/user-attachments/assets/6ce3d35f-95e0-4f08-8174-c5f9304154f0" />
 
 ---
 
@@ -204,6 +208,21 @@ A `/root` könyvtárra valós idejű, teljes körű figyelést állítottam be a
 | 553 | Fájl törlése |
 
 Minden esetet valós teszttel igazoltam: fájl létrehozása a figyelt könyvtárban, tartalom módosítása, jogosultság-változtatás és tulajdonos-váltás — minden alkalommal a dashboard pontosan megmutatta a régi és az új értéket, ami változott.
+
+Létrehozom a fájlt.
+<img width="671" height="737" alt="kép" src="https://github.com/user-attachments/assets/869e5857-2b99-4cf9-8f75-904a4120ab30" />
+
+Fájlt tartalmát módosítottam.
+<img width="808" height="565" alt="kép" src="https://github.com/user-attachments/assets/d49c503d-0773-4046-a2e0-ddabfc04a470" />
+
+Jogosultságot változtattam.
+<img width="625" height="280" alt="kép" src="https://github.com/user-attachments/assets/14fb2996-6ced-4d36-bb3d-225db6166e8a" />
+
+Tulajdonost változtattam.
+<img width="599" height="354" alt="kép" src="https://github.com/user-attachments/assets/3bdb83b7-9fe5-4de6-bd96-c74753168f5e" />
+
+Törlöm a fájlt.
+<img width="862" height="218" alt="kép" src="https://github.com/user-attachments/assets/dd5c1da7-50a0-496a-860e-d73e3fc2767f" />
 
 ---
 
@@ -245,8 +264,11 @@ A fájl integritás monitorozásra épülő, automatizált malware-szűrési fol
 ```bash
 curl -Lo eicar.com https://secure.eicar.org/eicar.com
 ```
+<img width="945" height="187" alt="kép" src="https://github.com/user-attachments/assets/7b0abb22-0b5e-4317-83d8-b460de07e75d" />
+
 
 A Wazuh detektálta az új fájlt, lekérdezte a VirusTotal API-n, és riasztást generált arra, hogy a fájl ismert kártékony kód.
+<img width="945" height="21" alt="kép" src="https://github.com/user-attachments/assets/bb20ee4d-8275-4f95-a294-cfecacb17934" />
 
 ---
 
@@ -267,6 +289,7 @@ A Wazuh beépített Vulnerability Detection modulja az agenteken telepített szo
 | Availability Impact | High | a rendszer/böngésző lefagyasztható, összeomlasztható |
 
 A saját rendszerem az érintett verziótartományba esett (149.0.7827.102), a Chrome frissítése után a sebezhetőség automatikusan lekerült a Wazuh dashboardról.
+<img width="945" height="580" alt="kép" src="https://github.com/user-attachments/assets/75052f48-a99a-4fdb-83b4-b0634f1dfa75" />
 
 ---
 
