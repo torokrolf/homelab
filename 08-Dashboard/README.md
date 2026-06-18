@@ -16,7 +16,7 @@
 - For this purpose, I use **Homarr**, which allows me to access all services **from a single interface**, quickly and easily.
 - An additional advantage is that it is **very mobile-friendly**, so the entire homelab can be easily managed from a phone.
 
-![Image description](https://github.com/user-attachments/assets/7508a075-fa1c-4dcb-82d5-00855fa0ec99)
+<img width="1904" height="844" alt="kép" src="https://github.com/user-attachments/assets/9a71aa33-cf6a-4091-a0af-aac16415dafa" />
 
 ---
 
