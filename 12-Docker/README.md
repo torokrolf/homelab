@@ -1,4 +1,4 @@
-← [Back to Homelab main page](../README_EN.md)
+← [Back to Homelab main page](../README.md)
 
 [🇬🇧 English](README.md) | [🇭🇺 Hungarian](README_HU.md)
 
@@ -77,5 +77,5 @@ The media stack (Jellyfin) is intentionally kept inside an LXC container. This p
 - **Deployment complexity:**  
   In LXC, each application must be installed manually inside the OS step by step. With Docker, prebuilt images significantly simplify the process, eliminating the need to manually resolve and install dependencies.
 
-← [Back to Homelab main page](../README_EN.md)
+← [Back to Homelab main page](../README.md)
 
