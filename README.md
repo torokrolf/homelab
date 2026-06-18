@@ -62,6 +62,8 @@ This project presents a self-designed, enterprise-grade homelab where I practice
 | PXE Boot | iVentoy |
 | Troubleshooting | Wireshark |
 
+<img width="1904" height="844" alt="kép" src="https://github.com/user-attachments/assets/72d0a0c1-5214-4089-8ee2-daac177d629e" />
+
 ---
 
 ## 🎯 How this Homelab supports my professional growth:
