@@ -27,8 +27,8 @@
 - [12. Docker](./12-Docker/README_HU.md)
 - [13. Infrastructure as Code (IaC)](./13-Infrastructure_as_Code_(IaC)/README_HU.md)
 - [14. Security_Lab](./14-Security_Lab/README_HU.md)
-- [15. Tervezési döntések](./15-Design_Decisions/README_HU.md)
-- [16. Hibák és hibaelhárítás](./16-Errors/README_HU.md)
+- [15. Tervezési döntések](./16-Design_Decisions/README_HU.md)
+- [16. Hibák és hibaelhárítás](./17-Errors/README_HU.md)
 
 ---
 
