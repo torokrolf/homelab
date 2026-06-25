@@ -27,8 +27,9 @@
 - [12. Docker](./12-Docker/README.md)
 - [13. Infrastructure as Code (IaC)](./13-Infrastructure_as_Code_(IaC)/README.md)
 - [14. Security_Lab](./14-Security_Lab/README.md)
-- [15. Design Decisions](./16-Design_Decisions/README.md)
-- [16. Errors and Troubleshooting](./17-Errors/README.md)
+- [15. AWS_Services](./15. AWS_Services/README.md)
+- [16. Design Decisions](./16-Design_Decisions/README.md)
+- [17. Errors and Troubleshooting](./17-Errors/README.md)
 
 ---
 
