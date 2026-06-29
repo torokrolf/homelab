@@ -200,7 +200,26 @@ ipconfig /flushdns
 
 ---
 
-### 3. Edge SSL vs Origin SSL
+### 3. Cloudflare proxy kikapcsolásakor tanúsítvány figyelmeztetés
+
+**Tünet:** Egy DNS rekord mellé felkiáltójelet tett a Cloudflare, miután kikapcsoltam rajta a proxyt (narancssárga felhő → szürke felhő / DNS-only). A figyelmeztetés szerint a tanúsítvány az adott aldomainre nem lesz érvényes.
+
+**Ok:** Ha a Cloudflare proxy ki van kapcsolva, a forgalom közvetlenül a szerverhez megy — Cloudflare-t megkerülve. Ilyenkor az Edge SSL tanúsítványt **Cloudflare nem tudja kiszolgálni**, mert az csak proxy üzemmódban érvényes. A szerver saját tanúsítványa kell a böngészőnek.
+
+Ha az aldomain ráadásul harmadik szintű (pl. `hostnev.aws.trkrolf.com`), a Universal SSL wildcard (`*.trkrolf.com`) ezt sem fedi le — dupla okból sem működik HTTPS.
+
+**Megoldás:** Ne kapcsold ki a proxyt, ha nincs saját érvényes tanúsítvány a szerveren. Ha mégis DNS-only módot akarsz, Origin certre van szükség (pl. Let's Encrypt `certbot`-tal).
+
+```bash
+# Gyors SSL ellenőrzés — ki adta ki a certet és mire érvényes
+curl -vI https://hostnev.trkrolf.com 2>&1 | grep -E "issuer|subject|expire"
+```
+
+> **Tanulság:** Cloudflare proxy ON = Cloudflare adja a tanúsítványt. DNS-only = a szerverednek kell saját cert. A kettő nem cserélhető fel.
+
+---
+
+### 4. Edge SSL vs Origin SSL
 
 **Kérdés:** Ha van Let's Encrypt certem a homelabban, miért kell még Cloudflare cert is?
 
