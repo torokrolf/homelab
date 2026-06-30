@@ -17,9 +17,10 @@
 - [1.7 Cloudflare Tunnel + Cloudflare Access](#tunnel)
 - [1.8 Hibák és megoldásuk](#hibak)
 
-## 1.1 Cél
 
 <a name="cel"></a>
+
+## 1.1 Cél
 
 A homelab monitorozó stack (Uptime Kuma + Gotify) ugyanazon a fizikai gépen futott, amit monitorozott, ha a homelab leállt, a monitorozás is leállt vele. 
 
@@ -33,9 +34,9 @@ A homelab monitorozó stack (Uptime Kuma + Gotify) ugyanazon a fizikai gépen fu
 
 ---
 
-## 1.2 EC2 Instance
-
 <a name="instance"></a>
+
+## 1.2 EC2 Instance
 
 **Instance típus:** `t3.micro` (free tier)  
 **OS:** Ubuntu 
@@ -70,9 +71,9 @@ aws ec2 run-instances \
 
 ---
 
-## 1.3 Docker telepítése
-
 <a name="dockertelepites"></a>
+
+## 1.3 Docker telepítése
 
 ```bash
 apt update && apt install -y curl gnupg lsb-release ca-certificates
@@ -90,9 +91,9 @@ apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
 ---
 
-## 1.4 Szolgáltatások (Docker Compose)
-
 <a name="services"></a>
+
+## 1.4 Szolgáltatások (Docker Compose)
 
 ### Gotify — `/opt/gotify/docker-compose.yml`
 
@@ -147,9 +148,9 @@ services:
 
 ---
 
-## 1.5 Uptime Kuma konfig migrálása
-
 <a name="uptimemigralas"></a>
+
+## 1.5 Uptime Kuma konfig migrálása
 
 Meglévő Kuma adatbázis átmásolása Termius SFTP-vel, majd:
 
@@ -164,9 +165,9 @@ docker logs uptime-kuma -f
 
 ---
 
-## 1.6 WireGuard — EC2 ↔ Homelab
-
 <a name="wireguard"></a>
+
+## 1.6 WireGuard — EC2 ↔ Homelab
 
 A WireGuard tunnel két célt szolgál:
 
@@ -175,9 +176,9 @@ A WireGuard tunnel két célt szolgál:
 
 ---
 
-## 1.7 Cloudflare Tunnel + Cloudflare Access
-
 <a name="tunnel"></a>
+
+## 1.7 Cloudflare Tunnel + Cloudflare Access
 
 **Miért Tunnel és nem nyitott portok?**
 
@@ -191,9 +192,9 @@ Az EC2-n semmilyen bejövő port nem volt nyitva a végleges beállításban, a 
 
 ---
 
-## 1.8 Hibák és megoldásuk
-
 <a name="hibak"></a>
+
+## 1.8 Hibák és megoldásuk
 
 A teljes infrastruktúrát érintő hibakezelési dokumentáció egy közös helyen, a [17. Hibák és hibaelhárítás](../17-Errors/README_HU.md) fejezetben található. Az AWS migráció során felmerült specifikus problémák:
 
