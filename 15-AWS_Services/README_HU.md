@@ -69,6 +69,10 @@ aws ec2 run-instances \
   --count '1'
 ```
 
+Ez a futó instance-om.
+
+<img width="1179" height="302" alt="kép" src="https://github.com/user-attachments/assets/0e985b99-adf9-4321-a7ec-b9235d393368" />
+
 ---
 
 <a name="dockertelepites"></a>
@@ -176,6 +180,14 @@ A WireGuard tunnel két célt szolgál:
 
 ---
 
+Wiregard peer-hez hozzáadva az EC2-es instance.
+
+<img width="1474" height="451" alt="kép" src="https://github.com/user-attachments/assets/fea969f9-4ab9-4872-a17e-e8e1029b98bd" />
+
+EC2-ben lévő gépem pingeli a Wireguard IP-n a Pfsense-n futó Wireguard szervert.
+
+<img width="654" height="109" alt="kép" src="https://github.com/user-attachments/assets/a107b078-246d-4896-9d41-994fa1144651" />
+
 <a name="tunnel"></a>
 
 ## 1.7 Cloudflare Tunnel + Cloudflare Access
@@ -189,6 +201,18 @@ Az EC2-n semmilyen bejövő port nem volt nyitva a végleges beállításban, a 
 - `gotifyaws.trkrolf.com` → `localhost:3008`
 
 **Cloudflare Access policy:** az Authentik a homelab-on futó  szolgáltatásokhozhoz van, az EC2-es appokhoz email + OTP hitelesítés-t használok
+
+Cloudflare tunnel fut.
+
+<img width="1620" height="671" alt="kép" src="https://github.com/user-attachments/assets/5a61631a-0c22-4d90-bc84-0a24fd26dcf2" />
+
+Hostok a tunnelhez rendelve.
+
+<img width="1596" height="392" alt="kép" src="https://github.com/user-attachments/assets/3459b11d-95d8-4c0a-8ba4-4cc75bd726cb" />
+
+Email-es azonosítás beállítva a gotifyaws.trkrolf.com és uptimeaws.trkrolf.com-hoz.
+
+<img width="724" height="632" alt="kép" src="https://github.com/user-attachments/assets/190527a9-7739-4298-9fac-12627cb281a9" />
 
 ---
 
