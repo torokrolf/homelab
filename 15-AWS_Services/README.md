@@ -1,4 +1,4 @@
-← [Back to Homelab Home](../README.md)
+← [Back to Homelab main page](../README.md)
 
 [🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
 
@@ -6,31 +6,46 @@
 
 # 15. AWS Services — First EC2 Instance
 
-## 🎯 Goal
+## 📚 Table of Contents
 
-The homelab monitoring stack (Uptime Kuma + Gotify) ran on the same physical machines it was monitoring — meaning if the homelab went down, the monitoring went down with it. This defeated the purpose of monitoring entirely.
+- [1.1 Goal](#goal)
+- [1.2 EC2 Instance](#instance)
+- [1.3 Installing Docker](#dockerinstall)
+- [1.4 Services](#services)
+- [1.5 Migrating the Uptime Kuma Config](#uptimemigration)
+- [1.6 WireGuard](#wireguard)
+- [1.7 Cloudflare Tunnel + Cloudflare Access](#tunnel)
+- [1.8 Errors and Their Solutions](#errors)
 
-**Solution:** Deploy an external Uptime Kuma + Gotify instance on an AWS EC2 instance, connected to the homelab via WireGuard VPN, and exposed securely via Cloudflare Tunnel + Access.
+<a name="goal"></a>
+
+## 1.1 Goal
+
+The homelab's monitoring stack (Uptime Kuma + Gotify) was running on the same physical machine it was monitoring — if the homelab went down, monitoring went down with it.
+
+**Solution:** Deploying a separate Uptime Kuma + Gotify instance on AWS EC2, connected to the homelab via WireGuard VPN, and securely published through Cloudflare Tunnel + Cloudflare Access.
 
 **Architecture overview:**
-- EC2 (Frankfurt / eu-central-1) runs Uptime Kuma + Gotify in Docker
-- WireGuard tunnel connects EC2 to the homelab so EC2 can use the homelab's BIND9 DNS server (resolving internal hostnames)
-- Cloudflare Tunnel exposes EC2 services publicly — no open ports needed
-- Cloudflare Access (email + OTP) gates public access so the services aren't reachable by anyone
+- EC2 runs Uptime Kuma + Gotify in Docker
+- A WireGuard tunnel connects the EC2 instance to the homelab, so EC2 uses the homelab's BIND9 DNS server (for resolving internal hostnames)
+- Cloudflare Tunnel exposes the EC2 services publicly, without any open inbound ports
+- Cloudflare Access (email + OTP) protects public access so not just anyone can reach it
 
 ---
 
-## 🖥️ EC2 Instance
+<a name="instance"></a>
 
-**Instance type:** `t3.micro` (free tier eligible)  
-**OS:** Ubuntu (ami-0303e2e4a29f041a3)  
-**Region:** eu-central-1 (Frankfurt)  
+## 1.2 EC2 Instance
+
+**Instance type:** `t3.micro` (free tier)
+**OS:** Ubuntu
+**Region:** eu-central-1 (Frankfurt)
 **Storage:** 20 GB gp3
 
-**Created with AWS CLI:**
+**Creation via AWS CLI:**
 
 ```bash
-# Security group
+# Create security group
 aws ec2 create-security-group \
   --group-name 'launch-wizard-2' \
   --description 'launch-wizard-2 created 2026-06-25' \
@@ -53,9 +68,15 @@ aws ec2 run-instances \
   --count '1'
 ```
 
+This is the running instance.
+
+<img width="1179" height="302" alt="image" src="https://github.com/user-attachments/assets/0e985b99-adf9-4321-a7ec-b9235d393368" />
+
 ---
 
-## 🐳 Docker Installation
+<a name="dockerinstall"></a>
+
+## 1.3 Installing Docker
 
 ```bash
 apt update && apt install -y curl gnupg lsb-release ca-certificates
@@ -73,7 +94,9 @@ apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
 ---
 
-## 📦 Services (Docker Compose)
+<a name="services"></a>
+
+## 1.4 Services (Docker Compose)
 
 ### Gotify — `/opt/gotify/docker-compose.yml`
 
@@ -87,7 +110,7 @@ services:
       - "3008:80"
     environment:
       - TZ=Europe/Budapest
-      - GOTIFY_DEFAULTUSER_PASS=admin
+      - GOTIFY_DEFAULTUSER_PASS=password
       - GOTIFY_SERVER_EXTERNALURL=https://gotifyaws.trkrolf.com
     volumes:
       - "./data:/app/data"
@@ -128,9 +151,11 @@ services:
 
 ---
 
-## 🔁 Uptime Kuma Config Migration
+<a name="uptimemigration"></a>
 
-Copy the existing Kuma database via Termius SFTP, then:
+## 1.5 Migrating the Uptime Kuma Config
+
+Copied the existing Kuma database over via Termius SFTP, then:
 
 ```bash
 docker compose down
@@ -141,92 +166,64 @@ docker compose up -d
 docker logs uptime-kuma -f
 ```
 
-> **Note:** Only migrate after everything else is configured (Cloudflare, WireGuard, DNS) — at that point the EC2 username also changes to the homelab user and everything carries over cleanly.
-
 ---
 
-## 🌐 WireGuard — EC2 ↔ Homelab
+<a name="wireguard"></a>
+
+## 1.6 WireGuard — EC2 ↔ Homelab
 
 The WireGuard tunnel serves two purposes:
 
-1. EC2 uses the homelab's BIND9 DNS server → Uptime Kuma can reach internal hosts by name (e.g. `proxmox.lan`), not just by IP.
-2. Encrypted, secure channel between the two environments.
-
-> Detailed WireGuard config: [04-Remote_Access](../04-Remote_Access/README.md)
+1. EC2 uses the homelab's BIND9 DNS server, so Uptime Kuma can reach machines by their internal hostnames as well, not just by IP — more precisely, by their public names, but overridden internally.
+2. A secure, encrypted channel between the two environments.
 
 ---
 
-## ☁️ Cloudflare Tunnel + Access
+EC2 instance added as a WireGuard peer.
+
+<img width="1474" height="451" alt="image" src="https://github.com/user-attachments/assets/fea969f9-4ab9-4872-a17e-e8e1029b98bd" />
+
+The EC2 machine pinging the WireGuard server running on pfSense, over the WireGuard IP.
+
+<img width="654" height="109" alt="image" src="https://github.com/user-attachments/assets/a107b078-246d-4896-9d41-994fa1144651" />
+
+<a name="tunnel"></a>
+
+## 1.7 Cloudflare Tunnel + Cloudflare Access
 
 **Why Tunnel instead of open ports?**
 
-No inbound ports are open on the EC2 instance in the final setup — the Cloudflare Tunnel establishes an outbound connection to Cloudflare, and services are reached through that. This minimizes the attack surface.
+In the final setup, no inbound ports are open on the EC2 instance at all. Cloudflare Tunnel establishes an outbound connection to Cloudflare, and services are reached through that — minimizing the attack surface.
 
-**Assigned hostnames:**
+**Hosts mapped:**
 - `uptimeaws.trkrolf.com` → `localhost:3001`
 - `gotifyaws.trkrolf.com` → `localhost:3008`
 
-**Cloudflare Access policy:** email + OTP authentication, without Authentik — Authentik handles SSO for the homelab's Traefik services; the EC2 apps use a simpler, separate protection layer.
+**Cloudflare Access policy:** Authentik is used for the services running on the homelab, while the EC2 apps use email + OTP authentication.
+
+Cloudflare tunnel running.
+
+<img width="1620" height="671" alt="image" src="https://github.com/user-attachments/assets/5a61631a-0c22-4d90-bc84-0a24fd26dcf2" />
+
+Hosts mapped to the tunnel.
+
+<img width="1596" height="392" alt="image" src="https://github.com/user-attachments/assets/3459b11d-95d8-4c0a-8ba4-4cc75bd726cb" />
+
+Email-based authentication configured for `gotifyaws.trkrolf.com` and `uptimeaws.trkrolf.com`.
+
+<img width="724" height="632" alt="image" src="https://github.com/user-attachments/assets/190527a9-7739-4298-9fac-12627cb281a9" />
 
 ---
 
-## 🐛 Issues & Solutions
+<a name="errors"></a>
 
-### 1. DNS Override Conflict (on homelab WiFi)
+## 1.8 Errors and Their Solutions
 
-**Symptom:** `uptimeaws.trkrolf.com` failed to load on home network, but worked fine on mobile data.
+Documentation covering errors across the whole infrastructure lives in one shared place, the [17. Errors](../17-Errors/README.md) chapter. The specific issues encountered during the AWS migration:
 
-**Cause:** The homelab BIND9 has a `*.trkrolf.com` wildcard override pointing everything to the local Traefik — so EC2 subdomains never reached Cloudflare.
-
-**Fix:** Created exceptions in AdGuard Home for the EC2 subdomains so they resolve to the Cloudflare proxy IP instead of hitting the BIND9 override.
-
-```bash
-# Verify correct resolution
-nslookup gotifyaws.trkrolf.com 1.1.1.1
-ipconfig /flushdns
-```
+- [DNS override conflict — homelab BIND9 wildcard clashing with EC2 subdomains](../17-Errors/README.md#dns-override-aws)
+- [Cloudflare wildcard certificate limit — third-level subdomain SSL failure](../17-Errors/README.md#cf-wildcard-limit)
 
 ---
 
-### 2. Cloudflare Wildcard Certificate Limit
-
-**Symptom:** `uptime.aws.trkrolf.com` — SSL Handshake Failure.
-
-**Cause:** Cloudflare Universal SSL (free plan) only covers single-level wildcards (`*.trkrolf.com`). The subdomain `uptime.aws.trkrolf.com` is third-level, so it falls outside the certificate's scope.
-
-**Fix:** Renamed subdomains to single-level: `uptimeaws.trkrolf.com`, `gotifyaws.trkrolf.com` — these are fully covered by `*.trkrolf.com`.
-
-> **Lesson learned:** On Cloudflare's free plan, always design with single-level subdomains if using a wildcard cert — otherwise Total TLS (paid) is required.
-
----
-
-### 3. Edge SSL vs Origin SSL
-
-**Question:** If I already have a Let's Encrypt cert on the homelab, why do I need a Cloudflare cert too?
-
-**Explanation:**
-
-| | Edge cert (Cloudflare) | Origin cert (Let's Encrypt) |
-|---|---|---|
-| **Scope** | Browser ↔ Cloudflare | Cloudflare ↔ your server |
-| **Issued by** | Cloudflare (automatic) | Let's Encrypt / own CA |
-| **Without it** | Browser throws a red error | Only Flexible SSL possible |
-
-- **Cloudflare Tunnel:** The tunnel itself encrypts traffic between EC2 and Cloudflare, so `Flexible` mode is acceptable here.
-- **Homelab Traefik:** Has a Let's Encrypt cert, so `Full (Strict)` mode is used — the entire path is encrypted end-to-end.
-
----
-
-## 🔒 Closing Open Ports
-
-After testing, the Gotify (3008) and Uptime Kuma (3001) ports were removed from the EC2 security group — they are only accessible via Cloudflare Tunnel.
-
-| Port | Status | Notes |
-|------|--------|-------|
-| 22 (SSH) | Open | Administration |
-| 3001 (Uptime Kuma) | Closed | Cloudflare Tunnel only |
-| 3008 (Gotify) | Closed | Cloudflare Tunnel only |
-
----
-
-← [Back to Homelab Home](../README.md)
+← [Back to Homelab main page](../README.md)
