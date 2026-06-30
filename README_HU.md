@@ -77,8 +77,8 @@ Ez a projekt egy saját tervezésű, vállalati környezet szerű homelabot muta
 > [!IMPORTANT]
 >  Az alábbi két menüpontot kiemelném, amit a legértékesebb pontoknak tartok, ahol elmagyarázom milyen döntést miért hoztam és hogy milyen hibákkal szembesültem illetve hogyan oldottam meg őket.
 > 
-> - [13. Tervezési döntések](./13-Design_Decisions/README_HU.md)
-> - [14. Hibák és hibaelhárítás](./14-Errors/README_HU.md)
+> - [16. Design_Decisions](./16-Design_Decisions/README_HU.md)
+> - [17. Errors](./17-Errors/README_HU.md)
 
 ---
 
