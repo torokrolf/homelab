@@ -21,7 +21,6 @@
 - [Apt-cacher-ng csomagok beragadása](#aptcacherng)
 - [AWS – DNS override konfliktus (BIND9 wildcard vs EC2 aldomain)](#dns-override-aws)
 - [AWS – Cloudflare wildcard tanúsítvány limit](#cf-wildcard-limit)
-- [AWS – Cloudflare proxy kikapcsolásakor tanúsítvány figyelmeztetés](#cf-proxy-cert)
 
 ---
 
@@ -222,10 +221,12 @@ Az acngtool karbantartó parancs cron-ba helyezve, minden nap 22:30-kor futtatva
 <a name="dns-override-aws"></a>
 
 **Probléma**:
-- `uptimeaws.trkrolf.com` otthoni hálón nem töltött be, mobilneten igen.
+- Az EC2 szolgáltatások otthoni hálón nem töltöttek be, mobilneten igen.
 
 **Ok**:
 - A homelab BIND9-ben `*.trkrolf.com` wildcard override van, ami mindent a lokális Traefik-re irányít, így az EC2-es aldomainek el sem értek a Cloudflare-ig.
+
+<img width="691" height="255" alt="kép" src="https://github.com/user-attachments/assets/b55f6d2a-6a33-40c0-b048-38c288e24153" />
 
 **Megoldás**:
 - AdGuard Home-ban kivétel létrehozása az EC2-es aldomainekre, hogy azok ne az override-olt BIND9-hez menjenek, hanem Cloudflare proxy IP-re oldódjanak fel.
@@ -236,6 +237,12 @@ Cloudflare proxy ip kiderítése:
 nslookup gotifyaws.trkrolf.com 1.1.1.1
 ipconfig /flushdns
 ```
+
+<img width="726" height="379" alt="kép" src="https://github.com/user-attachments/assets/df18226d-62c7-428f-9510-0b144f2ac834" />
+
+Itt látható az adguard overrideolás.
+
+<img width="945" height="430" alt="kép" src="https://github.com/user-attachments/assets/f5d775b8-ba9e-4cc4-b31e-45ea16fe90d3" />
 
 ---
 
@@ -249,7 +256,9 @@ ipconfig /flushdns
 - A Cloudflare Universal SSL (ingyenes csomag) csak egyszintű wildcardot fed le (`*.trkrolf.com`). A `uptime.aws.trkrolf.com` harmadik szintű aldomain, így kiesik a hatókörből.
 
 **Megoldás**:
-- Aldomainek átnevezése egyszintűre: `uptimeaws.trkrolf.com`, `gotifyaws.trkrolf.com`, ezeket a `*.trkrolf.com` wildcard már lefedi.
+- Aldomainek átnevezése egyszintűre a cloudflare tunnelben: `uptimeaws.trkrolf.com`, `gotifyaws.trkrolf.com`, ezeket a `*.trkrolf.com` wildcard már lefedi.
+
+<img width="1603" height="415" alt="kép" src="https://github.com/user-attachments/assets/078d4589-e97a-451f-9324-f4e315711493" />
 
 > **Fontosság:** Cloudflare ingyenes csomagnál mindig egyszintű aldomaineket érdemes tervezni, ha wildcard certet használunk, különben Total TLS kell, de ez fizetős.
 
