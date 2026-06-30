@@ -147,7 +147,7 @@ docker logs uptime-kuma -f
 
 A WireGuard tunnel két célt szolgál:
 
-1. Az EC2 a homelab BIND9 DNS szerverét használja → az Uptime Kuma belső neveken is el tudja érni a gépeket, nem csak IP-n, pontosabban publikus neveken de overrideolva azt.
+1. Az EC2 a homelab BIND9 DNS szerverét használja, az Uptime Kuma belső neveken is el tudja érni a gépeket, nem csak IP-n, pontosabban publikus neveken de overrideolva azt.
 2. Biztonságos, titkosított csatorna a két környezet között.
 
 ---
