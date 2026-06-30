@@ -172,7 +172,6 @@ A teljes infrastruktúrát érintő hibakezelési dokumentáció egy közös hel
 
 - [DNS override konfliktus — homelab BIND9 wildcard ütközés EC2 aldomainekkel](../17-Errors/README_HU.md#dns-override-aws)
 - [Cloudflare wildcard tanúsítvány limit — harmadik szintű aldomain SSL hiba](../17-Errors/README_HU.md#cf-wildcard-limit)
-- [Cloudflare proxy kikapcsolás — tanúsítvány érvénytelenség](../17-Errors/README_HU.md#cf-proxy-cert)
 
 ---
 
