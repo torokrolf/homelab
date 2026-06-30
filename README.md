@@ -77,8 +77,8 @@ This project presents a self-designed, enterprise-grade homelab where I practice
 > [!IMPORTANT]
 > I would like to highlight the following two sections, which I consider the most valuable parts of this project. In these documents, I explain the rationale behind my design decisions, the challenges I encountered, and the specific troubleshooting steps I took to resolve them.
 > 
-> - [13. Design Decisions](./13-Design_Decisions/README.md)
-> - [14. Errors and Troubleshooting](./14-Errors/README.md)
+> - [16. Design_Decisions](./16-Design_Decisions/README_HU.md)
+> - [17. Errors](./17-Errors/README_HU.md)
 
 ---
 
