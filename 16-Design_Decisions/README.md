@@ -4,7 +4,7 @@
 
 ---
 
-# Design Decisions and Rationale
+# Design Decisions
 
 Here I present why I chose certain technologies and architectural approaches.
 
