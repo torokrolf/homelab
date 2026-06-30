@@ -225,10 +225,12 @@ Az acngtool karbantartó parancs cron-ba helyezve, minden nap 22:30-kor futtatva
 - `uptimeaws.trkrolf.com` otthoni hálón nem töltött be, mobilneten igen.
 
 **Ok**:
-- A homelab BIND9-ben `*.trkrolf.com` wildcard override van, ami mindent a lokális Traefik-re irányít — így az EC2-es aldomainek sem értek el Cloudflare-ig.
+- A homelab BIND9-ben `*.trkrolf.com` wildcard override van, ami mindent a lokális Traefik-re irányít, így az EC2-es aldomainek el sem értek a Cloudflare-ig.
 
 **Megoldás**:
 - AdGuard Home-ban kivétel létrehozása az EC2-es aldomainekre, hogy azok ne az override-olt BIND9-hez menjenek, hanem Cloudflare proxy IP-re oldódjanak fel.
+
+Cloudflare proxy ip kiderítése:
 
 ```bash
 nslookup gotifyaws.trkrolf.com 1.1.1.1
@@ -241,36 +243,15 @@ ipconfig /flushdns
 <a name="cf-wildcard-limit"></a>
 
 **Probléma**:
-- `uptime.aws.trkrolf.com` — SSL Handshake Failure.
+- `uptime.aws.trkrolf.com` — SSL Handshake Failure, http-n elérem de https-en nem.
 
 **Ok**:
 - A Cloudflare Universal SSL (ingyenes csomag) csak egyszintű wildcardot fed le (`*.trkrolf.com`). A `uptime.aws.trkrolf.com` harmadik szintű aldomain, így kiesik a hatókörből.
 
 **Megoldás**:
-- Aldomainek átnevezése egyszintűre: `uptimeaws.trkrolf.com`, `gotifyaws.trkrolf.com` — ezeket a `*.trkrolf.com` wildcard már lefedi.
+- Aldomainek átnevezése egyszintűre: `uptimeaws.trkrolf.com`, `gotifyaws.trkrolf.com`, ezeket a `*.trkrolf.com` wildcard már lefedi.
 
-> **Tanulság:** Cloudflare ingyenes csomagnál mindig egyszintű aldomaineket érdemes tervezni, ha wildcard certet használsz — különben Total TLS (fizetős) kell.
-
----
-
-## AWS – Cloudflare proxy kikapcsolásakor tanúsítvány figyelmeztetés
-<a name="cf-proxy-cert"></a>
-
-**Probléma**:
-- Egy DNS rekord mellé felkiáltójelet tett a Cloudflare, miután kikapcsoltam rajta a proxyt (narancssárga felhő → szürke felhő / DNS-only). A figyelmeztetés szerint a tanúsítvány az adott aldomainre nem lesz érvényes.
-
-**Ok**:
-- Ha a Cloudflare proxy ki van kapcsolva, a forgalom közvetlenül a szerverhez megy — Cloudflare-t megkerülve. Ilyenkor az Edge SSL tanúsítványt **Cloudflare nem tudja kiszolgálni**, mert az csak proxy üzemmódban érvényes. A szerver saját tanúsítványa kell a böngészőnek.
-- Ha az aldomain ráadásul harmadik szintű (pl. `hostnev.aws.trkrolf.com`), a Universal SSL wildcard (`*.trkrolf.com`) ezt sem fedi le — dupla okból sem működik HTTPS.
-
-**Megoldás**:
-- Ne kapcsold ki a proxyt, ha nincs saját érvényes tanúsítvány a szerveren. Ha mégis DNS-only módot akarsz, Origin certre van szükség (pl. Let's Encrypt `certbot`-tal).
-
-```bash
-curl -vI https://hostnev.trkrolf.com 2>&1 | grep -E "issuer|subject|expire"
-```
-
-> **Tanulság:** Cloudflare proxy ON = Cloudflare adja a tanúsítványt. DNS-only = a szerverednek kell saját cert. A kettő nem cserélhető fel.
+> **Fontosság:** Cloudflare ingyenes csomagnál mindig egyszintű aldomaineket érdemes tervezni, ha wildcard certet használunk, különben Total TLS kell, de ez fizetős.
 
 ---
 
