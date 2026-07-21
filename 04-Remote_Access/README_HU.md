@@ -60,7 +60,11 @@ Az alábbi hardening intézkedéseket tettem:
 - **OpenVPN**-t és **WireGuard**-ot használok, de teszteltem a **Tailscale** és **NordVPN Meshnet** megoldásokat is.
 - **Publikus szolgáltatások**: Közvetlenül elérhetők az internetről (Reverse Proxy-n keresztül) VPN nélkül is.
 - **Belső szolgáltatások**: Kizárólag **VPN-en keresztül** érhetők el, biztosítva a menedzsment felületek védelmét.
-- **Full Tunnel**: Mobilról engedélyezve a teljes forgalom a hazai hálózaton megy át, így távolról is élvezhetem a **Pi-hole / AdGuard Home** reklámszűrését.
+- **Full Tunnel**: Mobilról engedélyezve a teljes forgalom a hazai hálózaton megy át, így távolról is élvezhetem az **AdGuard Home** reklámszűrését.
+
+Full tunnel konfiguráció, az AllowedIPs = 0.0.0.0/0 beállítás azt jelenti, hogy a kliens összes forgalma a VPN-en keresztül megy, nem csak a homelab felé irányuló.
+<img width="324" height="690" alt="kép" src="https://github.com/user-attachments/assets/8c4b9cf5-7c2e-4360-af11-372dc9466cf1" />
+
 
 ---
 <a name="zerotrust"></a>
