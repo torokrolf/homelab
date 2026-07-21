@@ -59,7 +59,10 @@ In my lab, SSH security is strictly enforced and automated via **Ansible**[cite:
 - I utilize **OpenVPN** and **WireGuard**, having also tested **Tailscale** and **NordVPN Meshnet**.
 - **Public Services**: Accessible directly via Reverse Proxy without a VPN.
 - **Internal Services**: Accessible **exclusively via VPN**, ensuring management interfaces remain hidden.
-- **Full Tunnel**: Enabled on mobile to route all traffic through the home network, providing remote access to **Pi-hole / AdGuard Home** ad-blocking.
+- **Full Tunnel**: Enabled on mobile to route all traffic through the home network, providing remote access to **AdGuard Home** ad-blocking.
+
+Full tunnel configuration — AllowedIPs = 0.0.0.0/0 means all client traffic is routed through the VPN, not just traffic destined for the homelab network.
+<img width="324" height="690" alt="kép" src="https://github.com/user-attachments/assets/8c4b9cf5-7c2e-4360-af11-372dc9466cf1" />
 
 ---
 <a name="zerotrust"></a>
