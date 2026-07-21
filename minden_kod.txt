@@ -8077,7 +8077,7 @@ Volt tehát egy golden imagem VM-nek, és ezt én importáltam terraform-ba, miu
 
 
 --- FILE: ./14-Security_Lab/SOC/Wazuh/README.md ---
-← [Back to Homelab main page](../../../README.md)
+← [Back](../../README.md)
 
 [🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
 
@@ -8420,11 +8420,11 @@ Cleanup of alert/archive logs (`*.gz`) older than 30 days is handled by a cron j
 
 ---
 
-← [Back to Homelab main page](../../../README.md)
+← [Back](../../README.md)
 
 
 --- FILE: ./14-Security_Lab/SOC/Wazuh/README_HU.md ---
-← [Vissza a Homelab főoldalra](../../../README_HU.md)
+← [Vissza](../../README_HU.md)
 
 [🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
 
@@ -8766,46 +8766,856 @@ Az alert/archive logok (`*.gz`) 30 napnál régebbi tételeinek takarítását e
 
 ---
 
-← [Vissza a Homelab főoldalra](../../../README_HU.md)
+← [Vissza](../../README_HU.md)
 
 
 
 
 --- FILE: ./14-Security_Lab/Vulnerability_Management/Nessus_Essentials/README.md ---
-← [Back to Homelab Home](../../../README.md)
+← [Back](../../README.md)
 
 [🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
 
 ---
 
+# Vulnerability Management — Nessus Essentials
 
+| Service | Tool |
+|---|---|
+| Vulnerability scanner | Nessus Essentials |
 
 ---
 
-← [Back to Homelab Home](../../../README.md)
+## 📚 Table of Contents
+
+- [1.1 Overview](#overview)
+- [1.2 Installation](#installation)
+- [1.3 Scan types used](#scan-types)
+- [1.4 Unauthenticated vs Authenticated scan](#auth)
+- [1.5 Findings and fixes](#examples)
+
+---
+
+<a name="overview"></a>
+
+## 1.1 Overview
+
+**Nessus Essentials** is Tenable's free vulnerability scanner, limited to scanning up to 5 IP addresses. I actively use it to discover security gaps, misconfigured services, and missing patches across my homelab infrastructure.
+
+The scanner runs on the `wazuh-server-01-203` VM, alongside the SIEM stack.
+
+---
+
+<a name="installation"></a>
+
+## 1.2 Installation (native, on Ubuntu)
+
+I download the installer from Tenable's site, selecting the package that matches the target system:
+
+```
+https://www.tenable.com/downloads/nessus
+```
+
+```bash
+# Download the .deb package
+curl --request GET \
+  --url 'https://www.tenable.com/downloads/api/v2/pages/nessus/files/Nessus-10.12.0-ubuntu1604_amd64.deb' \
+  --output 'Nessus-10.12.0-ubuntu1604_amd64.deb'
+
+# Install
+sudo dpkg -i Nessus-10.12.0-ubuntu1604_amd64.deb
+
+# Start and enable the service
+sudo systemctl start nessusd
+sudo systemctl enable nessusd
+sudo systemctl status nessusd
+```
+---
+
+<a name="scan-types"></a>
+
+## 1.3 Scan types used
+
+Below are the scan types I use.
+
+<img width="1696" height="435" alt="image" src="https://github.com/user-attachments/assets/c8583b81-63b5-4d6f-87e2-e83aaa12b733" />
 
 
+### Host Discovery
 
+Discovers live hosts on the network and their open ports. It does **not** perform vulnerability scanning — it's useful for quick network inventory as a step before a deeper scan.
 
+### Basic Network Scan
 
+A general-purpose vulnerability scan. It probes thousands of ports (unlike Host Discovery), mapping running services, misconfigurations, and known CVEs. This is the primary scan type I use to assess the infrastructure as a whole.
+
+### Credentialed Patch Audit
+
+An authenticated scan that logs into the target system and checks installed patches, registry settings, and software versions from the inside. It produces significantly more accurate and complete results than an unauthenticated scan — especially important for Windows targets, where many checks require local access.
+
+**Prerequisites on Windows targets:**
+
+```powershell
+# Enable remote registry access (required so Nessus can read system information)
+Set-Service -Name RemoteRegistry -StartupType Automatic
+Start-Service -Name RemoteRegistry
+
+# Disable remote UAC restriction for local admin accounts
+# (without this, a local admin doesn't get full admin rights on remote login)
+New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" `
+  -Name LocalAccountTokenFilterPolicy -Value 1 -PropertyType DWord -Force
+```
+
+**Credential Validation** is a lightweight preliminary check: Nessus only verifies that the provided username and password are accepted on the target system before launching a full authenticated scan. It just logs in and out — no vulnerability checks run at this stage.
+
+---
+
+<a name="auth"></a>
+
+## 1.4 Unauthenticated vs. Authenticated scan
+
+| Mode | What Nessus sees | When to use |
+|---|---|---|
+| **Unauthenticated** | Only what's visible from the network (open ports, service banners, external behavior) | Simulating an external attacker's view; scanning devices I don't have access to |
+| **Authenticated** | Everything: installed packages, registry keys, patch level, local configuration | Routine scanning of internal infrastructure — gives much more complete and accurate results |
+
+On my own infrastructure, where I have credentials available, I always run an **authenticated scan**. The number and depth of findings differ significantly between the two modes.
+
+---
+
+<a name="examples"></a>
+
+## 1.5 Findings and fixes
+
+### Example 1 — Leftover files after an update (Windows)
+
+**Problem:** Nessus flagged a vulnerability in `Microsoft.NetCore.App 8.0.14`, even though I had already updated .NET Core to `8.0.28`.
+
+<img width="945" height="259" alt="image" src="https://github.com/user-attachments/assets/05e19085-313c-4c06-89cc-af3fdb38d2bf" />
+
+**Cause:** Windows updates don't always remove the old version's directory. The old version was still present at: `C:\Program Files (x86)\dotnet\shared\Microsoft.NetCore.App\8.0.14\`
+
+**Fix:** I manually deleted the leftover directory.
+
+<img width="945" height="364" alt="image" src="https://github.com/user-attachments/assets/50344053-d824-486b-8a34-7a2326e1ef92" />
+
+The next scan no longer flagged the issue.
+
+<img width="1638" height="615" alt="image" src="https://github.com/user-attachments/assets/9d54fa21-c98c-44ed-80b4-822b848bc407" />
+
+**Takeaway:** After resolving a vulnerability finding, it's always worth verifying that the old version's files are actually gone — the scanner checks what's on disk, not what the installer logged.
+
+---
+
+### Example 2 — Missing registry keys (CVE-2013-3900, HIGH)
+
+The scan results included a HIGH severity finding.
+
+<img width="945" height="437" alt="image" src="https://github.com/user-attachments/assets/f54e2952-2545-4824-9dcb-3fca3683f726" />
+
+**Problem:** Nessus reported a HIGH severity finding for CVE-2013-3900 — a Windows flaw where Authenticode signature verification didn't properly account for appended data, meaning a signed file could be modified after signing while the system still treated it as trusted and allowed it to run.
+
+<img width="945" height="673" alt="image" src="https://github.com/user-attachments/assets/053a30a2-96ff-4e97-8d80-13fc2bf91749" />
+
+**Investigation:** I checked the Output field to see which registry paths the scanner was missing. Both were absent:
+
+`HKLM:\Software\Microsoft\Cryptography\Wintrust\Config\EnableCertPaddingCheck` — the `Wintrust` key was missing here.
+
+<img width="475" height="358" alt="image" src="https://github.com/user-attachments/assets/4e9b6285-fe33-4a97-b458-bfd68a6b0d2f" />
+
+`HKLM:\Software\Wow6432Node\Microsoft\Cryptography\Wintrust\Config\EnableCertPaddingCheck` — the `Wintrust` key was also missing here.
+
+<img width="697" height="597" alt="image" src="https://github.com/user-attachments/assets/f1bfc203-90a6-4457-abbb-bef712ae3b03" />
+
+I confirmed in `regedit` that the `Wintrust` key didn't exist on either path.
+
+**Fix (PowerShell):**
+
+I created the missing keys in PowerShell.
+
+```powershell
+# Fix 1 — 64-bit path
+New-Item -Path "HKLM:\Software\Microsoft\Cryptography\Wintrust\Config" -Force
+New-ItemProperty -Path "HKLM:\Software\Microsoft\Cryptography\Wintrust\Config" `
+  -Name "EnableCertPaddingCheck" `
+  -PropertyType DWord `
+  -Value 1 `
+  -Force
+
+# Fix 2 — 32-bit (WoW64) path
+New-Item -Path "HKLM:\Software\Wow6432Node\Microsoft\Cryptography\Wintrust\Config" -Force
+New-ItemProperty -Path "HKLM:\Software\Wow6432Node\Microsoft\Cryptography\Wintrust\Config" `
+  -Name "EnableCertPaddingCheck" `
+  -PropertyType DWord `
+  -Value 1 `
+  -Force
+```
+
+The re-run scan confirmed the issue was resolved.
+
+<img width="945" height="214" alt="image" src="https://github.com/user-attachments/assets/ec64ff6b-38eb-48d0-9f9a-4507a33f956c" />
+
+**General workflow for a finding:** I read the **Description** first (what the vulnerability is), then the **Solution** (what to do about it), and finally the **Output** (what the specific problem is in my environment). Before fixing anything, I always verify the issue actually exists, then re-run the scan afterward to confirm the fix.
+
+---
+
+← [Back](../../README.md)
 
 
 --- FILE: ./14-Security_Lab/Vulnerability_Management/Nessus_Essentials/README_HU.md ---
-← [Vissza a Homelab főoldalra](../../../README_HU.md)
+← [Vissza](../../README_HU.md)
 
 [🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
 
 ---
 
-# 📚 Tartalomjegyzék
+# Sérülékenységkezelés — Nessus Essentials
 
-- [SOC/Wazuh](./SOC/Wazuh/README_HU.md)
-- [Vulnerability_Management](./Vulnerability_Management)
+| Szolgáltatás | Eszköz |
+|---|---|
+| Sérülékenység-vizsgáló | Nessus Essentials |
 
 ---
 
-← [Vissza a Homelab főoldalra](../../../README_HU.md)
+## 📚 Tartalomjegyzék
 
+- [1.1 Áttekintés](#overview)
+- [1.2 Telepítés](#installation)
+- [1.3 Alkalmazott scan típusok](#scan-types)
+- [1.4 Unauthenticated vs Authenticated scan](#auth)
+- [1.5 Talált hibák és javításuk](#examples)
+
+---
+
+<a name="overview"></a>
+
+## 1.1 Áttekintés
+
+A **Nessus Essentials** a Tenable ingyenes sérülékenység-vizsgálója, maximum 5 IP-cím szkennelésére. Aktívan használom a homelab infrastruktúrám biztonsági réseinek, hibásan konfigurált szolgáltatásainak és hiányzó patch-einek felderítésére.
+
+A scanner a `wazuh-server-01-203` VM-en fut, a SIEM stack-kel egy helyen.
+
+---
+
+<a name="installation"></a>
+
+## 1.2 Telepítés (natívan, Ubuntu-n)
+
+A telepítőt a Tenable oldaláról töltöm le, kiválasztva a célrendszerhez illő csomagot:
+
+```
+https://www.tenable.com/downloads/nessus
+```
+
+```bash
+# .deb csomag letöltése
+curl --request GET \
+  --url 'https://www.tenable.com/downloads/api/v2/pages/nessus/files/Nessus-10.12.0-ubuntu1604_amd64.deb' \
+  --output 'Nessus-10.12.0-ubuntu1604_amd64.deb'
+
+# Telepítés
+sudo dpkg -i Nessus-10.12.0-ubuntu1604_amd64.deb
+
+# Szolgáltatás indítása és engedélyezése
+sudo systemctl start nessusd
+sudo systemctl enable nessusd
+sudo systemctl status nessusd
+```
+---
+
+<a name="scan-types"></a>
+
+## 1.3 Alkalmazott scan típusok
+
+Az alábbi scan típusokat használom.
+
+<img width="1696" height="435" alt="kép" src="https://github.com/user-attachments/assets/c8583b81-63b5-4d6f-87e2-e83aaa12b733" />
+
+
+### Host Discovery
+
+Felfedezi a hálózaton élő gépeket és a nyitott portokat. **Nem** végez sérülékenység-vizsgálatot — gyors hálózati leltárkészítésre jó, mélyebb scan előtti lépésként.
+
+### Basic Network Scan
+
+Általános célú sérülékenységvizsgálat. Több ezer portot vizsgál át (szemben a Host Discovery-vel), feltérképezi a futó szolgáltatásokat, konfigurációs hibákat és ismert CVE-ket. Ez a fő scan típus, amit az infrastruktúra egészének átvizsgálására használok.
+
+### Credentialed Patch Audit
+
+Hitelesített scan, amely bejelentkezik a célrendszerre és belülről ellenőrzi a telepített patcheket, registry beállításokat és szoftververziókat. Jelentősen pontosabb és teljesebb eredményt ad, mint a hitelesítés nélküli scan — különösen fontos Windows célgépeknél, ahol sok ellenőrzéshez helyi hozzáférés kell.
+
+**Előfeltételek Windows célgépeken:**
+
+```powershell
+# Távoli registry-hozzáférés engedélyezése (kell, hogy a Nessus rendszerinfókat olvashasson)
+Set-Service -Name RemoteRegistry -StartupType Automatic
+Start-Service -Name RemoteRegistry
+
+# Távoli UAC-korlátozás feloldása helyi admin felhasználóknak
+# (enélkül egy helyi admin távoli bejelentkezéskor nem kap teljes admin jogot)
+New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" `
+  -Name LocalAccountTokenFilterPolicy -Value 1 -PropertyType DWord -Force
+```
+
+A **Credential Validation** egy könnyű előzetes ellenőrzés: a Nessus csak azt nézi meg, hogy a megadott felhasználónév és jelszó elfogadott-e a célgépen, mielőtt teljes hitelesített scant indítana. Csak bejelentkezik és kilép — ebben a lépésben még nem fut sérülékenység-ellenőrzés.
+
+---
+
+<a name="auth"></a>
+
+## 1.4 Unauthenticated vs. Authenticated scan
+
+| Mód | Mit lát a Nessus | Mikor érdemes |
+|---|---|---|
+| **Unauthenticated** | Csak amit hálózatról lát (nyitott portok, szolgáltatás-banner-ek, külső viselkedés) | Külső támadó szemszögének szimulálása; olyan eszközök vizsgálata, amikhez nincs hozzáférésem |
+| **Authenticated** | Mindent: telepített csomagok, registry kulcsok, patch szint, helyi konfiguráció | Belső infrastruktúra szokásos vizsgálata — sokkal teljesebb és pontosabb eredményt ad |
+
+A saját infrastruktúrámon, ahol rendelkezem a hozzáférési adatokkal, mindig **authenticated scant** futtatok. A talált hibák száma és mélysége jelentősen eltér a két mód között.
+
+---
+
+<a name="examples"></a>
+
+## 1.5 Talált hibák és javításuk
+
+### 1. példa — Frissítés utáni maradványfájlok (Windows)
+
+**Probléma:** A Nessus sérülékenységet jelzett a `Microsoft.NetCore.App 8.0.14` verzióban, annak ellenére, hogy a .NET Core-t már frissítettem `8.0.28`-ra.
+
+<img width="945" height="259" alt="kép" src="https://github.com/user-attachments/assets/05e19085-313c-4c06-89cc-af3fdb38d2bf" />
+
+**Ok:** Windows frissítéskor nem mindig törli le a régi verzió könyvtárát. A régi verzió itt maradt: `C:\Program Files (x86)\dotnet\shared\Microsoft.NetCore.App\8.0.14\`
+
+**Megoldás:** Kézzel töröltem a maradvány könyvtárat.
+
+<img width="945" height="364" alt="kép" src="https://github.com/user-attachments/assets/50344053-d824-486b-8a34-7a2326e1ef92" />
+
+A következő scan már nem jelezte a problémát.
+
+<img width="1638" height="615" alt="kép" src="https://github.com/user-attachments/assets/9d54fa21-c98c-44ed-80b4-822b848bc407" />
+
+**Tanulság:** Egy sérülékenység javítása után mindig érdemes ellenőrizni, hogy a régi verzió fájljai ténylegesen eltűntek-e — a scanner azt vizsgálja, mi van a lemezen, nem azt, hogy a telepítő mit jegyzett fel.
+
+---
+
+### 2. példa — Hiányzó registry kulcsok (CVE-2013-3900, HIGH)
+
+A scan eredményei közt egy HIGH súlyosságú probléma jelent meg.
+
+<img width="945" height="437" alt="kép" src="https://github.com/user-attachments/assets/f54e2952-2545-4824-9dcb-3fca3683f726" />
+
+**Probléma:** A Nessus HIGH súlyosságú hibát jelzett a CVE-2013-3900 sérülékenységre — ez egy Windows hiba, ahol a digitális aláírás (Authenticode) ellenőrzése hibásan működött, így egy már aláírt fájl módosítása után a rendszer továbbra is megbízhatónak tekintette és futtatta azt.
+
+<img width="945" height="673" alt="kép" src="https://github.com/user-attachments/assets/053a30a2-96ff-4e97-8d80-13fc2bf91749" />
+
+**Ellenőrzés:** Az Output mezőben megnéztem, mely registry útvonalakat hiányolja a scanner. Mindkettő hiányzott:
+
+`HKLM:\Software\Microsoft\Cryptography\Wintrust\Config\EnableCertPaddingCheck` útvonalon nálam a `Wintrust` kulcs hiányzik.
+
+<img width="475" height="358" alt="kép" src="https://github.com/user-attachments/assets/4e9b6285-fe33-4a97-b458-bfd68a6b0d2f" />
+
+`HKLM:\Software\Wow6432Node\Microsoft\Cryptography\Wintrust\Config\EnableCertPaddingCheck` útvonalon is hiányzik a `Wintrust` kulcs.
+
+<img width="697" height="597" alt="kép" src="https://github.com/user-attachments/assets/f1bfc203-90a6-4457-abbb-bef712ae3b03" />
+
+A `regedit`-ben megerősítettem, hogy a `Wintrust` kulcs egyik útvonalon sem létezett.
+
+**Megoldás (PowerShell):**
+
+Powershellben létrehozom a hiányzó kulcsokat.
+
+```powershell
+# 1. javítás — 64 bites útvonal
+New-Item -Path "HKLM:\Software\Microsoft\Cryptography\Wintrust\Config" -Force
+New-ItemProperty -Path "HKLM:\Software\Microsoft\Cryptography\Wintrust\Config" `
+  -Name "EnableCertPaddingCheck" `
+  -PropertyType DWord `
+  -Value 1 `
+  -Force
+
+# 2. javítás — 32 bites (WoW64) útvonal
+New-Item -Path "HKLM:\Software\Wow6432Node\Microsoft\Cryptography\Wintrust\Config" -Force
+New-ItemProperty -Path "HKLM:\Software\Wow6432Node\Microsoft\Cryptography\Wintrust\Config" `
+  -Name "EnableCertPaddingCheck" `
+  -PropertyType DWord `
+  -Value 1 `
+  -Force
+```
+
+Az újrafuttatott scan megerősítette, hogy a hiba megszűnt.
+
+<img width="945" height="214" alt="kép" src="https://github.com/user-attachments/assets/ec64ff6b-38eb-48d0-9f9a-4507a33f956c" />
+
+**Általános munkamenet egy hibánál:** Először a **Description** (mi a sérülékenység), utána a **Solution** (mi a teendő), végül az **Output** (nálam konkrétan mi a probléma) mezőt olvasom el. A javítás előtt mindig ellenőrzöm, hogy a probléma valóban fennáll-e, majd a javítás után újra futtatom a scant, hogy megerősítsem a megoldást.
+
+---
+
+← [Vissza](../../README_HU.md)
+
+
+--- FILE: ./15-AWS_Services/README.md ---
+← [Back to Homelab main page](../README.md)
+
+[🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
+
+---
+
+# 15. AWS Services — First EC2 Instance
+
+## 📚 Table of Contents
+
+- [1.1 Goal](#goal)
+- [1.2 EC2 Instance](#instance)
+- [1.3 Installing Docker](#dockerinstall)
+- [1.4 Services](#services)
+- [1.5 Migrating the Uptime Kuma Config](#uptimemigration)
+- [1.6 WireGuard](#wireguard)
+- [1.7 Cloudflare Tunnel + Cloudflare Access](#tunnel)
+- [1.8 Errors and Their Solutions](#errors)
+
+<a name="goal"></a>
+
+## 1.1 Goal
+
+The homelab's monitoring stack (Uptime Kuma + Gotify) was running on the same physical machine it was monitoring — if the homelab went down, monitoring went down with it.
+
+**Solution:** Deploying a separate Uptime Kuma + Gotify instance on AWS EC2, connected to the homelab via WireGuard VPN, and securely published through Cloudflare Tunnel + Cloudflare Access.
+
+**Architecture overview:**
+- EC2 runs Uptime Kuma + Gotify in Docker
+- A WireGuard tunnel connects the EC2 instance to the homelab, so EC2 uses the homelab's BIND9 DNS server (for resolving internal hostnames)
+- Cloudflare Tunnel exposes the EC2 services publicly, without any open inbound ports
+- Cloudflare Access (email + OTP) protects public access so not just anyone can reach it
+
+---
+
+<a name="instance"></a>
+
+## 1.2 EC2 Instance
+
+**Instance type:** `t3.micro` (free tier)
+**OS:** Ubuntu
+**Region:** eu-central-1 (Frankfurt)
+**Storage:** 20 GB gp3
+
+**Creation via AWS CLI:**
+
+```bash
+# Create security group
+aws ec2 create-security-group \
+  --group-name 'launch-wizard-2' \
+  --description 'launch-wizard-2 created 2026-06-25' \
+  --vpc-id 'vpc-0c86cda3b79915739'
+
+# Allow SSH
+aws ec2 authorize-security-group-ingress \
+  --group-id 'sg-preview-1' \
+  --ip-permissions '{"IpProtocol":"tcp","FromPort":22,"ToPort":22,"IpRanges":[{"CidrIp":"0.0.0.0/0"}]}'
+
+# Launch instance
+aws ec2 run-instances \
+  --image-id 'ami-0303e2e4a29f041a3' \
+  --instance-type 't3.micro' \
+  --key-name 'ssh' \
+  --block-device-mappings '{"DeviceName":"/dev/sda1","Ebs":{"Encrypted":false,"DeleteOnTermination":true,"Iops":3000,"VolumeSize":20,"VolumeType":"gp3","Throughput":125}}' \
+  --network-interfaces '{"AssociatePublicIpAddress":true,"DeviceIndex":0,"Groups":["sg-preview-1"]}' \
+  --tag-specifications '{"ResourceType":"instance","Tags":[{"Key":"Name","Value":"FirstEC2"}]}' \
+  --metadata-options '{"HttpEndpoint":"enabled","HttpPutResponseHopLimit":2,"HttpTokens":"required"}' \
+  --count '1'
+```
+
+This is the running instance.
+
+<img width="1179" height="302" alt="image" src="https://github.com/user-attachments/assets/0e985b99-adf9-4321-a7ec-b9235d393368" />
+
+---
+
+<a name="dockerinstall"></a>
+
+## 1.3 Installing Docker
+
+```bash
+apt update && apt install -y curl gnupg lsb-release ca-certificates
+
+mkdir -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
+  https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" \
+  | tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+apt update
+apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+```
+
+---
+
+<a name="services"></a>
+
+## 1.4 Services (Docker Compose)
+
+### Gotify — `/opt/gotify/docker-compose.yml`
+
+```yaml
+services:
+  gotify:
+    image: gotify/server:2.9.1
+    container_name: gotify
+    restart: always
+    ports:
+      - "3008:80"
+    environment:
+      - TZ=Europe/Budapest
+      - GOTIFY_DEFAULTUSER_PASS=password
+      - GOTIFY_SERVER_EXTERNALURL=https://gotifyaws.trkrolf.com
+    volumes:
+      - "./data:/app/data"
+```
+
+### Uptime Kuma — `/opt/uptime/docker-compose.yml`
+
+```yaml
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:latest
+    container_name: uptime-kuma
+    restart: always
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./data:/app/data
+    networks:
+      - monitor-net
+
+networks:
+  monitor-net:
+    driver: bridge
+```
+
+### Cloudflare Tunnel — `/opt/cloudflare/docker-compose.yml`
+
+```yaml
+services:
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    restart: unless-stopped
+    environment:
+      TUNNEL_TOKEN: <token>
+    command: tunnel --no-autoupdate run
+```
+
+---
+
+<a name="uptimemigration"></a>
+
+## 1.5 Migrating the Uptime Kuma Config
+
+Copied the existing Kuma database over via Termius SFTP, then:
+
+```bash
+docker compose down
+mv /home/ubuntu/kuma.db /opt/uptime/data/kuma.db
+chown 1000:1000 /opt/uptime/data/kuma.db
+chmod 664 /opt/uptime/data/kuma.db
+docker compose up -d
+docker logs uptime-kuma -f
+```
+
+---
+
+<a name="wireguard"></a>
+
+## 1.6 WireGuard — EC2 ↔ Homelab
+
+The WireGuard tunnel serves two purposes:
+
+1. EC2 uses the homelab's BIND9 DNS server, so Uptime Kuma can reach machines by their internal hostnames as well, not just by IP — more precisely, by their public names, but overridden internally.
+2. A secure, encrypted channel between the two environments.
+
+---
+
+EC2 instance added as a WireGuard peer.
+
+<img width="1474" height="451" alt="image" src="https://github.com/user-attachments/assets/fea969f9-4ab9-4872-a17e-e8e1029b98bd" />
+
+The EC2 machine pinging the WireGuard server running on pfSense, over the WireGuard IP.
+
+<img width="654" height="109" alt="image" src="https://github.com/user-attachments/assets/a107b078-246d-4896-9d41-994fa1144651" />
+
+<a name="tunnel"></a>
+
+## 1.7 Cloudflare Tunnel + Cloudflare Access
+
+**Why Tunnel instead of open ports?**
+
+In the final setup, no inbound ports are open on the EC2 instance at all. Cloudflare Tunnel establishes an outbound connection to Cloudflare, and services are reached through that — minimizing the attack surface.
+
+**Hosts mapped:**
+- `uptimeaws.trkrolf.com` → `localhost:3001`
+- `gotifyaws.trkrolf.com` → `localhost:3008`
+
+**Cloudflare Access policy:** Authentik is used for the services running on the homelab, while the EC2 apps use email + OTP authentication.
+
+Cloudflare tunnel running.
+
+<img width="1620" height="671" alt="image" src="https://github.com/user-attachments/assets/5a61631a-0c22-4d90-bc84-0a24fd26dcf2" />
+
+Hosts mapped to the tunnel.
+
+<img width="1596" height="392" alt="image" src="https://github.com/user-attachments/assets/3459b11d-95d8-4c0a-8ba4-4cc75bd726cb" />
+
+Email-based authentication configured for `gotifyaws.trkrolf.com` and `uptimeaws.trkrolf.com`.
+
+<img width="724" height="632" alt="image" src="https://github.com/user-attachments/assets/190527a9-7739-4298-9fac-12627cb281a9" />
+
+---
+
+<a name="errors"></a>
+
+## 1.8 Errors and Their Solutions
+
+Documentation covering errors across the whole infrastructure lives in one shared place, the [17. Errors](../17-Errors/README.md) chapter. The specific issues encountered during the AWS migration:
+
+- [DNS override conflict — homelab BIND9 wildcard clashing with EC2 subdomains](../17-Errors/README.md#dns-override-aws)
+- [Cloudflare wildcard certificate limit — third-level subdomain SSL failure](../17-Errors/README.md#cf-wildcard-limit)
+
+---
+
+← [Back to Homelab main page](../README.md)
+
+
+--- FILE: ./15-AWS_Services/README_HU.md ---
+← [Vissza a Homelab főoldalra](../README_HU.md)
+
+[🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
+
+---
+
+# 15. AWS Services — Első EC2 Instance
+
+## 📚 Tartalomjegyzék
+
+- [1.1 Cél](#cel)
+- [1.2 EC2 instance](#instance)
+- [1.3 Docker telepítése](#dockertelepites)
+- [1.4 Szolgáltatások](#services)
+- [1.5 Uptime Kuma konfig migrálása](#uptimemigralas)
+- [1.6 Wireguard](#wireguard)
+- [1.7 Cloudflare Tunnel + Cloudflare Access](#tunnel)
+- [1.8 Hibák és megoldásuk](#hibak)
+
+
+<a name="cel"></a>
+
+## 1.1 Cél
+
+A homelab monitorozó stack (Uptime Kuma + Gotify) ugyanazon a fizikai gépen futott, amit monitorozott, ha a homelab leállt, a monitorozás is leállt vele. 
+
+**Megoldás:** Egy külső Uptime Kuma + Gotify instance telepítése AWS EC2-re, WireGuard VPN-en keresztül összekötve a homelabbal, és Cloudflare Tunnel + Access által biztonságosan publikálva.
+
+**Architektúra áttekintés:**
+- EC2 futtatja az Uptime Kumát + Gotifyt Dockerben
+- WireGuard tunnel köti össze az EC2-t a homelabbal, így az EC2 a homelab BIND9 DNS szerverét használja (belső hostnevek feloldásához)
+- Cloudflare Tunnel teszi elérhetővé az EC2 szolgáltatásait publikusan, nyitott portok nélkül
+- Cloudflare Access (email + OTP) védi a publikus elérést, hogy ne férjen hozzá bárki
+
+---
+
+<a name="instance"></a>
+
+## 1.2 EC2 Instance
+
+**Instance típus:** `t3.micro` (free tier)  
+**OS:** Ubuntu 
+**Régió:** eu-central-1 (Frankfurt)  
+**Tárhely:** 20 GB gp3
+
+**Létrehozás AWS CLI-vel:**
+
+```bash
+# Security group létrehozása
+aws ec2 create-security-group \
+  --group-name 'launch-wizard-2' \
+  --description 'launch-wizard-2 created 2026-06-25' \
+  --vpc-id 'vpc-0c86cda3b79915739'
+
+# SSH engedélyezése
+aws ec2 authorize-security-group-ingress \
+  --group-id 'sg-preview-1' \
+  --ip-permissions '{"IpProtocol":"tcp","FromPort":22,"ToPort":22,"IpRanges":[{"CidrIp":"0.0.0.0/0"}]}'
+
+# Instance indítása
+aws ec2 run-instances \
+  --image-id 'ami-0303e2e4a29f041a3' \
+  --instance-type 't3.micro' \
+  --key-name 'ssh' \
+  --block-device-mappings '{"DeviceName":"/dev/sda1","Ebs":{"Encrypted":false,"DeleteOnTermination":true,"Iops":3000,"VolumeSize":20,"VolumeType":"gp3","Throughput":125}}' \
+  --network-interfaces '{"AssociatePublicIpAddress":true,"DeviceIndex":0,"Groups":["sg-preview-1"]}' \
+  --tag-specifications '{"ResourceType":"instance","Tags":[{"Key":"Name","Value":"FirstEC2"}]}' \
+  --metadata-options '{"HttpEndpoint":"enabled","HttpPutResponseHopLimit":2,"HttpTokens":"required"}' \
+  --count '1'
+```
+
+Ez a futó instance-om.
+
+<img width="1179" height="302" alt="kép" src="https://github.com/user-attachments/assets/0e985b99-adf9-4321-a7ec-b9235d393368" />
+
+---
+
+<a name="dockertelepites"></a>
+
+## 1.3 Docker telepítése
+
+```bash
+apt update && apt install -y curl gnupg lsb-release ca-certificates
+
+mkdir -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
+  https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" \
+  | tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+apt update
+apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+```
+
+---
+
+<a name="services"></a>
+
+## 1.4 Szolgáltatások (Docker Compose)
+
+### Gotify — `/opt/gotify/docker-compose.yml`
+
+```yaml
+services:
+  gotify:
+    image: gotify/server:2.9.1
+    container_name: gotify
+    restart: always
+    ports:
+      - "3008:80"
+    environment:
+      - TZ=Europe/Budapest
+      - GOTIFY_DEFAULTUSER_PASS=password
+      - GOTIFY_SERVER_EXTERNALURL=https://gotifyaws.trkrolf.com
+    volumes:
+      - "./data:/app/data"
+```
+
+### Uptime Kuma — `/opt/uptime/docker-compose.yml`
+
+```yaml
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:latest
+    container_name: uptime-kuma
+    restart: always
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./data:/app/data
+    networks:
+      - monitor-net
+
+networks:
+  monitor-net:
+    driver: bridge
+```
+
+### Cloudflare Tunnel — `/opt/cloudflare/docker-compose.yml`
+
+```yaml
+services:
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    restart: unless-stopped
+    environment:
+      TUNNEL_TOKEN: <token>
+    command: tunnel --no-autoupdate run
+```
+
+---
+
+<a name="uptimemigralas"></a>
+
+## 1.5 Uptime Kuma konfig migrálása
+
+Meglévő Kuma adatbázis átmásolása Termius SFTP-vel, majd:
+
+```bash
+docker compose down
+mv /home/ubuntu/kuma.db /opt/uptime/data/kuma.db
+chown 1000:1000 /opt/uptime/data/kuma.db
+chmod 664 /opt/uptime/data/kuma.db
+docker compose up -d
+docker logs uptime-kuma -f
+```
+
+---
+
+<a name="wireguard"></a>
+
+## 1.6 WireGuard — EC2 ↔ Homelab
+
+A WireGuard tunnel két célt szolgál:
+
+1. Az EC2 a homelab BIND9 DNS szerverét használja, az Uptime Kuma belső neveken is el tudja érni a gépeket, nem csak IP-n, pontosabban publikus neveken de overrideolva azt.
+2. Biztonságos, titkosított csatorna a két környezet között.
+
+---
+
+Wiregard peer-hez hozzáadva az EC2-es instance.
+
+<img width="1474" height="451" alt="kép" src="https://github.com/user-attachments/assets/fea969f9-4ab9-4872-a17e-e8e1029b98bd" />
+
+EC2-ben lévő gépem pingeli a Wireguard IP-n a Pfsense-n futó Wireguard szervert.
+
+<img width="654" height="109" alt="kép" src="https://github.com/user-attachments/assets/a107b078-246d-4896-9d41-994fa1144651" />
+
+<a name="tunnel"></a>
+
+## 1.7 Cloudflare Tunnel + Cloudflare Access
+
+**Miért Tunnel és nem nyitott portok?**
+
+Az EC2-n semmilyen bejövő port nem volt nyitva a végleges beállításban, a Cloudflare Tunnel kimenő kapcsolatot épít fel a Cloudflare-rel, és ezen keresztül érhetők el a szolgáltatások. Ez minimalizálja a támadási felületet.
+
+**Hozzárendelt hostok:**
+- `uptimeaws.trkrolf.com` → `localhost:3001`
+- `gotifyaws.trkrolf.com` → `localhost:3008`
+
+**Cloudflare Access policy:** az Authentik a homelab-on futó  szolgáltatásokhozhoz van, az EC2-es appokhoz email + OTP hitelesítés-t használok
+
+Cloudflare tunnel fut.
+
+<img width="1620" height="671" alt="kép" src="https://github.com/user-attachments/assets/5a61631a-0c22-4d90-bc84-0a24fd26dcf2" />
+
+Hostok a tunnelhez rendelve.
+
+<img width="1596" height="392" alt="kép" src="https://github.com/user-attachments/assets/3459b11d-95d8-4c0a-8ba4-4cc75bd726cb" />
+
+Email-es azonosítás beállítva a gotifyaws.trkrolf.com és uptimeaws.trkrolf.com-hoz.
+
+<img width="724" height="632" alt="kép" src="https://github.com/user-attachments/assets/190527a9-7739-4298-9fac-12627cb281a9" />
+
+---
+
+<a name="hibak"></a>
+
+## 1.8 Hibák és megoldásuk
+
+A teljes infrastruktúrát érintő hibakezelési dokumentáció egy közös helyen, a [17. Hibák és hibaelhárítás](../17-Errors/README_HU.md) fejezetben található. Az AWS migráció során felmerült specifikus problémák:
+
+- [DNS override konfliktus — homelab BIND9 wildcard ütközés EC2 aldomainekkel](../17-Errors/README_HU.md#dns-override-aws)
+- [Cloudflare wildcard tanúsítvány limit — harmadik szintű aldomain SSL hiba](../17-Errors/README_HU.md#cf-wildcard-limit)
+
+---
+
+← [Vissza a Homelab főoldalra](../README_HU.md)
 
 
 --- FILE: ./16-Design_Decisions/README.md ---
@@ -8815,7 +9625,7 @@ Az alert/archive logok (`*.gz`) 30 napnál régebbi tételeinek takarítását e
 
 ---
 
-# Design Decisions and Rationale
+# Design Decisions
 
 Here I present why I chose certain technologies and architectural approaches.
 
@@ -9103,7 +9913,7 @@ The VM/LXC name refers to the service or role running on it, extended with the l
 
 ---
 
-# Tervezési döntések és érvek
+# Design Decisions
 
 Itt bemutatom, hogy miért esett a döntésem bizonyos technológiákra és architektúrákra.
 
@@ -9398,7 +10208,7 @@ A VM/LXC neve a rajta futó szolgáltatásra vagy szerepkörre utal, kiegészít
 
 
 --- FILE: ./17-Errors/README.md ---
-← [Back to Homelab Main Page](../README.md)
+← [Back to Homelab main page](../README.md)
 
 [🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
 
@@ -9408,42 +10218,44 @@ A VM/LXC neve a rajta futó szolgáltatásra vagy szerepkörre utal, kiegészít
 
 ## 📚 Table of Contents
 
-- [DNS – Public domain resolution without internet](#dns-offline)
-- [DNS – Pi-hole blocking Google Image search results](#dns-pihole)
+- [DNS – Public domain name resolution without internet](#dns-offline)
+- [DNS – Pi-hole blocking Google image search results](#dns-pihole)
 - [DNS – ARP starving caused by AdGuard DNS rate limit](#ratelimit)
-- [SSH – SSH login issues with LXC / Ubuntu](#ssh-lxc)
-- [Sharing – SMB/NFS access from LXC](#mount-lxc)
-- [Sharing – Handling TrueNAS share unavailability](#unavailable)
+- [SSH – SSH login on LXC / Ubuntu](#ssh-lxc)
+- [Mounts – SMB/NFS access from LXC](#mount-lxc)
+- [Mounts – when the TrueNAS share is unavailable](#nemelerheto)
 - [Hardware – External SSD stability over USB](#hw-ssd)
 - [Hardware – M70q network adapter instability](#hw-m70q)
 - [Hardware – Local and public DNS issues (Wi-Fi)](#hw-wifi)
 - [DDNS – Cloudflare update behind pfSense](#ddns-pfsense)
-- [Apt-cacher-ng csomagok beragadása](#aptcacherng)
+- [Apt-cacher-ng stuck packages](#aptcacherng)
+- [AWS – DNS override conflict (BIND9 wildcard vs EC2 subdomain)](#dns-override-aws)
+- [AWS – Cloudflare wildcard certificate limit](#cf-wildcard-limit)
 
 ---
 
-## DNS – Public domain resolution without internet
+## DNS – Public domain name resolution without internet
 <a name="dns-offline"></a>
 
 **Problem**:
-- Accessing the `*.trkrolf.com` public domain failed when the internet connection was down.
+- Accessing the `*.trkrolf.com` public domain failed without an internet connection.
 
 **Solution**:
-- **DNS override**: Implemented a wildcard DNS override for `*.trkrolf.com` in the local resolver. This ensures requests resolve directly to the local Traefik IP, bypassing external lookups.
+- **DNS override**: the wildcarded trkrolf.com (`*.trkrolf.com`) records resolve directly to Traefik's local IP on the internal network, bypassing the external lookup.
 
 ---
 
-## DNS – Pi-hole blocking Google Image search results on mobile
+## DNS – Pi-hole blocking Google image search results on mobile
 <a name="dns-pihole"></a>
 
 **Problem**:
-- Google Image search results fail to open on mobile devices due to Pi-hole blocking lists.
+- On mobile, Google image search results wouldn't open because of Pi-hole's blocklists.
 
 **Cause**:
-- Google uses tracking domains (e.g., `googleadservices.com`) for certain results, which are present on standard blocklists.
+- Google uses tracking domains (e.g. `googleadservices.com`) that are present on the blocklists.
 
 **Solution**:
-- Created an SSH script to temporarily disable Pi-hole when needed.
+- Temporarily disabling Pi-hole via an SSH script.
 
 ❗ Script: [/11-Scripts/Android/toggle_pihole_ssh.sh](/11-Scripts/Android/toggle_pihole_ssh.sh)
 
@@ -9452,65 +10264,65 @@ A VM/LXC neve a rajta futó szolgáltatásra vagy szerepkörre utal, kiegészít
 ## DNS – ARP starving caused by AdGuard DNS rate limit
 <a name="ratelimit"></a>
 
-**Problem Description**:
-After migrating from Pi-hole to AdGuard Home (AGH), Proxmox hosts (`192.168.2.198`, `192.168.2.199`) became unreachable from the `192.168.1.0/24` network. Interestingly, the VMs and LXC containers running on these hosts remained pingable, but the physical nodes themselves did not respond.
+**Problem description**
+After switching from Pi-hole to AdGuard Home, the Proxmox hosts (192.168.2.198, 192.168.2.199) became unreachable from the 192.168.1.0/24 network. Interestingly, the VMs and LXC containers running on those hosts remained pingable, but the physical nodes themselves stopped responding.
 
-**Cause**:
-- **DNS rate limit:** AdGuard Home's default rate limit (**20 queries/sec**) was too low. Clients exceeded this limit, causing AdGuard Home to drop requests.
-- **DNS Flood:** Due to failed resolutions, clients initiated aggressive DNS retries. This created a self-reinforcing loop that saturated the Proxmox network interface.
-- **Missing records:** Since the Proxmox nodes had fixed IPs (configured on the host, not by pfSense DHCP), **Static ARP** was not enabled for them in pfSense. Due to network noise, they could not be added to the ARP table, resulting in **ARP starvation**.
-- **ARP starvation:** Due to the high volume of dropped packets and queuing, the Proxmox interface could not respond to pfSense's ARP requests (required for PING) in time. The VMs and LXCs on the Proxmox node remained pingable from `1.0` because they received their IPs from the pfSense DHCP server, where Static ARP was already configured and enabled. Thus, their IP + MAC address pairs were already known.
+**Cause**
 
-**Solution**:
-1. **Static ARP Binding:**
-   - Added Proxmox hosts to the **DHCP Static Mappings** in pfSense.
-   - Enabled the **Static ARP** option for these mappings. This ensures the router has a hardcoded MAC-IP pairing and doesn't need to broadcast ARP requests.
-2. **Remove AdGuard Rate Limit:**
-   - Navigation: `Settings` -> `DNS settings` -> `Rate limit`.
-   - Set the value to **0** (disabled) or a significantly higher threshold.
+- **DNS rate limit:** AdGuard Home's default rate limit (**20 queries/sec**) was too low. Clients exceeded it, and AdGuard Home started dropping requests.
+- **DNS Flood:** Due to the failed resolutions, clients began aggressively retrying, increasingly often, which overloaded the Proxmox network interface — a self-reinforcing process.
+- **Missing records:** Since the Proxmox nodes had fixed IPs (not assigned via pfSense DHCP), they didn't have a static ARP entry enabled on pfSense. Because of the network noise, they couldn't get into the ARP table, resulting in **ARP starving**.
+- **ARP starving:** Due to the large number of dropped packets and the resulting queue, the Proxmox interface couldn't respond in time to pfSense's ARP requests, which are needed for PING. The VMs and LXC containers on the Proxmox node remained pingable from the 1.0 network because they received their IP from the pfSense DHCP server, which also assigned them static ARP entries (since I had configured that). So their IP + MAC address pairing was already known.
+
+**Solution**
+
+1. **Pinning static ARP:**
+    * Added the Proxmox hosts to the **DHCP Static Mappings** list in pfSense.
+    * After locking in the MAC addresses, enabled the **Static ARP** option, so the router no longer needs to look up the hosts via ARP requests.
+2. **Raising the AdGuard Home limit:**
+    * In the AdGuard interface: Settings / DNS settings / Rate limit.
 
 ---
 
-## SSH – SSH login for LXC / Ubuntu
+## SSH – SSH login on LXC / Ubuntu
 <a name="ssh-lxc"></a>
 
 **Problem**:
-- Root SSH login is disabled by default in LXC containers.
+- Root SSH login is disabled by default inside LXC containers.
 
 **Solution**:
-- Create a regular user and configure SSH key-based authentication.
+- Creating a regular user and setting up SSH key-based authentication.
 
 ---
 
-## Sharing – SMB/NFS access from LXC
+## Mounts – SMB/NFS access from LXC
 <a name="mount-lxc"></a>
 
 **Problem**:
-- Unprivileged LXC containers cannot mount network shares directly.
+- Unprivileged LXC containers can't directly mount network shares.
 
 **Solution**:
-- Use **fstab** on the Proxmox host to mount the shares, then pass them to the LXC using a bind mount (`mp0`).
-- This prevents the `df` command from hanging if the storage goes offline.
+- Forwarding the share — already mounted on the Proxmox host via **AutoFS** — into the container using a bind mount (`mp0`).
+- This also prevents the `df` command from hanging if the storage becomes unavailable.
 
 ---
 
-## Sharing – Handling TrueNAS share unavailability
-<a name="unavailable"></a>
+## Mounts – when the TrueNAS share is unavailable
+<a name="nemelerheto"></a>
 
 **Problem**:
-- Several VMs and LXCs on the Proxmox1 node depend on TrueNAS shares. If the share becomes unavailable, services like qBittorrent might continue downloading to the VM's local storage, filling up the disk.
+- Since several VMs and LXC containers on Proxmox1 use the TrueNAS share, it's a real concern what happens if that share becomes unavailable. For example, when the share dropped out, qBittorrent simply kept downloading onto the VM's local storage instead — which is a problem.
 
 **Solution**:
-- Adopted a "shutdown on failure" policy. Since I follow the "one service per VM/LXC" principle, stopping affected machines doesn't impact other services.
-- Proxmox uses **fstab** to mount and monitor shares.
-- A script runs every 30 seconds to check share availability.
-- If the share is online: The script starts the VM/LXC if it isn't running.
-- If the share is offline: The script shuts down the affected VM/LXC immediately.
+The best approach I found is to stop the affected LXC and VM machines whenever the share is unavailable — since I follow a one-service-per-VM/LXC principle, this doesn't affect any other running service. Once the share becomes available again, the VM/LXC is started back up.
+- All shares are mounted on the Proxmox host via fstab, so it can check and forward them to LXC containers.
+- A script checks every 30 seconds whether the share is reachable.
+- If the share is reachable, it checks whether the VM/LXC is running, and starts it if not.
+- If the share is unreachable, it stops the VM/LXC if it's running.
 
-❗ Script: [/11-Scripts/proxmox/mount-monitor](/11-Scripts/proxmox/mount-monitor)
+❗ Script: [/11-Scripts/Android/proxmox-mount-monitor.sh](/11-Scripts/proxmox/mount-monitor)
 
-The image below shows that when TrueNAS is stopped, the dependent VMs/LXCs on the other Proxmox node shut down automatically. They restart once TrueNAS is back online.
-
+The image below shows that when I stop TrueNAS, the affected VM/LXC machines on the other Proxmox node stop as well. Starting TrueNAS back up brings those machines back up too.
 <p align="center">
   <img src="https://github.com/user-attachments/assets/042abb72-ea53-4769-b017-237a0f493dbe" alt="TrueNAS stopped" width="400">
 </p>
@@ -9521,10 +10333,10 @@ The image below shows that when TrueNAS is stopped, the dependent VMs/LXCs on th
 <a name="hw-ssd"></a>
 
 **Problem**:
-- Samsung 870 EVO SSD was unstable when connected directly via USB.
+- The Samsung 870 EVO SSD was unstable when connected directly via USB.
 
 **Solution**:
-- Using a powered TP-Link UE330 USB hub to provide stable power delivery.
+- Using a TP-Link UE330 USB hub, which provides more stable power delivery.
 
 ---
 
@@ -9532,10 +10344,10 @@ The image below shows that when TrueNAS is stopped, the dependent VMs/LXCs on th
 <a name="hw-m70q"></a>
 
 **Problem**:
-- The internal network card of the M70q randomly dropped the connection.
+- The M70q's built-in network card randomly dropped the connection.
 
 **Solution**:
-- Using a TP-Link UE330 external USB-to-Ethernet adapter for stable connectivity.
+- Using a TP-Link UE330 external USB adapter for stable network access.
 
 ---
 
@@ -9543,78 +10355,126 @@ The image below shows that when TrueNAS is stopped, the dependent VMs/LXCs on th
 <a name="hw-wifi"></a>
 
 **Problem**:
-- The MediaTek 7921 Wi-Fi card produced unstable DNS resolution in Linux environments.
+- The MediaTek 7921 Wi-Fi card produced unstable DNS resolution on Linux.
 
 **Solution**:
-- Replaced the adapter with an Intel AX210.
+- Replacing the adapter with an Intel AX210.
 
 ---
 
-## DDNS – pfSense DDNS not updating Cloudflare behind Double NAT
+## DDNS – pfSense DDNS not updating Cloudflare behind double NAT
 <a name="ddns-pfsense"></a>
 
 **Problem**
 
-The pfSense WAN interface does **not have a public IP address**, but a **static private IP (e.g. 192.168.1.196)** because the router is located behind double NAT.
+The pfSense WAN interface doesn't have a **public IP**, but a **static private IP (e.g. 192.168.1.196)**, since the router sits behind double NAT.
 
-The built-in pfSense Dynamic DNS mechanism (`/etc/rc.dyndns.update`) is triggered only in three cases:
+pfSense's built-in Dynamic DNS mechanism (`/etc/rc.dyndns.update`) is triggered in 3 cases:
 
-- system startup
-- the WAN interface receives a new IP address
-- the WAN interface is brought down and up again
+- system boot
+- the WAN interface receives a new IP
+- the WAN interface goes down/up
 
-Since the IP address on the WAN interface never changes, pfSense **does not detect** that the real public IP has changed on the upstream router, therefore it does not update the Cloudflare DNS record.
+Since the IP on the WAN interface never actually changes, pfSense **doesn't notice** that the real public IP on the upstream router has changed, and so it never updates the Cloudflare DNS record.
 
-As a result, the `trkrolf.com` domain becomes unreachable from outside the network.
+The result: the trkrolf.com domain becomes unreachable from outside.
 
 **Solution**
 
-With the help of a script, we force pfSense to react **not to the WAN IP change**, but to the **actual public IP change**.
+A script forces pfSense to react to changes in the **actual public IP**, rather than to changes on the WAN interface.
 
-Mechanism:
+The mechanism:
 
-- It queries the current public IP using `checkip.amazonaws.com`
-- It compares it with the previously stored IP saved in a file
-- If a change is detected:
-  - it updates the stored IP in the file
-  - it manually triggers the `/etc/rc.dyndns.update` script
+- Queries the current public IP via checkip.amazonaws.com
+- Compares it against the previously stored IP, kept in a file
+- If it changed:
+   - updates the stored IP in the file
+   - manually invokes the `/etc/rc.dyndns.update` script
 
-This ensures that the Cloudflare record always points to the correct public IP.
+This way, the Cloudflare record always points to the correct public IP.
 
 ❗ Script: [/11-Scripts/pfsense/ddns-force-update.sh](/11-Scripts/pfsense/ddns-force-update.sh)
 
 ---
 
-## Apt-cacher-ng Stuck Package Issue
+## Apt-cacher-ng stuck packages issue
+
 <a name="aptcacherng"></a>
 
-**Problem**  
-During client updates via Ansible, I noticed in the Semaphore GUI that sometimes the update does not complete—it gets stuck and waits indefinitely. This can be seen in the figure below:
-
+**Problem**
+During Ansible-driven client updates, I noticed in the Semaphore GUI that runs would sometimes not complete — they'd just hang and wait indefinitely. This is visible in the image below.
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/db0a18b6-dd7c-45b4-83cc-b9f97840c7f8" alt="Semaphore GUI" width="600">
+  <img src="https://github.com/user-attachments/assets/db0a18b6-dd7c-45b4-83cc-b9f97840c7f8" alt="Description" width="600">
 </p>
 
-**Cause**  
+**Cause**
 
-- On the proxy server: `tail -f /var/log/apt-cacher-ng/apt-cacher.err` shows cache errors, as illustrated below.  
-- The client requests the package from the proxy server (`apt-cacher-ng`).  
-- The apt-cacher-ng database detects that the downloaded package size does not match the expected size in the database (`checked size beyond EOF`).  
-- The proxy tries to re-download the faulty file but cannot, because a file with the same name already exists (even if incorrect), so the client **waits for the package indefinitely**.
-
+- On the proxy server: `tail -f /var/log/apt-cacher-ng/apt-cacher.err` shows the cache errors, visible in the image below.
+- The client requests the package from the proxy server (apt-cacher-ng).
+- apt-cacher-ng's database sees that the downloaded package's file size doesn't match what its database says the file should officially be (`checked size beyond EOF`).
+- The proxy tries to re-download the broken file, but can't, since a file by that name already exists (`file exists`) — even though it's corrupted — so the client **waits for the package indefinitely**.
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/3563cca6-e744-4dbe-b23f-4ae2823db9ac" alt="Proxy errors" width="600">
+  <img src="https://github.com/user-attachments/assets/3563cca6-e744-4dbe-b23f-4ae2823db9ac" alt="Description" width="600">
 </p>
 
-**Solution**  
+**Solution**
 
-The `acngtool` maintenance command is scheduled via cron to run **daily at 22:30**. This automatically cleans and rebuilds the cache, preventing stuck updates, and runs just before the **23:00 Ansible update playbook**, avoiding the issue entirely.
+The `acngtool` maintenance command was added to cron, running every day at 22:30. This automatically cleans and rebuilds the cache, preventing it from getting stuck — running right before the 23:00 Ansible-driven update playbook, thereby avoiding the hang.
 
+```
 30 22 * * * /usr/lib/apt-cacher-ng/acngtool maint -c /etc/apt-cacher-ng >/dev/null 2>&1
+```
 
 ---
 
-← [Back to Homelab Main Page](../README.md)
+## AWS – DNS override conflict (BIND9 wildcard vs EC2 subdomain)
+<a name="dns-override-aws"></a>
+
+**Problem**:
+- The EC2 services wouldn't load on the home network, but worked fine on mobile data.
+
+**Cause**:
+- The homelab's BIND9 has a `*.trkrolf.com` wildcard override that routes everything to the local Traefik instance, so the EC2 subdomains never even reached Cloudflare.
+
+<img width="691" height="255" alt="image" src="https://github.com/user-attachments/assets/b55f6d2a-6a33-40c0-b048-38c288e24153" />
+
+**Solution**:
+- Creating an exception in AdGuard Home for the EC2 subdomains, so they don't get routed to the overridden BIND9 record, but instead resolve to the Cloudflare proxy IP.
+
+Finding out the Cloudflare proxy IP:
+
+```bash
+nslookup gotifyaws.trkrolf.com 1.1.1.1
+ipconfig /flushdns
+```
+
+<img width="726" height="379" alt="image" src="https://github.com/user-attachments/assets/df18226d-62c7-428f-9510-0b144f2ac834" />
+
+The AdGuard override shown here.
+
+<img width="945" height="430" alt="image" src="https://github.com/user-attachments/assets/f5d775b8-ba9e-4cc4-b31e-45ea16fe90d3" />
+
+---
+
+## AWS – Cloudflare wildcard certificate limit
+<a name="cf-wildcard-limit"></a>
+
+**Problem**:
+- `uptime.aws.trkrolf.com` — SSL Handshake Failure; reachable over HTTP but not HTTPS.
+
+**Cause**:
+- Cloudflare Universal SSL (the free tier) only covers a single-level wildcard (`*.trkrolf.com`). `uptime.aws.trkrolf.com` is a third-level subdomain, so it falls outside that scope.
+
+**Solution**:
+- Renaming the subdomains to single-level in the Cloudflare tunnel: `uptimeaws.trkrolf.com`, `gotifyaws.trkrolf.com` — these are already covered by the `*.trkrolf.com` wildcard.
+
+<img width="1603" height="415" alt="image" src="https://github.com/user-attachments/assets/078d4589-e97a-451f-9324-f4e315711493" />
+
+> **Important takeaway:** on the Cloudflare free tier, always plan for single-level subdomains if you're relying on a wildcard cert — otherwise you'd need Total TLS, which is a paid feature.
+
+---
+
+← [Back to Homelab main page](../README.md)
 
 
 --- FILE: ./17-Errors/README_HU.md ---
@@ -9639,6 +10499,8 @@ The `acngtool` maintenance command is scheduled via cron to run **daily at 22:30
 - [Hardver – Lokális és publikus DNS problémák (Wi-Fi)](#hw-wifi)
 - [DDNS – Cloudflare frissítés pfSense mögött](#ddns-pfsense)
 - [Apt-cacher-ng csomagok beragadása](#aptcacherng)
+- [AWS – DNS override konfliktus (BIND9 wildcard vs EC2 aldomain)](#dns-override-aws)
+- [AWS – Cloudflare wildcard tanúsítvány limit](#cf-wildcard-limit)
 
 ---
 
@@ -9835,6 +10697,53 @@ Az acngtool karbantartó parancs cron-ba helyezve, minden nap 22:30-kor futtatva
 
 ---
 
+## AWS – DNS override konfliktus (BIND9 wildcard vs EC2 aldomain)
+<a name="dns-override-aws"></a>
+
+**Probléma**:
+- Az EC2 szolgáltatások otthoni hálón nem töltöttek be, mobilneten igen.
+
+**Ok**:
+- A homelab BIND9-ben `*.trkrolf.com` wildcard override van, ami mindent a lokális Traefik-re irányít, így az EC2-es aldomainek el sem értek a Cloudflare-ig.
+
+<img width="691" height="255" alt="kép" src="https://github.com/user-attachments/assets/b55f6d2a-6a33-40c0-b048-38c288e24153" />
+
+**Megoldás**:
+- AdGuard Home-ban kivétel létrehozása az EC2-es aldomainekre, hogy azok ne az override-olt BIND9-hez menjenek, hanem Cloudflare proxy IP-re oldódjanak fel.
+
+Cloudflare proxy ip kiderítése:
+
+```bash
+nslookup gotifyaws.trkrolf.com 1.1.1.1
+ipconfig /flushdns
+```
+
+<img width="726" height="379" alt="kép" src="https://github.com/user-attachments/assets/df18226d-62c7-428f-9510-0b144f2ac834" />
+
+Itt látható az adguard overrideolás.
+
+<img width="945" height="430" alt="kép" src="https://github.com/user-attachments/assets/f5d775b8-ba9e-4cc4-b31e-45ea16fe90d3" />
+
+---
+
+## AWS – Cloudflare wildcard tanúsítvány limit
+<a name="cf-wildcard-limit"></a>
+
+**Probléma**:
+- `uptime.aws.trkrolf.com` — SSL Handshake Failure, http-n elérem de https-en nem.
+
+**Ok**:
+- A Cloudflare Universal SSL (ingyenes csomag) csak egyszintű wildcardot fed le (`*.trkrolf.com`). A `uptime.aws.trkrolf.com` harmadik szintű aldomain, így kiesik a hatókörből.
+
+**Megoldás**:
+- Aldomainek átnevezése egyszintűre a cloudflare tunnelben: `uptimeaws.trkrolf.com`, `gotifyaws.trkrolf.com`, ezeket a `*.trkrolf.com` wildcard már lefedi.
+
+<img width="1603" height="415" alt="kép" src="https://github.com/user-attachments/assets/078d4589-e97a-451f-9324-f4e315711493" />
+
+> **Fontosság:** Cloudflare ingyenes csomagnál mindig egyszintű aldomaineket érdemes tervezni, ha wildcard certet használunk, különben Total TLS kell, de ez fizetős.
+
+---
+
 ← [Vissza a Homelab főoldalra](../README_HU.md)
 
 
@@ -9868,8 +10777,9 @@ Az acngtool karbantartó parancs cron-ba helyezve, minden nap 22:30-kor futtatva
 - [12. Docker](./12-Docker/README.md)
 - [13. Infrastructure as Code (IaC)](./13-Infrastructure_as_Code_(IaC)/README.md)
 - [14. Security_Lab](./14-Security_Lab/README.md)
-- [15. Design Decisions](./16-Design_Decisions/README.md)
-- [16. Errors and Troubleshooting](./17-Errors/README.md)
+- [15. AWS_Services](./15-AWS_Services/README.md)
+- [16. Design Decisions](./16-Design_Decisions/README.md)
+- [17. Errors and Troubleshooting](./17-Errors/README.md)
 
 ---
 
@@ -9917,8 +10827,8 @@ This project presents a self-designed, enterprise-grade homelab where I practice
 > [!IMPORTANT]
 > I would like to highlight the following two sections, which I consider the most valuable parts of this project. In these documents, I explain the rationale behind my design decisions, the challenges I encountered, and the specific troubleshooting steps I took to resolve them.
 > 
-> - [13. Design Decisions](./13-Design_Decisions/README.md)
-> - [14. Errors and Troubleshooting](./14-Errors/README.md)
+> - [16. Design_Decisions](./16-Design_Decisions/README.md)
+> - [17. Errors](./17-Errors/README.md)
 
 ---
 
@@ -10047,8 +10957,9 @@ graph TD
 - [12. Docker](./12-Docker/README_HU.md)
 - [13. Infrastructure as Code (IaC)](./13-Infrastructure_as_Code_(IaC)/README_HU.md)
 - [14. Security_Lab](./14-Security_Lab/README_HU.md)
-- [15. Tervezési döntések](./16-Design_Decisions/README_HU.md)
-- [16. Hibák és hibaelhárítás](./17-Errors/README_HU.md)
+- [15. AWS_Services](./15-AWS_Services/README_HU.md)
+- [16. Tervezési döntések](./16-Design_Decisions/README_HU.md)
+- [17. Hibák és hibaelhárítás](./17-Errors/README_HU.md)
 
 ---
 
@@ -10096,8 +11007,8 @@ Ez a projekt egy saját tervezésű, vállalati környezet szerű homelabot muta
 > [!IMPORTANT]
 >  Az alábbi két menüpontot kiemelném, amit a legértékesebb pontoknak tartok, ahol elmagyarázom milyen döntést miért hoztam és hogy milyen hibákkal szembesültem illetve hogyan oldottam meg őket.
 > 
-> - [13. Tervezési döntések](./13-Design_Decisions/README_HU.md)
-> - [14. Hibák és hibaelhárítás](./14-Errors/README_HU.md)
+> - [16. Design_Decisions](./16-Design_Decisions/README_HU.md)
+> - [17. Errors](./17-Errors/README_HU.md)
 
 ---
 
