@@ -62,6 +62,7 @@ In my lab, SSH security is strictly enforced and automated via **Ansible**[cite:
 - **Full Tunnel**: Enabled on mobile to route all traffic through the home network, providing remote access to **AdGuard Home** ad-blocking.
 
 Full tunnel configuration — AllowedIPs = 0.0.0.0/0 means all client traffic is routed through the VPN, not just traffic destined for the homelab network.
+
 <img width="324" height="690" alt="kép" src="https://github.com/user-attachments/assets/8c4b9cf5-7c2e-4360-af11-372dc9466cf1" />
 
 ---
