@@ -98,7 +98,7 @@ A Pi-hole-ról AdGuard Home-ra való átállás után a 192.168.1.0/24 hálózat
 
 ---
 
-## Megosztás – ha nem elérhető a Truenas megosztás]
+## Megosztás – ha nem elérhető a Truenas megosztás
 <a name="nemelerheto"></a>
 
 **Probléma**:
@@ -135,10 +135,85 @@ Lenti képen látható, TrueNAS-t leállítottam akkor leáll a másik Proxmoxon
 <a name="hw-m70q"></a>
 
 **Probléma**:
-- Az M70q belső hálózati kártyája véletlenszerűen megszakította a kapcsolatot.
+- Az M70q gyári belső hálózati kártyája (`eno2`, Intel e1000e) véletlenszerűen lekapcsolódott a LAN-ról, majd sokszor csak reboot után jött vissza.
 
-**Megoldás**:
-- TP-Link UE330 külső USB adapter használata a stabil hálózati eléréshez.
+**Diagnosztika**:
+- Amikor lekapcsolódott a kapcsolat, a Proxmox host elé ülve az alábbi paranccsal néztem meg mi történt a driver szintjén:
+```bash
+dmesg | grep eno2
+```
+- A log alapján az e1000e driver hibáira/resetjeire lehetett következtetni, ami arra utalt, hogy nem szoftveres (pl. DHCP, kábel) hanem driver/hardver szintű instabilitásról van szó.
+
+**Megoldási kísérletek**
+
+1. **1. próbálkozás – e1000e driver paraméterek finomhangolása (nem vált be)**
+
+   Létrehoztam a fájlt, mert még nem létezett:
+```bash
+   sudo nano /etc/modprobe.d/e1000e.conf
+```
+   Tartalma:
+
+options e1000e InterruptThrottleRate=2000
+options e1000e TxIntDelay=16
+options e1000e RxIntDelay=16
+options e1000e InterruptModeration=1
+options e1000e FlowControl=1
+
+Ezután reboot. Ez a beállítás önmagában nem oldotta meg a random lekapcsolódást.
+
+2. **2. próbálkozás – watchdog script az interfész automatikus újraindítására (elvileg jó irány, de nem futott elég sokáig ahhoz, hogy kiderüljön, valóban stabil-e)**
+
+   A lényeg egy saját "WDT" (watchdog timer) létrehozása: a script rendszeresen pingel egy elérhető eszközt (pl. a routert), és ha nem kap választ, le- majd felkapcsolja az `eno2` interfészt.
+
+```bash
+   sudo nano /usr/local/bin/monitor_eno2.sh
+```
+```bash
+   #!/bin/bash
+
+   # Interfész neve
+   INTERFACE="eno2"
+   PING_TARGET="192.168.1.1"  # A router vagy egy másik elérhető eszköz IP-címe
+
+   # Ellenőrizzük, hogy az interfész válaszol-e (pingel)
+   if ! ping -c 1 -W 1 $PING_TARGET > /dev/null 2>&1; then
+       echo "Network interface $INTERFACE is down. Restarting..."
+       # Ha nem válaszol, újraindítjuk az interfészt
+       ifdown $INTERFACE && ifup $INTERFACE
+   fi
+```
+```bash
+   sudo chmod +x /usr/local/bin/monitor_eno2.sh
+```
+
+   Ehhez systemd service is készült, hogy folyamatosan fusson, és leállás esetén magától újrainduljon:
+```bash
+   sudo nano /etc/systemd/system/network-watchdog.service
+```
+```ini
+   [Unit]
+   Description=Network Interface Watchdog for eno2
+   After=network.target
+
+   [Service]
+   Type=simple
+   ExecStart=/usr/local/bin/monitor_eno2.sh
+   Restart=always
+   RestartSec=30
+
+   [Install]
+   WantedBy=multi-user.target
+```
+```bash
+   sudo systemctl daemon-reload
+   sudo systemctl enable network-watchdog.service
+   sudo systemctl start network-watchdog.service
+   sudo systemctl status network-watchdog.service
+```
+
+**Végleges megoldás**:
+- A driver-szintű tuningolás és a watchdog script helyett végül egy **TP-Link UE330 külső USB Ethernet adapter** használata oldotta meg a problémát véglegesen — azóta hibátlanul, kimaradás nélkül működik.
 
 ---
 
