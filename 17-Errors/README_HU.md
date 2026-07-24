@@ -148,7 +148,7 @@ dmesg | grep eno2
 
 **Megoldási kísérletek**
 
-1. **1. próbálkozás – e1000e driver paraméterek finomhangolása (nem vált be)**
+**1. próbálkozás – e1000e driver paraméterek finomhangolása (nem vált be)**
 
    Létrehoztam a fájlt, mert még nem létezett:
 ```bash
@@ -164,7 +164,7 @@ options e1000e FlowControl=1
 
 Ezután reboot. Ez a beállítás önmagában nem oldotta meg a random lekapcsolódást.
 
-2. **2. próbálkozás – watchdog script az interfész automatikus újraindítására (elvileg jó irány, de nem futott elég sokáig ahhoz, hogy kiderüljön, valóban stabil-e)**
+**2. próbálkozás – watchdog script az interfész automatikus újraindítására (elvileg jó irány, de nem futott elég sokáig ahhoz, hogy kiderüljön, valóban stabil-e)**
 
    A lényeg egy saját "WDT" (watchdog timer) létrehozása: a script rendszeresen pingel egy elérhető eszközt (pl. a routert), és ha nem kap választ, le- majd felkapcsolja az `eno2` interfészt.
 
