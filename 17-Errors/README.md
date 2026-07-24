@@ -143,9 +143,11 @@ dmesg | grep eno2
 ```
 - Based on the log, it pointed to e1000e driver errors/resets, suggesting the instability was not software-related (e.g. DHCP, cabling) but rather driver/hardware-level.
 
+<img width="738" height="247" alt="kép" src="https://github.com/user-attachments/assets/6206a66c-c54c-4302-b9cb-e42b7141fc4b" />
+
 **Solution attempts**
 
-1. **Attempt 1 – Tuning e1000e driver parameters (didn't work)**
+**Attempt 1 – Tuning e1000e driver parameters (didn't work)**
 
    I created the file, since it didn't exist yet:
 ```bash
@@ -161,7 +163,7 @@ options e1000e FlowControl=1
 
 Then rebooted. This setting alone did not fix the random disconnects.
 
-2. **Attempt 2 – Watchdog script to automatically restart the interface (probably a good direction, but wasn't run long enough to confirm it was actually stable)**
+**Attempt 2 – Watchdog script to automatically restart the interface (probably a good direction, but wasn't run long enough to confirm it was actually stable)**
 
    The idea here is essentially creating a custom WDT (watchdog timer): the script regularly pings a reachable device (e.g. the router), and if it fails, it brings the `eno2` interface down and back up.
 
