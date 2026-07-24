@@ -144,6 +144,8 @@ dmesg | grep eno2
 ```
 - A log alapján az e1000e driver hibáira/resetjeire lehetett következtetni, ami arra utalt, hogy nem szoftveres (pl. DHCP, kábel) hanem driver/hardver szintű instabilitásról van szó.
 
+<img width="738" height="247" alt="kép" src="https://github.com/user-attachments/assets/0cb35fe9-ac9c-418c-b03c-cc9f931c3365" />
+
 **Megoldási kísérletek**
 
 1. **1. próbálkozás – e1000e driver paraméterek finomhangolása (nem vált be)**
