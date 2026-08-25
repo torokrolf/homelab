@@ -320,6 +320,10 @@ Here you can see the AdGuard override.
 
 <img width="945" height="430" alt="image" src="https://github.com/user-attachments/assets/f5d775b8-ba9e-4cc4-b31e-45ea16fe90d3" />
 
+Success. 
+
+<img width="439" height="163" alt="kép" src="https://github.com/user-attachments/assets/40fc277e-3023-4b1d-af75-2dde84993643" />
+
 ---
 
 ## AWS – Cloudflare wildcard certificate limit
