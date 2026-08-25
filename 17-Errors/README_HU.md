@@ -321,6 +321,10 @@ Itt látható az adguard overrideolás.
 
 <img width="945" height="430" alt="kép" src="https://github.com/user-attachments/assets/f5d775b8-ba9e-4cc4-b31e-45ea16fe90d3" />
 
+Siker.
+
+<img width="439" height="163" alt="kép" src="https://github.com/user-attachments/assets/675a1b2f-4b0d-4cb7-a51c-e7dd17db137f" />
+
 ---
 
 ## AWS – Cloudflare wildcard tanúsítvány limit
