@@ -131,7 +131,7 @@ Az Authentik a homelab központi **Identity Provider (IdP)** megoldása, amely l
 | **Switch (TP-Link) UI** | Proxy Provider | 
 | **Arr Stack (Radarr, stb.)** | Proxy Provider | 
 | **qBittorrent / Gotify** | Proxy Provider |
-| **Webmin / PXE / Apt-Cacher**| Proxy Provider | 
+| **PXE / Apt-Cacher**| Proxy Provider | 
 | **pfSense** | Proxy Provider | 
 | **FreeIPA** | LOKÁLIS | 
 | **Proxmox VE 1 & 2** | Elsődlegesen OIDC, de a root@pam megmarad vészhelyzeti elérésnek.. |

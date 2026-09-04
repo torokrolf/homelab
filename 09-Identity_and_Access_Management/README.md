@@ -130,7 +130,7 @@ Authentik serves as the primary **Identity Provider (IdP)** for the homelab infr
 | **Switch (TP-Link) UI** | Proxy Provider | 
 | **Arr Stack (Radarr, etc.)** | Proxy Provider | 
 | **qBittorrent / Gotify** | Proxy Provider | 
-| **Webmin / PXE / Apt-Cacher**| Proxy Provider | 
+| **PXE / Apt-Cacher**| Proxy Provider | 
 | **pfSense** | Proxy Provider | 
 | **FreeIPA** | LOCAL | 
 | **Proxmox VE 1 & 2** | Primarily OIDC (root@pam retained as break-glass emergency access) | 
