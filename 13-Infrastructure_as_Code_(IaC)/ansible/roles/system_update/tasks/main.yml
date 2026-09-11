@@ -1,0 +1,42 @@
+# 1. APT LOCK FELOLDÁS
+- name: Háttérben futó update folyamatok kinyírása
+  shell: |
+    systemctl stop apt-daily.service apt-daily.timer || true
+    systemctl stop apt-daily-upgrade.service apt-daily-upgrade.timer || true
+    systemctl stop unattended-upgrades.service || true
+    killall apt apt-get dpkg 2>/dev/null || true
+    rm -f /var/lib/dpkg/lock*
+    rm -f /var/lib/apt/lists/lock
+    rm -f /var/cache/apt/archives/lock
+    dpkg --configure -a
+  become: yes
+  changed_when: false
+
+# 2. RENDSZER FRISSÍTÉS
+- name: Rendszer frissítés (Upgrade dist)
+  apt:
+    upgrade: dist
+    autoremove: yes
+    force_apt_get: yes
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+  async: 300
+  poll: 5
+  register: upgrade_output
+  become: yes
+
+# 3. TISZTÍTÁS
+- name: Felesleges csomagok és cache törlése
+  shell: |
+    apt-get autoremove --purge -y
+    apt-get clean
+    journalctl --vacuum-time=1d
+  become: yes
+  changed_when: false
+
+# 4. REBOOT ELLENŐRZÉS
+- name: Reboot ellenőrzése
+  stat:
+    path: /var/run/reboot-required
+  register: reboot_required
+  notify: "Rendszer ujrainditasa"

@@ -1,0 +1,16 @@
+---
+- name: Add SSH public key for ansibleuser
+  hosts: gepeim
+  become: true
+  gather_facts: false
+
+  vars:
+    ansibleserver_username: username
+    ansibleclient_username: username
+
+  tasks:
+    - name: Add SSH public key to user's authorized_keys
+      authorized_key:
+        user: "{{ ansibleclient_username }}"
+        state: present
+        key: "{{ lookup('file', '/home/' + ansibleserver_username + '/.ssh/id_ed25519.pub') }}"

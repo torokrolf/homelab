@@ -1,0 +1,20 @@
+---
+- name: Backup – edge-gw-01-230
+  hosts: edge-gw-01-230
+  become: yes
+  roles:
+    - role: backup
+
+- name: Backup – access-core-01-206
+  hosts: access-core-01-206
+  become: yes
+  roles:
+    - role: backup
+
+- name: Backup – k3s-server-01-225
+  hosts: k3s-server-01-225
+  become: yes
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  roles:
+    - role: backup

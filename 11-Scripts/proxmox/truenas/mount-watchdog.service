@@ -1,0 +1,11 @@
+[Unit]
+Description=Mount Watchdog (LXC + VM)
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStartPre=/bin/bash -c 'if [ $(awk -F. "{print \$1}" /proc/uptime) -lt 45 ]; then rm -f /var/lib/mount-watchdog/nas_status.state; fi'
+ExecStart=/usr/local/bin/mount-watchdog.sh
+
+[Install]
+WantedBy=timers.target

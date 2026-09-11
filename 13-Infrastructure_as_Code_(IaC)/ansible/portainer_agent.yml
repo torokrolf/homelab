@@ -1,0 +1,6 @@
+---
+- name: portainer_agent
+  hosts: "{{ target | default('all_nodes') }}"
+  become: true
+  roles:
+    - role: portainer_agent

@@ -1,0 +1,411 @@
+← [Vissza a Homelab főoldalra](../README_HU.md)
+
+[🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
+
+---
+
+# Errors
+
+## 📚 Tartalomjegyzék
+
+- [DNS – Publikus domain névfeloldás internet nélkül](#dns-offline)
+- [DNS – Pi-hole blokkolja a Google képtalálatokat](#dns-pihole)
+- [DNS – AdGuard DNS rate limitből adótó ARP starving](#ratelimit)
+- [SSH – SSH belépés LXC / Ubuntu esetén](#ssh-lxc)
+- [Megosztás – SMB/NFS elérés LXC-ből](#mount-lxc)
+- [Megosztás – ha nem elérhető a Truenas megosztás](#nemelerheto)
+- [Hardver – Külső SSD stabilitása USB-n](#hw-ssd)
+- [Hardver – M70q hálózati adapter instabilitás](#hw-m70q)
+- [Hardver – Lokális és publikus DNS problémák (Wi-Fi)](#hw-wifi)
+- [DDNS – Cloudflare frissítés pfSense mögött](#ddns-pfsense)
+- [Apt-cacher-ng csomagok beragadása](#aptcacherng)
+- [AWS – DNS override konfliktus (BIND9 wildcard vs EC2 aldomain)](#dns-override-aws)
+- [AWS – Cloudflare wildcard tanúsítvány limit](#cf-wildcard-limit)
+- [Terraform – LXC template zárolási hiba párhuzamos klónozásnál (Fontos, ez a hiba Proxmoxon VM template-nél nem fordult elő!)](#lxc-parhuzamos-vegrehajtas) 
+- [Terraform – LXC klónozott konténer disk.size nem érvényesül egy `apply`-ban](#lxcklonozashiba)
+
+---
+
+## DNS – Publikus domain névfeloldás internet nélkül
+<a name="dns-offline"></a>
+
+**Probléma**:
+- A `*.trkrolf.com` publikus domain elérése sikertelen volt internetkapcsolat nélkül.
+
+**Megoldás**:
+- **DNS override**: A wildcardolt trkrolf.com (*.trkrolf.com) rekordok belső hálózaton közvetlenül a Traefik helyi IP-re oldódik fel, kikerülve a külső lekérdezést.
+
+---
+
+## DNS – Pi-hole blokkolja a Google képtalálatokat mobilon
+<a name="dns-pihole"></a>
+
+**Probléma**:
+- Mobilon a Google képtalálatok nem nyílnak meg a Pi-hole blokkolási listái miatt.
+
+**Ok**:
+- A Google tracking domaineket használ (pl. `googleadservices.com`), amik a tiltólistákon szerepelnek.
+
+**Megoldás**:
+- Ideiglenes Pi-hole kikapcsolás SSH script segítségével.
+
+❗ Script: [/11-Scripts/Android/toggle_pihole_ssh.sh](/11-Scripts/Android/toggle_pihole_ssh.sh)
+
+---
+
+## DNS – AdGuard DNS rate limitből adótó ARP starving
+<a name="ratelimit"></a>
+
+**Probléma leírása**
+A Pi-hole-ról AdGuard Home-ra való átállás után a 192.168.1.0/24 hálózatról a Proxmox hostok (192.168.2.198, 192.168.2.199) elérhetetlenné váltak. Érdekesség, hogy a hostokon futó VM-ek és LXC konténerek pingelhetőek maradtak, de maguk a fizikai node-ok nem válaszoltak.
+
+**Ok**
+
+- **DNS rate limit:** Az AdGuard Home alapértelmezett rate limit-e (**20 lekérdezés/mp**) túl alacsony volt. A kliensek túllépték ezt, az AdGuard Home pedig eldobta a kéréseket.
+- **DNS Flood:** A kliensek a sikertelen feloldások miatt agresszív újrapróbálkozásokba kezdtek, egyre sűrűbben, ami túlterhelte a Proxmox hálózati interfészét, ez egy öngerjesztő folyamat.
+  **Hiányzó rekordok:** Mivel a Proxmox node-ok fix IP-vel rendelkeztek (nem Pfsense DHCP által), nem volt hozzájuk a statikus ARP bejegyzés bekapcsolva a pfSense-ben. A hálózati zaj miatt nem tudtak bekerülni az ARP táblába így, aminek eredménye az **ARP starving**.
+- **ARP starving:** A nagy mennyiségű eldobott csomag és a sorban állás miatt a Proxmox interfésze nem tudta időben megválaszolni a pfSense ARP kéréseit, ami a PING-hez kellene. A Proxmox node-on lévő VM-eket és LXC-ket azért tudtam pingelni 1.0-ról, mert ők a pfSense DHCP szervertől kapták az IP-t és ott a statikus ARP-ot is megkapták, ugyanis beállítottam. Így az ő IP címük + MAC címük ismert volt. 
+
+
+**Megoldás**
+
+1.  **Statikus ARP rögzítése:**
+    * A pfSense-ben a Proxmox hostokat hozzáadtam a **DHCP Static Mappings** listához.
+    * A MAC címek rögzítése után bekapcsoltam a **Static ARP** opciót, így a routernek már nem kell ARP kérésekkel keresnie a hostokat.
+2.  **AdGuard Home korlát feloldása:**
+    * Az AdGuard felületén: Settings/DNS settings/Rate limit.
+
+---
+
+## SSH – SSH belépés LXC / Ubuntu esetén
+<a name="ssh-lxc"></a>
+
+**Probléma**:
+- Az LXC konténerekben alapértelmezetten tiltott a root SSH login.
+
+**Megoldás**:
+- Regular user létrehozása és SSH kulcs alapú hitelesítés beállítása.
+
+---
+
+## Megosztás – SMB/NFS elérés LXC-ből
+<a name="mount-lxc"></a>
+
+**Probléma**:
+- Unprivileged LXC konténerek nem tudnak közvetlenül hálózati megosztást mountolni.
+
+**Megoldás**:
+- A Proxmox hoston **AutoFS**-al csatolt megosztás továbbadása bind mount (`mp0`) segítségével.
+- Ez kiküszöböli a `df` parancs fagyását, ha a tároló nem elérhető.
+
+---
+
+## Megosztás – ha nem elérhető a Truenas megosztás
+<a name="nemelerheto"></a>
+
+**Probléma**:
+- Mivel nekem a Proxmox1-es node-on fut több VM és LXC ami használja a TrueNAS megosztást, így problémás lehet, hogy mi van akkor, amennyiben nem elérhető a megosztás. Például a qBittorrent a megosztás amennyiben nem volt elérhető, a VM lokális terhelyére folytatta a letöltést, ami probléma. 
+
+**Megoldás**:
+Legjobb megoldásnak azt találtam, ha leállítom ekkor az LXC és VM gépeket, úgyis az ahány szolgáltatás annyi VM/LXC elvet követem, így ez nem befolyásolja más szolgáltatás futását. Amennyiben elérhető a megosztás, akkor elindítom a VM/LXC-t.
+- Proxmoxhoz fstab-al minden megosztás mountolva van, hogy tudja ellenőrizni és továbbosztani LXC-nek.
+- Leellenőrzöm scripttel 30 másodpercenként, hogy elérhető-e a megosztás.
+- Ha elérhető a megosztás, megnézi hogy fut-e a VM/LXC, ha nem fut, elindítja.
+- Ha nem elérhető a megosztás, akkor leállítja a VM/LXC-t ha fut.
+
+❗ Script: [/11-Scripts/Android/proxmox-mount-monitor.sh](/11-Scripts/proxmox/mount-monitor)
+
+Lenti képen látható, TrueNAS-t leállítottam akkor leáll a másik Proxmoxon node-on lévő érintett VM/LXC gépek. Ha elindíntanám újra a TrueNAS-t akkor elindulnak ezek a gépek is.
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/042abb72-ea53-4769-b017-237a0f493dbe" alt="TrueNAS stopped" width="400">
+</p>
+
+---
+
+## Hardver – Külső SSD stabilitása USB-n
+<a name="hw-ssd"></a>
+
+**Probléma**:
+- A Samsung 870 EVO SSD közvetlen USB csatlakozás mellett instabil volt.
+
+**Megoldás**:
+- TP-Link UE330 USB hub használata, amely stabilabb áramellátást biztosít.
+
+---
+
+## Hardver – M70q hálózati adapter instabilitása
+<a name="hw-m70q"></a>
+
+**Probléma**:
+- Az M70q gyári belső hálózati kártyája (`eno2`, Intel e1000e) véletlenszerűen lekapcsolódott a LAN-ról, majd sokszor csak reboot után jött vissza.
+
+**Diagnosztika**:
+- Amikor lekapcsolódott a kapcsolat, a Proxmox host elé ülve az alábbi paranccsal néztem meg mi történt a driver szintjén:
+```bash
+dmesg | grep eno2
+```
+- A log alapján az e1000e driver hibáira/resetjeire lehetett következtetni, ami arra utalt, hogy nem szoftveres (pl. DHCP, kábel) hanem driver/hardver szintű instabilitásról van szó.
+
+<img width="738" height="247" alt="kép" src="https://github.com/user-attachments/assets/0cb35fe9-ac9c-418c-b03c-cc9f931c3365" />
+
+**Megoldási kísérletek**
+
+**1. próbálkozás – e1000e driver paraméterek finomhangolása (nem vált be)**
+
+   Létrehoztam a fájlt, mert még nem létezett:
+```bash
+   sudo nano /etc/modprobe.d/e1000e.conf
+```
+   Tartalma:
+
+options e1000e InterruptThrottleRate=2000
+options e1000e TxIntDelay=16
+options e1000e RxIntDelay=16
+options e1000e InterruptModeration=1
+options e1000e FlowControl=1
+
+Ezután reboot. Ez a beállítás önmagában nem oldotta meg a random lekapcsolódást.
+
+**2. próbálkozás – watchdog script az interfész automatikus újraindítására (elvileg jó irány, de nem futott elég sokáig ahhoz, hogy kiderüljön, valóban stabil-e)**
+
+   A lényeg egy saját "WDT" (watchdog timer) létrehozása: a script rendszeresen pingel egy elérhető eszközt (pl. a routert), és ha nem kap választ, le- majd felkapcsolja az `eno2` interfészt.
+
+```bash
+   sudo nano /usr/local/bin/monitor_eno2.sh
+```
+```bash
+   #!/bin/bash
+
+   # Interfész neve
+   INTERFACE="eno2"
+   PING_TARGET="192.168.1.1"  # A router vagy egy másik elérhető eszköz IP-címe
+
+   # Ellenőrizzük, hogy az interfész válaszol-e (pingel)
+   if ! ping -c 1 -W 1 $PING_TARGET > /dev/null 2>&1; then
+       echo "Network interface $INTERFACE is down. Restarting..."
+       # Ha nem válaszol, újraindítjuk az interfészt
+       ifdown $INTERFACE && ifup $INTERFACE
+   fi
+```
+```bash
+   sudo chmod +x /usr/local/bin/monitor_eno2.sh
+```
+
+   Ehhez systemd service is készült, hogy folyamatosan fusson, és leállás esetén magától újrainduljon:
+```bash
+   sudo nano /etc/systemd/system/network-watchdog.service
+```
+```ini
+   [Unit]
+   Description=Network Interface Watchdog for eno2
+   After=network.target
+
+   [Service]
+   Type=simple
+   ExecStart=/usr/local/bin/monitor_eno2.sh
+   Restart=always
+   RestartSec=30
+
+   [Install]
+   WantedBy=multi-user.target
+```
+```bash
+   sudo systemctl daemon-reload
+   sudo systemctl enable network-watchdog.service
+   sudo systemctl start network-watchdog.service
+   sudo systemctl status network-watchdog.service
+```
+
+**Végleges megoldás**:
+- A driver-szintű tuningolás és a watchdog script helyett végül egy **TP-Link UE330 külső USB Ethernet adapter** használata oldotta meg a problémát véglegesen — azóta hibátlanul, kimaradás nélkül működik.
+
+---
+
+## Hardver – Lokális és publikus DNS problémák Wi-Fi adapter miatt
+<a name="hw-wifi"></a>
+
+**Probléma**:
+- A MediaTek 7921 Wi-Fi kártya instabil DNS feloldást produkált Linux környezetben.
+
+**Megoldás**:
+- Az adapter cseréje Intel AX210-re.
+
+---
+
+## DDNS – pfSense DDNS nem frissít Cloudflare felé Double NAT mögött
+<a name="ddns-pfsense"></a>
+
+**Probléma**
+
+A pfSense WAN interfészén **nem publikus IP cím** van, hanem egy **statikus privát IP (pl. 192.168.1.196)**, mert a router double NAT mögött található.
+
+A pfSense beépített Dynamic DNS mechanizmusa (/etc/rc.dyndns.update) 3 esetben triggerelődik:
+
+- rendszerindítás történik
+- WAN interfész új IP-t kap
+- WAN interfész le/fel kapcsolódik
+
+Mivel a WAN interfészen lévő IP nem változik, a pfSense **nem érzékeli**, hogy az upstream routeren a valós publikus IP megváltozott, ezért nem frissíti a Cloudflare DNS rekordot.
+
+Ennek eredménye: a trkrolf.com domain kívülről elérhetetlenné válik.
+
+**Megoldás**
+
+Egy script segítségével a pfSense-t **nem a WAN IP változására**, hanem a **valós publikus IP változására** kényszerítjük reagálni.
+
+A mechanizmus:
+
+- Lekérdezi az aktuális publikus IP-t a checkip.amazonaws.com segítségével
+- Összehasonlítja az előzőleg eltárolt IP-vel, ami egy fájlba van írva
+- Ha változás történt:
+   - frissíti az eltárolt IP-t a fájlban
+   - kézzel meghívja az `/etc/rc.dyndns.update` scriptet
+
+Így a Cloudflare rekord mindig a helyes publikus IP-re fog mutatni.
+
+❗ Script: [/11-Scripts/pfsense/ddns-force-update.sh](/11-Scripts/pfsense/ddns-force-update.sh)
+
+---
+
+## Apt-cacher-ng beragadó csomagok problémája
+
+<a name="aptcacherng"></a>
+
+**Probléma**
+Kliensek Ansible-el történő frissítésekor a Semaphore GUI-nál láttam, hogy néha nem fut le, csak beragad és vár a végtelenségig. Ezt láthatom a lenti ábrán.
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/db0a18b6-dd7c-45b4-83cc-b9f97840c7f8" alt="Description" width="600">
+</p>
+
+**Ok**
+
+- Proxy szerveren: tail -f /var/log/apt-cacher-ng/apt-cacher.err –> mutatja a cache hibákat, ezt láthatom a lenti ábrán.
+- A kliens kéri a csomagot a proxy szervertől (apt-cacher-ng).
+- Az apt-cacher-ng adatbázisa látja, hogy a letöltött csomag fájlmérete nem egyezik azzal, ami az adatbázisában szerepel, hogy hivatalosan mekkora méretűnek kellene lennie a fájlnak (checked size beyond EOF).
+- A proxy megpróbálja újra letölteni a hibás fájl, de nem tudja, hiszen van már ilyen nével letölve, még ha hibásan is (file exists), ezért a kliens **vár a csomagra végtelenségig**.
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/3563cca6-e744-4dbe-b23f-4ae2823db9ac" alt="Description" width="600">
+</p>
+
+
+**Megoldás**
+
+Az acngtool karbantartó parancs cron-ba helyezve, minden nap 22:30-kor futtatva. Így automatikusan tisztítja és újraépíti a cache-t, elkerülve a beragadást, közvetlenül a 23:00 órási ansible által vezényelt update playbook előtt, elkerülve így a beragadást.
+
+30 22 * * * /usr/lib/apt-cacher-ng/acngtool maint -c /etc/apt-cacher-ng >/dev/null 2>&1
+
+---
+
+## AWS – DNS override konfliktus (BIND9 wildcard vs EC2 aldomain)
+<a name="dns-override-aws"></a>
+
+**Probléma**:
+- Az EC2 szolgáltatások otthoni hálón nem töltöttek be, mobilneten igen.
+
+**Ok**:
+- A homelab BIND9-ben `*.trkrolf.com` wildcard override van, ami mindent a lokális Traefik-re irányít, így az EC2-es aldomainek el sem értek a Cloudflare-ig.
+
+<img width="691" height="255" alt="kép" src="https://github.com/user-attachments/assets/b55f6d2a-6a33-40c0-b048-38c288e24153" />
+
+**Megoldás**:
+- AdGuard Home-ban kivétel létrehozása az EC2-es aldomainekre, hogy azok ne az override-olt BIND9-hez menjenek, hanem Cloudflare proxy IP-re oldódjanak fel.
+
+Cloudflare proxy ip kiderítése:
+
+```bash
+nslookup gotifyaws.trkrolf.com 1.1.1.1
+ipconfig /flushdns
+```
+
+<img width="726" height="379" alt="kép" src="https://github.com/user-attachments/assets/df18226d-62c7-428f-9510-0b144f2ac834" />
+
+Itt látható az adguard overrideolás.
+
+<img width="945" height="430" alt="kép" src="https://github.com/user-attachments/assets/f5d775b8-ba9e-4cc4-b31e-45ea16fe90d3" />
+
+Siker.
+
+<img width="439" height="163" alt="kép" src="https://github.com/user-attachments/assets/675a1b2f-4b0d-4cb7-a51c-e7dd17db137f" />
+
+---
+
+## AWS – Cloudflare wildcard tanúsítvány limit
+<a name="cf-wildcard-limit"></a>
+
+**Probléma**:
+- `uptime.aws.trkrolf.com` — SSL Handshake Failure, http-n elérem de https-en nem.
+
+**Ok**:
+- A Cloudflare Universal SSL (ingyenes csomag) csak egyszintű wildcardot fed le (`*.trkrolf.com`). A `uptime.aws.trkrolf.com` harmadik szintű aldomain, így kiesik a hatókörből.
+
+**Megoldás**:
+- Aldomainek átnevezése egyszintűre a cloudflare tunnelben: `uptimeaws.trkrolf.com`, `gotifyaws.trkrolf.com`, ezeket a `*.trkrolf.com` wildcard már lefedi.
+
+<img width="1603" height="415" alt="kép" src="https://github.com/user-attachments/assets/078d4589-e97a-451f-9324-f4e315711493" />
+
+> **Fontosság:** Cloudflare ingyenes csomagnál mindig egyszintű aldomaineket érdemes tervezni, ha wildcard certet használunk, különben Total TLS kell, de ez fizetős.
+
+---
+<a name="lxc-parhuzamos-vegrehajtas"></a>
+
+## Terraform – LXC template zárolási hiba párhuzamos klónozásnál (Fontos, ez a hiba Proxmoxon VM template-nél nem fordult elő!)
+
+**Probléma:**
+Ha egyszerre több LXC konténert is klónoznak ugyanabból a template-ből
+(vagy a Terraform alapértelmezett párhuzamos végrehajtása miatt egyszerre
+próbál több erőforrást is létrehozni), a Proxmox zárolja a template-et
+klónozás közben. Emiatt a párhuzamosan induló másik klónozási művelet
+"template is locked" hibával elszáll, mert a forrás template még
+foglalt az előző klónozás miatt.
+
+Ezen a lenti képen láthatom, hogy az LXC template-re zárolás lesz, mikor egy másik LXC-t klónozok belőle (pl dns-201-et). Ezért más most nem klónozhat a zár alatt lévő LXC template-ből.
+
+<img width="323" height="269" alt="kép" src="https://github.com/user-attachments/assets/15bcdbce-4bf3-4e41-be07-81543ba33c5d" />
+<img width="769" height="329" alt="image" src="https://github.com/user-attachments/assets/7eb3dff6-d8a1-4f4b-8929-e727daf50180" />
+
+**Megoldás:**
+A workflow `apply` parancsában a `-parallelism=1` flag biztosítja, hogy
+a Terraform az erőforrásokat egymás után, szekvenciálisan hozza létre,
+nem párhuzamosan:
+
+```bash
+terraform_cmd apply -auto-approve -parallelism=1
+```
+
+Így az első LXC klónozása lefut és befejeződik (a template zárolása
+feloldódik), és csak ezután indul a következő klónozás - nincs
+ütközés a template zárolásán.
+
+---
+<a name="lxcklonozashiba"></a>
+
+## Terraform – LXC klónozott konténer disk.size nem érvényesül egy `apply`-ban
+
+**Probléma:**
+Az 5GB-os LXC template klónozásakor memóriaméretet, MAC címet, mindent tudok módosítani egy körben, kivéve a disk-et,például  az LXC template méretét 5GB-ról 10GB-ra. 
+A `bpg/proxmox` Terraform provider (v0.112.0-ig bezárólag) LXC konténer klónozásakor (`clone` blokk) a `disk.size` mezőt figyelmen kívül hagyja, az új konténer a forrás template eredeti méretét örökli. A tényleges
+átméretezés (Proxmox `pct resize` API-hívás) csak a provider Update lépésében fut le, ami csak akkor triggerelődik, ha a Terraform state és a konfigban megadott méret eltér egymástól. Emiatt egyetlen `apply`
+lefuttatása után a state ugyan a kért méretet mutatja, de a tényleges Proxmox-os konténer a klónozás pillanatában rögzült (kisebb) méretű marad - a valós resize csak a **második** `apply` futtatásakor
+történik meg.
+
+**Megoldás:**
+A .github/workflows/terraform.yml workflow `apply` ága két egymást követő `terraform apply`-t futtat:
+
+```bash
+terraform_cmd apply -auto-approve -parallelism=1
+terraform_cmd apply -auto-approve -parallelism=1
+```
+
+Az 1. kör létrehozza/klónozza az új erőforrásokat, a 2. kör pedig
+érvényesíti a `disk.size`-t (élő resize, LXC-nél nem igényel
+konténer-újraindítást). Ha nincs új klónozás az adott futtatásban, a
+2. kör egyszerű no operation.
+
+A GUI sárgával jelzi a változást, de a df már 10GB-ot mutat, a resize működik, a sárga jelzés csak a GUI-ban lóg, reboot után eltűnik
+
+<img width="980" height="438" alt="kép" src="https://github.com/user-attachments/assets/adad71b9-5360-41d0-bc40-42c61e83dafc" />
+
+
+---
+
+← [Vissza a Homelab főoldalra](../README_HU.md)

@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prowlarr
+  namespace: media
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prowlarr
+  template:
+    metadata:
+      labels:
+        app: prowlarr
+    spec:
+      containers:
+        - name: prowlarr
+          image: lscr.io/linuxserver/prowlarr:2.3.5
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: Europe/Budapest
+          ports:
+            - containerPort: 9696
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: nas-data
+              mountPath: /data
+      volumes:
+        - name: config
+          hostPath:
+            path: /opt/app-data/media-stack/prowlarr/config
+            type: DirectoryOrCreate
+        - name: nas-data
+          hostPath:
+            path: /mnt/torrent/data
+            type: Directory
+
+
+

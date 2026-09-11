@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: homarr
+  namespace: dashboard
+  labels:
+    app: homarr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: homarr
+  template:
+    metadata:
+      labels:
+        app: homarr
+    spec:
+      containers:
+      - name: homarr
+        image: ghcr.io/homarr-labs/homarr:v1.64.0
+        env:
+        - name: SECRET_ENCRYPTION_KEY
+          valueFrom:
+            secretKeyRef:
+              name: homarr-secrets
+              key: SECRET_ENCRYPTION_KEY
+          
+        # --- Ide jönnek az Authentik OIDC beállítások ---
+        - name: AUTH_PROVIDERS
+          value: "oidc"
+        - name: AUTH_OIDC_ENABLED
+          value: "true"
+        - name: AUTH_OIDC_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: homarr-secrets
+              key: AUTH_OIDC_CLIENT_ID
+        - name: AUTH_OIDC_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: homarr-secrets
+              key: AUTH_OIDC_CLIENT_SECRET
+        - name: AUTH_OIDC_ISSUER
+          value: "https://authentik.trkrolf.com/application/o/homarr/"
+        - name: AUTH_OIDC_REDIRECT_URI  !
+          value: "https://homarr.trkrolf.com/api/auth/callback/oidc"
+        - name: AUTH_OIDC_AUTO_LOGIN
+          value: "false"
+        - name: AUTH_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: homarr-secrets
+              key: AUTH_SECRET
+
+
+        ports:
+        - containerPort: 7575
+        volumeMounts:
+        - name: homarr-data
+          mountPath: /appdata  
+      volumes:
+      - name: homarr-data
+        hostPath:
+          path: /opt/app-data/dashboard-stack/homarr/config 
+          type: Directory

@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nextcloud-app
+  namespace: storage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nextcloud-app
+  template:
+    metadata:
+      labels:
+        app: nextcloud-app
+    spec:
+      containers:
+        - name: nextcloud
+          image: nextcloud:33.0.5
+          env:
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: nextcloud-db-secrets
+                  key: MYSQL_PASSWORD
+            - name: OIDC_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: nextcloud-db-secrets
+                  key: CLIENT_ID
+            - name: OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: nextcloud-db-secrets
+                  key: CLIENT_SECRET
+            - name: MYSQL_DATABASE
+              value: "nextcloud_db"
+            - name: MYSQL_USER
+              value: "rolf"
+            - name: MYSQL_HOST
+              value: "nextcloud-db"
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: app-data
+              mountPath: /var/www/html/data
+            - name: app-config
+              mountPath: /var/www/html/config
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - "/bin/sh"
+                  - "-c"
+                  - |
+                    sleep 30;
+                    
+                    # 1. Alapvető rendszerbeállítások (Ezek oldották meg a hibát!)
+                    runuser -u www-data -- php occ config:system:set allow_local_remote_servers --value="true" --type=bool;
+                    runuser -u www-data -- php occ config:system:set overwrite.cli.url --value="https://nextcloud.trkrolf.com";
+                    runuser -u www-data -- php occ config:system:set overwriteprotocol --value="https";
+                    
+                    # 2. OIDC App telepítés/engedélyezés
+                    runuser -u www-data -- php occ app:install user_oidc || runuser -u www-data -- php occ app:enable user_oidc;
+                    
+                    # 3. Provider konfiguráció
+                    runuser -u www-data -- php occ user_oidc:provider authentik \
+                      --clientid="$OIDC_CLIENT_ID" \
+                      --clientsecret="$OIDC_CLIENT_SECRET" \
+                      --discoveryuri="https://authentik.trkrolf.com/application/o/nextcloud/.well-known/openid-configuration" \
+                      --scope="openid profile email groups";
+                    
+                    # 4. Redirect URI és felület finomhangolás
+                    runuser -u www-data -- php occ config:app:set user_oidc provider-authentik-redirectUrl --value="https://nextcloud.trkrolf.com/index.php/apps/user_oidc/code";
+                    runuser -u www-data -- php occ config:app:set user_oidc show_alternative_logins --value="1";
+                    runuser -u www-data -- php occ config:system:set allow_user_to_back_to_login_after_logout --value="true" --type=bool;
+
+      volumes:
+        - name: app-data
+          hostPath:
+            path: /opt/app-data/storage-stack/nextcloud/data
+            type: DirectoryOrCreate
+        - name: app-config
+          hostPath:
+            path: /opt/app-data/storage-stack/nextcloud/config
+            type: DirectoryOrCreate

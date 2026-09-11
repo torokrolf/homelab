@@ -1,0 +1,6 @@
+---
+- name: Mounts
+  hosts: "{{ target | default('all_nodes') }}"
+  become: true
+  roles:
+    - role: mounts

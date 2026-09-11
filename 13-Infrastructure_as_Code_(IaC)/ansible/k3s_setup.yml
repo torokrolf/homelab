@@ -1,0 +1,6 @@
+---
+- name: k3s_setup
+  hosts: "{{ target | default('all_nodes') }}"
+  become: true
+  roles:
+    - role: k3s_setup

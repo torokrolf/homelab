@@ -1,0 +1,117 @@
+name: Ansible Dispatcher
+on:
+  schedule:
+    - cron: '00 18 * * *'
+  workflow_dispatch:
+    inputs:
+      playbook:
+        description: "Melyik playbook fusson?"
+        required: true
+        type: choice
+        options:
+          - full_site
+          - k3s_full
+          - access_core_full
+          - edge-core_full
+          - access_core_01
+          - edge_gw_01
+          - system_update
+          - common
+          - mounts
+          - docker
+          - portainer_agent
+          - k3s_setup
+          - argocd
+          - argocd_apps
+          - app_restore
+          - backup
+      target_hosts:
+        description: "Célgép(ek)"
+        required: true
+        type: choice
+        options:
+          - all_nodes
+          - mount_targets
+          - docker_hosts
+          - lxc_nodes
+          - host_k3s
+          - host_wazuh
+          - host_access
+          - host_edge
+          - host_dns
+          - host_adguard
+          - host_unbound
+          - host_aptcacher
+          - host_jelly
+          - host_mgmt
+      dry_run:
+        description: "Dry run? (--check mód, nem változtat semmit)"
+        type: boolean
+        default: false
+
+jobs:
+  run-ansible:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ansible futtatása
+        run: |
+          mkdir -p /home/ansible/.config/sops/age
+          echo "${{ secrets.SOPS_AGE_KEY }}" > /home/ansible/.config/sops/age/keys.txt
+          chmod 600 /home/ansible/.config/sops/age/keys.txt
+
+          # 2. Playbook logika
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            PLAYBOOK="ansible/system_update.yml"
+            INVENTORY_TARGET="all_nodes"
+            TRIGGER="⏰ Automatikus"
+          else
+            TRIGGER="🖱️ Kézi"
+            [ "${{ inputs.playbook }}" = "full_site" ] && PLAYBOOK="ansible/site.yml" || PLAYBOOK="ansible/${{ inputs.playbook }}.yml"
+            case "${{ inputs.target_hosts }}" in
+              host_k3s)       INVENTORY_TARGET="k3s_server_01_225_host" ;;
+              host_wazuh)     INVENTORY_TARGET="wazuh_server_01_203_host" ;;
+              host_access)    INVENTORY_TARGET="access_core_01_206_host" ;;
+              host_edge)      INVENTORY_TARGET="edge_gw_01_230_host" ;;
+              host_dns)       INVENTORY_TARGET="dns_201_host" ;;
+              host_adguard)   INVENTORY_TARGET="adguard_222_host" ;;
+              host_unbound)   INVENTORY_TARGET="unbound_223_host" ;;
+              host_aptcacher) INVENTORY_TARGET="apt_cacher_ng_207_host" ;;
+              host_jelly)     INVENTORY_TARGET="jellyfin_221_host" ;;
+              host_mgmt)      INVENTORY_TARGET="mgmt-core-01-204" ;;
+              *)              INVENTORY_TARGET="${{ inputs.target_hosts }}" ;;
+            esac
+          fi
+
+          # 3. Dekódolás
+          sops -d secrets/secrets.enc.yaml > /tmp/secrets_dec.yaml
+
+          # 4. Dinamikus változók kinyerése a dekódolt fájlból
+          # A kinyerésnél figyelünk a tisztaságra:
+          URL_VAL=$(grep 'gotify_url:' /tmp/secrets_dec.yaml | awk -F': ' '{print $2}' | tr -d '"' | tr -d '[:space:]')
+          TOKEN_VAL=$(grep 'gotify_token_ansible:' /tmp/secrets_dec.yaml | awk -F': ' '{print $2}' | tr -d '"' | tr -d '[:space:]')
+
+          # 5. Ansible futtatása (a kimenet nem állítja le a scriptet)
+          ansible-playbook $PLAYBOOK -e target=$INVENTORY_TARGET ${{ inputs.dry_run == 'true' && '--check --diff' || '' }} -i ansible/inventory.ini -e "@/tmp/secrets_dec.yaml" --private-key ~/.ssh/ansible_target_key
+          ANSIBLE_EXIT=$?
+
+          # 6. Gotify értesítés (kizárólag a kinyert változókat használjuk)
+          if [ $ANSIBLE_EXIT -eq 0 ] || [ $ANSIBLE_EXIT -eq 3 ]; then
+            TITLE="Ansible Kész ✅"
+            PRIORITY=5
+          else
+            TITLE="Ansible HIBÁS ❌"
+            PRIORITY=9
+          fi
+          
+          MSG="Playbook: $PLAYBOOK\nTarget: $INVENTORY_TARGET\nTrigger: $TRIGGER\nExit: $ANSIBLE_EXIT"
+          
+          curl -s -X POST "${URL_VAL}/message?token=${TOKEN_VAL}" \
+            -H "Content-Type: application/json" \
+            -d "{\"title\":\"$TITLE\",\"message\":\"$MSG\",\"priority\":$PRIORITY}"
+
+          # 7. Takarítás és sikeres kilépés (mindig 0-val lépünk ki!)
+          rm -f /tmp/secrets_dec.yaml
+          rm -f /home/ansible/.config/sops/age/keys.txt
+          
+          exit 0

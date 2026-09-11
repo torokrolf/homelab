@@ -1,0 +1,46 @@
+---
+- name: App namespace-ek összegyűjtése (rendszer-namespace-ek nélkül)
+  shell: |
+    kubectl get ns --no-headers -o custom-columns=NAME:.metadata.name | grep -Ev '^(kube-system|kube-public|kube-node-lease)$'
+  register: k3s_namespaces
+  changed_when: false
+  args:
+    executable: /bin/bash
+
+- name: Deploymentek és StatefulSetek leállítása (replicas=0)
+  shell: |
+    for ns in {{ k3s_namespaces.stdout_lines | join(' ') }}; do
+      kubectl scale deployment,statefulset --all --replicas=0 -n $ns || true
+    done
+  args:
+    executable: /bin/bash
+
+- name: Podok teljes leállásának megvárása
+  shell: |
+    for ns in {{ k3s_namespaces.stdout_lines | join(' ') }}; do
+      kubectl wait --for=delete pod --all -n $ns --timeout=60s 2>/dev/null || true
+    done
+  args:
+    executable: /bin/bash
+
+- name: /opt/app-data rsync mentése
+  shell: |
+    rsync -avzh --exclude="*.sock" --exclude="admin-stack/" /opt/app-data/ /mnt/backup/app-configs-backup-$(date +%F)/
+  args:
+    executable: /bin/bash
+
+- name: Deploymentek és StatefulSetek visszaindítása (replicas=1)
+  shell: |
+    for ns in {{ k3s_namespaces.stdout_lines | join(' ') }}; do
+      kubectl scale deployment,statefulset --all --replicas=1 -n $ns || true
+    done
+  args:
+    executable: /bin/bash
+
+- name: Megvárjuk, amíg az appok (és a Gotify) ténylegesen elindulnak (Ready)
+  shell: |
+    for ns in {{ k3s_namespaces.stdout_lines | join(' ') }}; do
+      kubectl wait --for=condition=Ready pod --all -n $ns --timeout=90s 2>/dev/null || true
+    done
+  args:
+    executable: /bin/bash

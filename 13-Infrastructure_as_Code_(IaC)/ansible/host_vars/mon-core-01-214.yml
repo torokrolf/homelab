@@ -1,0 +1,9 @@
+# EZEK FIXEK, EZEK NEM DINAMIKUSAN ÉPÜLNEK A PROMETHEUS.YML-BE (ansible/roles/monitoring/templates/prometheus.yml.j2---ide lesz beolvasva az itteni változó)
+---
+external_monitoring_targets:
+  - { name: 'proxmox1', target: '192.168.2.199:9100' }
+  - { name: 'proxmox1-smart', target: '192.168.2.199:9633' }
+  - { name: 'proxmox2', target: '192.168.2.198:9100' }
+  - { name: 'proxmox2-smart', target: '192.168.2.198:9633' }
+  - { name: 'laptopom', target: '192.168.1.180:9182' }
+  - { name: 'laptopom-smart', target: '192.168.1.180:9633' }

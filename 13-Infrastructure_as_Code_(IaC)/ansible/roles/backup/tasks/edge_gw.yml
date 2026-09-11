@@ -1,0 +1,12 @@
+---
+- name: Docker konténerek leállítása
+  shell: docker stop $(docker ps -q) 2>/dev/null || true
+
+- name: /opt/app-data rsync mentése
+  shell: |
+    rsync -avzh /opt/app-data/ /mnt/backup/app-configs-backup-$(date +%F)/
+  args:
+    executable: /bin/bash
+
+- name: Docker konténerek visszaindítása
+  shell: docker start $(docker ps -a -q) 2>/dev/null || true

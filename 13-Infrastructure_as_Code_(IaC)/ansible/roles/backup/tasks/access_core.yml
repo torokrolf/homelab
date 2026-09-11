@@ -1,0 +1,34 @@
+- name: Docker konténerek leállítása
+  shell: docker stop $(docker ps -q) 2>/dev/null || true
+
+- name: /opt/app-data rsync mentése (Dátumozott mappába)
+  shell: |
+    rsync -avzhL --exclude="*.sock" /opt/app-data/ /mnt/backup/app-configs-backup-{{ ansible_date_time.date }}/
+  args:
+    executable: /bin/bash
+
+- name: Docker konténerek visszaindítása
+  shell: docker start $(docker ps -a -q) 2>/dev/null || true
+
+- name: FreeRADIUS mentési mappa létrehozása (Most már a dátumozott mappán belül!)
+  file:
+    path: "/mnt/backup/app-configs-backup-{{ ansible_date_time.date }}/identity-stack/freeradius/db"
+    state: directory
+    mode: '0755'
+
+- name: FreeRADIUS / daloRADIUS / Apache konfigok becsomagolása
+  shell: |
+    tar -czf /mnt/backup/app-configs-backup-{{ ansible_date_time.date }}/identity-stack/freeradius/radius_configs_backup.tar.gz \
+      /etc/freeradius/3.0/ \
+      /var/www/daloradius/ \
+      /etc/apache2/sites-available/ \
+      /etc/apache2/ports.conf 2>/dev/null || true
+  args:
+    executable: /bin/bash
+
+- name: RADIUS adatbázis mentése (mysqldump)
+  shell: |
+    mysqldump -u root radius --skip-ssl > /mnt/backup/app-configs-backup-{{ ansible_date_time.date }}/identity-stack/freeradius/db/radius_db_backup.sql 2>/dev/null
+    sync
+  args:
+    executable: /bin/bash

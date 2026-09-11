@@ -1,0 +1,43 @@
+---
+- name: Kliens csomagok telepítése
+  become: yes
+  apt:
+    name: ["nfs-common", "cifs-utils"]
+    state: present
+
+- name: Mount pontok létezésének ellenőrzése
+  stat:
+    path: "{{ item.path }}"
+  register: mount_stat
+  loop: "{{ nfs_mounts + smb_mounts }}"
+
+- name: Könyvtárak létrehozása (Csak ha NEM léteznek)
+  become: yes
+  file:
+    path: "{{ item.item.path }}"
+    state: directory
+    owner: 1000
+    group: 1000
+    mode: '0775'
+  loop: "{{ mount_stat.results }}"
+  when: not item.stat.exists 
+
+- name: NFS felcsatolása
+  become: yes
+  mount:
+    path: "{{ item.path }}"
+    src: "{{ item.src }}"
+    fstype: nfs
+    opts: "{{ item.opts }}"
+    state: mounted
+  loop: "{{ nfs_mounts | default([]) }}"
+
+- name: SMB felcsatolása
+  become: yes
+  mount:
+    path: "{{ item.path }}"
+    src: "{{ item.src }}"
+    fstype: cifs
+    opts: "{{ item.opts }}"
+    state: mounted
+  loop: "{{ smb_mounts | default([]) }}"

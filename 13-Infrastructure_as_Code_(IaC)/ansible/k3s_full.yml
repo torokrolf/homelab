@@ -1,0 +1,42 @@
+---
+- name: system_update
+  hosts: k3s-server-01-225
+  become: true
+  roles:
+    - role: system_update
+    
+- name: Common setup
+  hosts: k3s-server-01-225
+  become: true
+  roles:
+    - role: common
+
+- name: Mounts
+  hosts: k3s-server-01-225
+  become: true
+  roles:
+    - role: mounts
+    
+- name: k3s_setup
+  hosts: k3s-server-01-225
+  become: true
+  roles:
+    - role: k3s_setup
+    
+- name: argocd_install
+  hosts: k3s-server-01-225
+  become: true
+  roles:
+    - role: argocd
+
+- name: argocd_apps
+  hosts: k3s-server-01-225
+  become: true
+  roles:
+    - role: argocd_apps
+
+- name: app_restore
+  hosts: k3s-server-01-225
+  become: true
+  roles:
+    - role: app_restore

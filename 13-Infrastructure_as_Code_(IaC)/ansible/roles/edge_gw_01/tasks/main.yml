@@ -1,0 +1,53 @@
+---
+- name: Traefik mappák biztosítása
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: 1000
+    group: 1000
+    mode: '0775'
+  loop:
+    - "/opt/app-data/edge-stack/traefik"
+    - "/opt/app-data/edge-stack/traefik/config"
+    - "/opt/app-data/edge-stack/traefik/letsencrypt"
+
+- name: Adatok visszatöltése mentésből (rsync)
+  shell: "rsync -av --ignore-errors /mnt/backup/app-configs-backup/edge-stack/traefik/config/ /opt/app-data/edge-stack/traefik/config/"
+  become: yes
+
+- name: Traefik STATIKUS főkonfig másolása
+  template:
+    src: traefik_static.yml.j2
+    dest: /opt/app-data/edge-stack/traefik/traefik.yml
+    owner: 1000
+    group: 1000
+    mode: '0644'
+
+- name: Traefik DINAMIKUS dashboard konfig másolása
+  template:
+    src: traefik_dynamic.yml.j2
+    dest: /opt/app-data/edge-stack/traefik/config/traefik.yml
+    owner: 1000
+    group: 1000
+    mode: '0644'
+
+- name: Docker Compose sablon másolása
+  template:
+    src: docker-compose.yml.j2
+    dest: /opt/app-data/edge-stack/traefik/docker-compose.yml
+    mode: '0644'
+
+- name: ACME json létrehozása és JOGOSULTSÁG FIXÁLÁSA
+  file:
+    path: "/opt/app-data/edge-stack/traefik/letsencrypt/acme.json"
+    state: touch
+    owner: 1000
+    group: 1000
+    mode: '0600'  
+  become: yes
+
+- name: Edge Stack indítása (Docker Compose)
+  community.docker.docker_compose_v2:
+    project_src: /opt/app-data/edge-stack/traefik
+    state: present
+    recreate: always
