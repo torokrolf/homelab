@@ -7,13 +7,13 @@
 # 📚 Table of Contents
 
 - [1. Using Terraform](#terra)
-- [2. Secrets management (SOPS+AGE)](#secrets)
-- [3. Template preparation](#templates)
-  - [3.1. VM template — cloud-init based](#golden_image)
-  - [3.2. LXC template — ansible user + SSH](#lxc_template)
-- [4. GitHub Actions pipeline](#pipeline)
-- [5. Terraform state management and recovery](#terrastatefajl)
-- [6. Importing a VM/LXC](#imp)
+- [2. Secrets Management (SOPS+AGE)](#secrets)
+- [3. Template Creation](#templates)
+  - [3.1. VM Template — cloud-init based](#golden_image)
+  - [3.2. LXC Template — ansible user + SSH](#lxc_template)
+- [4. GitHub Actions Pipeline](#pipeline)
+- [5. Terraform State Management and Recovery](#terrastatefajl)
+- [6. Importing VM/LXC](#imp)
 
 ---
 
@@ -21,37 +21,37 @@
 
 # 1. Using Terraform
 
-The entire Proxmox infrastructure is managed by Terraform — VMs and LXC containers alike. Every resource is cloned from a pre-prepared **golden image** — cloud-init based for VMs, manually prepared templates for LXC containers. Existing, manually created resources were brought under Terraform management using `terraform import`. This ensures every node is consistently managed, reproducible, and rebuildable.
+The entire Proxmox infrastructure is managed by Terraform, covering both VMs and LXC containers. Every resource is cloned from a pre-built **golden image** — cloud-init based for VMs, and a manually prepared template for LXC containers. Existing manually created resources were brought under Terraform management using `terraform import`. This ensures every node is uniformly managed, reproducible, and rebuildable.
 
 ---
 
 <a name="secrets"></a>
 
-# 2. Secrets management (SOPS+AGE)
+# 2. Secrets Management (SOPS+AGE)
 
-Sensitive values (Proxmox API token, passwords, SSH keys, MAC addresses) are stored encrypted in `secrets.enc.yaml` using SOPS+AGE. This replaces the `terraform.tfvars` file — no unencrypted secrets file exists in the repository.
+Sensitive data (Proxmox API token, passwords, SSH keys, MAC addresses) is stored in the `secrets.enc.yaml` file, encrypted with SOPS+AGE and committed to version control. This replaces the `terraform.tfvars` file — there are no unencrypted secrets files in the repository.
 
 ---
 
 <a name="templates"></a>
 
-# 3. Template preparation
+# 3. Template Creation
 
-Two types of templates are maintained: a **VM template** based on cloud-init (used by Terraform for cloning) and an **LXC template** (cloud-init is not supported on LXC, so a separate approach is needed). Both serve the same purpose: a consistent, ready-to-use base state for the Ansible pipeline.
+Two types of templates are maintained: a **VM template** based on cloud-init (used by Terraform for cloning) and an **LXC template** (cloud-init is not supported on LXC, so a separate approach is required). Both serve the same purpose: providing a uniform, immediately usable base state for the Ansible pipeline.
 
 ---
 
 <a name="golden_image"></a>
 
-## 3.1. VM template — cloud-init based
+## 3.1. VM Template — cloud-init based
 
-A base Ubuntu VM is used to prepare the cloud-init template that Terraform clones for every VM.
+The cloud-init template is built from a base Ubuntu VM, from which Terraform clones every VM.
 
-### 3.1.1. VM base configuration
+### 3.1.1. Base VM Configuration
 
-All VMs start from a consistent hardware configuration. The **ballooning device** is disabled so that RAM is permanently allocated — this is more reliable than setting identical minimum and maximum memory values.
+All VMs start from a uniform hardware configuration. The **ballooning device** is disabled so that RAM is allocated as a fixed amount — this is more reliable than setting minimum and maximum memory to the same value.
 
-### 3.1.2. Preparing the golden image
+### 3.1.2. Preparing the Golden Image
 
 **System update:**
 
@@ -60,7 +60,7 @@ sudo apt update
 sudo apt upgrade -y
 ```
 
-**Install qemu-guest-agent** — ensures Terraform receives a signal once the VM has booted, instead of waiting indefinitely:
+**Installing qemu-guest-agent** — ensures Terraform receives feedback as soon as the VM has started, without unnecessary waiting:
 
 ```bash
 sudo apt install qemu-guest-agent -y
@@ -69,16 +69,16 @@ sudo systemctl start qemu-guest-agent
 sudo systemctl status qemu-guest-agent
 ```
 
-<img width="779" height="444" alt="screenshot" src="https://github.com/user-attachments/assets/db83215e-5a8b-486b-9765-edd811d0a123" />
+<img width="779" height="444" alt="image" src="https://github.com/user-attachments/assets/db83215e-5a8b-486b-9765-edd811d0a123" />
 
-**Install and prepare cloud-init:**
+**Installing and preparing cloud-init:**
 
 ```bash
 sudo apt install cloud-init -y
 sudo cloud-init clean
 ```
 
-**Clean the machine** — remove SSH host keys, machine-id, and unnecessary packages so that every clone starts as a completely fresh, unique system:
+**Cleaning the machine** — removing SSH host keys, machine-id, and unnecessary packages so that clones boot as completely fresh, unique machines:
 
 ```bash
 sudo rm -f /etc/ssh/ssh_host_*
@@ -87,39 +87,39 @@ sudo apt clean
 sudo apt autoremove
 ```
 
-### 3.1.3. Adding the cloud-init drive
+### 3.1.3. Adding the cloud-init Drive
 
-After shutting down the VM, add a **cloud-init drive** and remove the CD-ROM used during installation. The result: one system disk and one cloud-init drive.
+After shutting down the VM, a **cloud-init drive** is added and the CD-ROM drive used during installation is removed. The result: one system disk and one cloud-init drive.
 
-<img width="939" height="379" alt="screenshot" src="https://github.com/user-attachments/assets/e04f2ced-55e7-495c-840a-30f5ae1ed112" />
+<img width="939" height="379" alt="image" src="https://github.com/user-attachments/assets/e04f2ced-55e7-495c-840a-30f5ae1ed112" />
 
-Set the cloud-init network config to DHCP:
+The cloud-init network configuration is set to DHCP:
 
-<img width="848" height="488" alt="screenshot" src="https://github.com/user-attachments/assets/97744f54-37fe-478a-9192-36cfd4d0b074" />
+<img width="848" height="488" alt="image" src="https://github.com/user-attachments/assets/97744f54-37fe-478a-9192-36cfd4d0b074" />
 
-Regenerate the cloud-init image. The username is `ansible`, the corresponding key is `ansible_target_key`:
+The cloud-init image is regenerated. The username is `ansible`, and the associated key name is `ansible_target_key`:
 
-<img width="968" height="509" alt="screenshot" src="https://github.com/user-attachments/assets/a107e125-6472-4f9f-bea3-8130ec0a2125" />
+<img width="968" height="509" alt="image" src="https://github.com/user-attachments/assets/a107e125-6472-4f9f-bea3-8130ec0a2125" />
 
-### 3.1.4. Converting to template
+### 3.1.4. Converting to Template
 
-Right-click → **Convert to template**. Template ID: `8000`, name: `ubuntu-server-22.04.5-cloudinit`.
+Right-click → **Convert to template**. The template ID is `8000`, name: `ubuntu-server-22.04.5-cloudinit`.
 
 ---
 
 <a name="lxc_template"></a>
 
-## 3.2. LXC template — ansible user + SSH
+## 3.2. LXC Template — ansible user + SSH
 
-Since cloud-init is not supported on LXC containers, a custom template is prepared that includes the Ansible-compatible base configuration out of the box.
+Cloud-init cannot be used with LXC containers, so a custom template is prepared that automatically includes an Ansible-compatible base configuration.
 
-**The template includes:**
+**Template contents:**
 - `rolf` and `ansible` users with SSH key-based login,
-- passwordless (`NOPASSWD`) sudo for the `ansible` user,
+- passwordless (`NOPASSWD`) sudo rights for the `ansible` user,
 - unique SSH host keys on every clone (managed by a systemd service),
-- a zeroed-out `machine-id`.
+- zeroed `machine-id`.
 
-**Create users and configure sudo:**
+**Creating users and sudo configuration:**
 
 ```bash
 useradd -m -s /bin/bash rolf
@@ -134,18 +134,18 @@ chmod 0440 /etc/sudoers.d/ansible
 visudo -cf /etc/sudoers.d/ansible
 ```
 
-**Upload SSH keys:**
+**Uploading SSH keys:**
 
 ```bash
 mkdir -p /home/rolf/.ssh /home/ansible/.ssh
-# paste public keys into the authorized_keys files
+# copy public keys into the authorized_keys files
 chmod 700 /home/rolf/.ssh /home/ansible/.ssh
 chmod 600 /home/rolf/.ssh/authorized_keys /home/ansible/.ssh/authorized_keys
 chown -R rolf:rolf /home/rolf/.ssh
 chown -R ansible:ansible /home/ansible/.ssh
 ```
 
-**Unique SSH host keys per clone** — host keys are removed from the template, and a systemd service regenerates them on the first boot of each clone:
+**Unique SSH host keys per clone** — host keys are deleted from the template, and a systemd service ensures that every clone regenerates them on first boot:
 
 ```bash
 rm -f /etc/ssh/ssh_host_*
@@ -168,69 +168,69 @@ EOF
 systemctl enable generate-ssh-host-keys.service
 ```
 
-**Zero out machine-id** — not deleted, just emptied, since `/var/lib/dbus/machine-id` symlinks to it:
+**Zeroing machine-id** — rather than deleting it, it is truncated, since `/var/lib/dbus/machine-id` symlinks to it:
 
 ```bash
 truncate -s 0 /etc/machine-id
 ```
 
-**Clean up and convert:**
+**Cleanup and conversion:**
 
 ```bash
 apt clean
 apt autoremove
 ```
 
-In the Proxmox UI: right-click → *Convert to template*. LXC containers cloned from this template are immediately usable by the Ansible pipeline — just like VMs provisioned by Terraform.
+In the Proxmox UI: right-click → *Convert to template*. LXC containers cloned from this template are immediately accessible to the Ansible pipeline — just like VMs created with Terraform.
 
 ---
 
 <a name="pipeline"></a>
 
-# 4. GitHub Actions pipeline
+# 4. GitHub Actions Pipeline
 
-Terraform operations are managed by a dedicated workflow (`.github/workflows/proxmox-terraform.yml`), running on the self-hosted runner. The workflow is triggered manually via `workflow_dispatch` with a single parameter:
+Terraform operations are orchestrated by a dedicated workflow (`.github/workflows/proxmox-terraform.yml`), running on a self-hosted runner. The workflow is triggered manually (`workflow_dispatch`) with a single parameter:
 
 | Parameter | Value | Description |
 |---|---|---|
 | `action` | `plan` | Shows what would change, without applying anything |
-| `action` | `apply` | Executes the changes (`-auto-approve`) |
-| `action` | `import` | Imports an existing Proxmox VM/LXC into state, based on `imported.tf` |
+| `action` | `apply` | Applies the changes (`-auto-approve`) |
+| `action` | `import` | Imports an existing Proxmox VM/LXC into the state, based on `imported.tf` |
 | `action` | `show` | Prints the full Terraform state contents |
 
 **Workflow steps:**
 
-1. **Checkout** — clean clone from the repository.
-2. **Secrets decryption** — creates the AGE key file from the `SOPS_AGE_KEY` GitHub Actions Secret, decrypts `secrets.enc.yaml` with it, and reads the values (Proxmox API token, SSH keys, MAC addresses, etc.) into shell variables.
-3. **Run Terraform in Docker** — runs the `hashicorp/terraform` image with the `terraform/proxmox-deploy` directory and the state directory (`/home/ansible/terraform-state/proxmox`) mounted in, passing secrets as `TF_VAR_*` environment variables.
-   - For `plan` / `apply`: runs the corresponding Terraform command.
-   - For `import`: automatically reads the resource name, `node_name`, and `vm_id` from `imported.tf`, then runs `terraform import` with those values.
-   - For `show`: prints the state contents so the imported object's data can be copied into `main.tf`.
-4. **Cleanup** — deletes the decrypted secrets file and the AGE key, regardless of the step outcome (`if: always()`).
+1. **Checkout** — a clean clone from the repository.
+2. **Secrets decryption** — the `SOPS_AGE_KEY` GitHub Actions Secret is used to produce the AGE key file, which decrypts `secrets.enc.yaml`; the contained values (Proxmox API token, SSH keys, MAC addresses, etc.) are then loaded into shell variables.
+3. **Running Terraform in Docker** — the `hashicorp/terraform` image is run, with the `terraform/proxmox-deploy` directory and the state directory (`/home/ansible/terraform-state/proxmox`) mounted in, and secrets passed as `TF_VAR_*` environment variables.
+   - For `plan` / `apply`, the corresponding Terraform command is executed.
+   - For `import`, the resource name, `node_name`, and `vm_id` are automatically parsed from `imported.tf`, and `terraform import` is run with those values.
+   - For `show`, the state contents are printed — this is then used to copy the imported object's data into `main.tf`.
+4. **Cleanup** — the decrypted secrets file and AGE key are deleted, regardless of the step's outcome (`if: always()`).
 
 ---
 
 <a name="terrastatefajl"></a>
 
-# 5. Terraform state management and recovery
+# 5. Terraform State Management and Recovery
 
-The `main.tf` and other Terraform configs live in GitHub, but `terraform.tfstate` stays on the runner machine (`mgmt-core-01-204`) — the workflow uses and updates it on every run. The state file is currently backed up manually to the NAS.
+`main.tf` and other Terraform configs live on GitHub, but `terraform.tfstate` remains on the runner machine (`mgmt-core-01-204`) — the workflow reads and updates it on every run. The state file is currently backed up manually to a NAS.
 
-If `mgmt-core-01-204` is lost, restoring the state file from the NAS is enough for Terraform to immediately resume managing the existing resources. Create the state directory if needed:
+If `mgmt-core-01-204` is lost, restoring the state file from the NAS allows Terraform to immediately resume managing the existing resources. The state directory must be created if it doesn't exist:
 
 ```bash
 mkdir -p /home/ansible/terraform-state/proxmox
 ```
 
-Restore the saved file to: `/home/ansible/terraform-state/proxmox/terraform.tfstate`
+The backed-up file must be restored to: `/home/ansible/terraform-state/proxmox/terraform.tfstate`
 
 ---
 
 <a name="imp"></a>
 
-# 6. Importing a VM/LXC
+# 6. Importing VM/LXC
 
-To bring an existing, manually created Proxmox VM or LXC under Terraform management, copy the resource block into `imported.tf` with the `node_name` and `vm_id` — use `container` for LXC, `vm` for VMs:
+To bring an existing, manually created Proxmox VM or LXC under Terraform management, copy the resource definition into `imported.tf` with the `node_name` and `vm_id` specified — use `container` for LXC and `vm` for VMs:
 
 ```hcl
 resource "proxmox_virtual_environment_container" "adguardhome-222" {
@@ -239,11 +239,11 @@ resource "proxmox_virtual_environment_container" "adguardhome-222" {
 }
 ```
 
-Running the `import` action in the workflow automatically assembles and executes the `terraform import` command from the above data.
+Running the workflow with the `import` action automatically assembles and executes the `terraform import` command from the above data.
 
-Then run the `show` action to print the state, find the imported object, copy its attributes into `main.tf`, and clear the contents of `imported.tf`.
+Afterwards, the `show` action prints the state contents — locate the imported object, copy its data into `main.tf`, and clear the contents of `imported.tf`.
 
-**Common issue after import:** `plan` may want to recreate the container due to mismatched `unprivileged` or `operating_system` attributes. This can be avoided by ignoring them in a `lifecycle` block:
+**Common issue after import:** `plan` may want to recreate the container due to mismatches in the `unprivileged` and `operating_system` attributes. This can be avoided by ignoring them in the `lifecycle` block:
 
 ```hcl
 lifecycle {
@@ -254,13 +254,9 @@ lifecycle {
 }
 ```
 
-> ⚠️ The trade-off is that Terraform will no longer track changes to these attributes — neither modifications in `main.tf` nor manual changes in Proxmox will be synchronized.
+> ⚠️ This means Terraform will no longer track these attributes in the future — changes made in `main.tf` or directly in Proxmox will not be synchronized.
 
-To list available LXC template images on Proxmox:
-
-```bash
-pveam list local
-```
+Listing available LXC template images on Proxmox:
 
 ---
 
