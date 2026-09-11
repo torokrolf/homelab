@@ -1,66 +1,66 @@
-← [Back](../README.md)
+← [Vissza](../README_HU.md)
 
 [🇬🇧 English](README.md) | [🇭🇺 Magyar](README_HU.md)
 
 ---
 
-# 📚 Table of Contents
+# 📚 Tartalomjegyzék
 
-- [1. Using Terraform](#terra)
-- [2. Secrets Management (SOPS+AGE)](#secrets)
-- [3. Template Creation](#templates)
-  - [3.1. VM Template — cloud-init based](#golden_image)
-  - [3.2. LXC Template — ansible user + SSH](#lxc_template)
-- [4. GitHub Actions Pipeline](#pipeline)
-- [5. Terraform State Management and Recovery](#terrastatefajl)
-- [6. Importing VM/LXC](#imp)
+- [1. Terraform használata](#terra)
+- [2. Secrets kezelése (SOPS+AGE)](#secrets)
+- [3. Template készítés](#templates)
+  - [3.1. VM template — cloud-init alapon](#golden_image)
+  - [3.2. LXC template — ansible user + SSH](#lxc_template)
+- [4. GitHub Actions pipeline](#pipeline)
+- [5. Terraform state kezelése és visszaállítása](#terrastatefajl)
+- [6. VM/LXC importálása](#imp)
 
 ---
 
 <a name="terra"></a>
 
-# 1. Using Terraform
+# 1. Terraform használata
 
-The entire Proxmox infrastructure is managed by Terraform, covering both VMs and LXC containers. Every resource is cloned from a pre-built **golden image** — cloud-init based for VMs, and a manually prepared template for LXC containers. Existing manually created resources were brought under Terraform management using `terraform import`. This ensures every node is uniformly managed, reproducible, and rebuildable.
+A Proxmox infrastruktúra teljes egészében Terraform felügyelet alatt áll, VM-ek és LXC konténerek egyaránt. Minden erőforrás előre elkészített **golden image**-ből lesz klónozva, VM-ekhez cloud-init alapú, LXC-khez manuálisan előkészített template formájában. A kézzel létrehozott már meglévő erőforrásokat `terraform import`-tal vontam Terraform felügyelete alá. Így minden csomópont egységesen kezelhető, reprodukálható és újraépíthető.
 
 ---
 
 <a name="secrets"></a>
 
-# 2. Secrets Management (SOPS+AGE)
+# 2. Secrets kezelése (SOPS+AGE)
 
-Sensitive data (Proxmox API token, passwords, SSH keys, MAC addresses) is stored in the `secrets.enc.yaml` file, encrypted with SOPS+AGE and committed to version control. This replaces the `terraform.tfvars` file — there are no unencrypted secrets files in the repository.
+Az érzékeny adatok (Proxmox API token, jelszavak, SSH kulcsok, MAC-címek) a `secrets.enc.yaml` fájlban, SOPS+AGE-vel titkosítva kerülnek verziókövetés alá. A `terraform.tfvars` fájlt ezzel váltottam ki: nincs titkosítatlan secrets fájl a repóban.
 
 ---
 
 <a name="templates"></a>
 
-# 3. Template Creation
+# 3. Template készítés
 
-Two types of templates are maintained: a **VM template** based on cloud-init (used by Terraform for cloning) and an **LXC template** (cloud-init is not supported on LXC, so a separate approach is required). Both serve the same purpose: providing a uniform, immediately usable base state for the Ansible pipeline.
+Kétféle template-et tartok karban: egy **VM template**-et cloud-init alapon (Terraform használja klónozáshoz) és egy **LXC template**-et (cloud-init LXC-n nem támogatott, ezért külön megközelítés szükséges). Mindkettő célja ugyanaz: az Ansible pipeline számára azonnal használható, egységes alapállapot.
 
 ---
 
 <a name="golden_image"></a>
 
-## 3.1. VM Template — cloud-init based
+## 3.1. VM template — cloud-init alapon
 
-The cloud-init template is built from a base Ubuntu VM, from which Terraform clones every VM.
+Egy alap Ubuntu VM-ből készítem el a cloud-init alapú template-et, amelyből a Terraform minden VM-et klónoz.
 
-### 3.1.1. Base VM Configuration
+### 3.2.1. VM alapkonfiguráció
 
-All VMs start from a uniform hardware configuration. The **ballooning device** is disabled so that RAM is allocated as a fixed amount — this is more reliable than setting minimum and maximum memory to the same value.
+Az összes VM egységes hardverkonfigurációból indul. A **ballooning device**-t kikapcsolom, hogy a RAM fixen legyen kiosztva, ez megbízhatóbb, mint a minimum/maximum memória azonos értékre állítása.
 
-### 3.1.2. Preparing the Golden Image
+### 3.1.2. A golden image előkészítésének 
 
-**System update:**
+**Rendszerfrissítés:**
 
 ```bash
 sudo apt update
 sudo apt upgrade -y
 ```
 
-**Installing qemu-guest-agent** — ensures Terraform receives feedback as soon as the VM has started, without unnecessary waiting:
+**qemu-guest-agent telepítése** — ez biztosítja, hogy a Terraform visszajelzést kapjon, amint a VM elindult, és ne várakozzon:
 
 ```bash
 sudo apt install qemu-guest-agent -y
@@ -69,16 +69,16 @@ sudo systemctl start qemu-guest-agent
 sudo systemctl status qemu-guest-agent
 ```
 
-<img width="779" height="444" alt="image" src="https://github.com/user-attachments/assets/db83215e-5a8b-486b-9765-edd811d0a123" />
+<img width="779" height="444" alt="kép" src="https://github.com/user-attachments/assets/db83215e-5a8b-486b-9765-edd811d0a123" />
 
-**Installing and preparing cloud-init:**
+**cloud-init telepítése és előkészítése:**
 
 ```bash
 sudo apt install cloud-init -y
 sudo cloud-init clean
 ```
 
-**Cleaning the machine** — removing SSH host keys, machine-id, and unnecessary packages so that clones boot as completely fresh, unique machines:
+**A gép tisztítása** — SSH host kulcsok, machine-id és felesleges csomagok törlése, hogy a klónok teljesen friss, egyedi gépként induljanak:
 
 ```bash
 sudo rm -f /etc/ssh/ssh_host_*
@@ -87,39 +87,39 @@ sudo apt clean
 sudo apt autoremove
 ```
 
-### 3.1.3. Adding the cloud-init Drive
+### 3.1.3. cloud-init drive hozzáadása
 
-After shutting down the VM, a **cloud-init drive** is added and the CD-ROM drive used during installation is removed. The result: one system disk and one cloud-init drive.
+A VM leállítása után hozzáadok egy **cloud-init drive-ot** és eltávolítom a telepítéshez használt CD-ROM meghajtót. A végeredmény: egy rendszerlemez és egy cloud-init drive.
 
-<img width="939" height="379" alt="image" src="https://github.com/user-attachments/assets/e04f2ced-55e7-495c-840a-30f5ae1ed112" />
+<img width="939" height="379" alt="kép" src="https://github.com/user-attachments/assets/e04f2ced-55e7-495c-840a-30f5ae1ed112" />
 
-The cloud-init network configuration is set to DHCP:
+A cloud-init hálózati beállítását DHCP-re állítom:
 
-<img width="848" height="488" alt="image" src="https://github.com/user-attachments/assets/97744f54-37fe-478a-9192-36cfd4d0b074" />
+<img width="848" height="488" alt="kép" src="https://github.com/user-attachments/assets/97744f54-37fe-478a-9192-36cfd4d0b074" />
 
-The cloud-init image is regenerated. The username is `ansible`, and the associated key name is `ansible_target_key`:
+Újragenerálom a cloud-init image-et. A felhasználónév `ansible`, a hozzá tartozó kulcs neve `ansible_target_key`:
 
-<img width="968" height="509" alt="image" src="https://github.com/user-attachments/assets/a107e125-6472-4f9f-bea3-8130ec0a2125" />
+<img width="968" height="509" alt="kép" src="https://github.com/user-attachments/assets/a107e125-6472-4f9f-bea3-8130ec0a2125" />
 
-### 3.1.4. Converting to Template
+### 3.1.4. Konvertálás template-té
 
-Right-click → **Convert to template**. The template ID is `8000`, name: `ubuntu-server-22.04.5-cloudinit`.
+Jobb klikk → **Convert to template**. A template ID-ja `8000`, neve: `ubuntu-server-22.04.5-cloudinit`.
 
 ---
 
 <a name="lxc_template"></a>
 
-## 3.2. LXC Template — ansible user + SSH
+## 3.2. LXC template — ansible user + SSH
 
-Cloud-init cannot be used with LXC containers, so a custom template is prepared that automatically includes an Ansible-compatible base configuration.
+Az LXC konténerekhez cloud-init nem használható, ezért saját template-et készítek, amely automatikusan tartalmazza az Ansible-kompatibilis alapkonfigurációt.
 
-**Template contents:**
-- `rolf` and `ansible` users with SSH key-based login,
-- passwordless (`NOPASSWD`) sudo rights for the `ansible` user,
-- unique SSH host keys on every clone (managed by a systemd service),
-- zeroed `machine-id`.
+**A template tartalma:**
+- `rolf` és `ansible` felhasználók SSH kulcsos belépéssel,
+- az `ansible` usernek jelszó nélküli (`NOPASSWD`) sudo jog,
+- minden klónon egyedi SSH host key-ek (systemd service gondoskodik róla),
+- nullázott `machine-id`.
 
-**Creating users and sudo configuration:**
+**Felhasználók és sudo létrehozása:**
 
 ```bash
 useradd -m -s /bin/bash rolf
@@ -134,18 +134,18 @@ chmod 0440 /etc/sudoers.d/ansible
 visudo -cf /etc/sudoers.d/ansible
 ```
 
-**Uploading SSH keys:**
+**SSH kulcsok feltöltése:**
 
 ```bash
 mkdir -p /home/rolf/.ssh /home/ansible/.ssh
-# copy public keys into the authorized_keys files
+# public key-ek bemásolása az authorized_keys fájlokba
 chmod 700 /home/rolf/.ssh /home/ansible/.ssh
 chmod 600 /home/rolf/.ssh/authorized_keys /home/ansible/.ssh/authorized_keys
 chown -R rolf:rolf /home/rolf/.ssh
 chown -R ansible:ansible /home/ansible/.ssh
 ```
 
-**Unique SSH host keys per clone** — host keys are deleted from the template, and a systemd service ensures that every clone regenerates them on first boot:
+**Egyedi SSH host key-ek klónonként** — a template-ből törlöm a host key-eket, és egy systemd service gondoskodik arról, hogy minden klón első indulásakor újragenerálja azokat:
 
 ```bash
 rm -f /etc/ssh/ssh_host_*
@@ -168,69 +168,69 @@ EOF
 systemctl enable generate-ssh-host-keys.service
 ```
 
-**Zeroing machine-id** — rather than deleting it, it is truncated, since `/var/lib/dbus/machine-id` symlinks to it:
+**Machine-id nullázása** — nem törlöm, csak kiürítem, mivel a `/var/lib/dbus/machine-id` erre symlinkel:
 
 ```bash
 truncate -s 0 /etc/machine-id
 ```
 
-**Cleanup and conversion:**
+**Takarítás és konvertálás:**
 
 ```bash
 apt clean
 apt autoremove
 ```
 
-In the Proxmox UI: right-click → *Convert to template*. LXC containers cloned from this template are immediately accessible to the Ansible pipeline — just like VMs created with Terraform.
+Proxmox felületén: jobb klikk → *Convert to template*. Az így elkészült template-ből klónozott LXC konténerek azonnal elérhetők az Ansible pipeline számára — ugyanúgy, mint a Terraformmal létrehozott VM-ek.
 
 ---
 
 <a name="pipeline"></a>
 
-# 4. GitHub Actions Pipeline
+# 4. GitHub Actions pipeline
 
-Terraform operations are orchestrated by a dedicated workflow (`.github/workflows/proxmox-terraform.yml`), running on a self-hosted runner. The workflow is triggered manually (`workflow_dispatch`) with a single parameter:
+A Terraform műveleteket egy dedikált workflow vezérli (`.github/workflows/proxmox-terraform.yml`), amely a self-hosted runneren fut. A workflow manuálisan indítható (`workflow_dispatch`), egyetlen paraméterrel:
 
-| Parameter | Value | Description |
+| Paraméter | Érték | Leírás |
 |---|---|---|
-| `action` | `plan` | Shows what would change, without applying anything |
-| `action` | `apply` | Applies the changes (`-auto-approve`) |
-| `action` | `import` | Imports an existing Proxmox VM/LXC into the state, based on `imported.tf` |
-| `action` | `show` | Prints the full Terraform state contents |
+| `action` | `plan` | Megmutatja mi változna, tényleges módosítás nélkül |
+| `action` | `apply` | Végrehajtja a változásokat (`-auto-approve`) |
+| `action` | `import` | Meglévő Proxmox VM/LXC importálása a state-be, az `imported.tf` alapján |
+| `action` | `show` | Kiírja a teljes Terraform state tartalmát |
 
-**Workflow steps:**
+**A workflow lépései:**
 
-1. **Checkout** — a clean clone from the repository.
-2. **Secrets decryption** — the `SOPS_AGE_KEY` GitHub Actions Secret is used to produce the AGE key file, which decrypts `secrets.enc.yaml`; the contained values (Proxmox API token, SSH keys, MAC addresses, etc.) are then loaded into shell variables.
-3. **Running Terraform in Docker** — the `hashicorp/terraform` image is run, with the `terraform/proxmox-deploy` directory and the state directory (`/home/ansible/terraform-state/proxmox`) mounted in, and secrets passed as `TF_VAR_*` environment variables.
-   - For `plan` / `apply`, the corresponding Terraform command is executed.
-   - For `import`, the resource name, `node_name`, and `vm_id` are automatically parsed from `imported.tf`, and `terraform import` is run with those values.
-   - For `show`, the state contents are printed — this is then used to copy the imported object's data into `main.tf`.
-4. **Cleanup** — the decrypted secrets file and AGE key are deleted, regardless of the step's outcome (`if: always()`).
+1. **Checkout** — tiszta clone a repóból.
+2. **Secrets dekódolása** — a `SOPS_AGE_KEY` GitHub Actions Secretből előállítja az AGE kulcsfájlt, azzal dekódolja a `secrets.enc.yaml`-t, majd a benne lévő értékeket (Proxmox API token, SSH kulcsok, MAC-címek stb.) shell változókba olvassa.
+3. **Terraform futtatása Dockerben** — a `hashicorp/terraform` image-et futtatja, a `terraform/proxmox-deploy` mappát és a state könyvtárat (`/home/ansible/terraform-state/proxmox`) mountolva bele, a titkos értékeket `TF_VAR_*` környezeti változóként átadva.
+   - `plan` / `apply` esetén lefuttatja a megfelelő Terraform parancsot.
+   - `import` esetén az `imported.tf`-ből automatikusan kiolvassa a resource nevét, a `node_name`-et és a `vm_id`-t, majd ezekkel futtatja a `terraform import`-ot.
+   - `show` esetén kiírja a state tartalmát — innen másolom át az importált objektum adatait a `main.tf`-be.
+4. **Takarítás** — a dekódolt secrets fájl és az AGE kulcs törlése, a lépés kimenetelétől függetlenül (`if: always()`).
 
 ---
 
 <a name="terrastatefajl"></a>
 
-# 5. Terraform State Management and Recovery
+# 5. Terraform state kezelése és visszaállítása
 
-`main.tf` and other Terraform configs live on GitHub, but `terraform.tfstate` remains on the runner machine (`mgmt-core-01-204`) — the workflow reads and updates it on every run. The state file is currently backed up manually to a NAS.
+A `main.tf` és a többi Terraform konfiguráció GitHubon él, de a `terraform.tfstate` a futtató gépen (`mgmt-core-01-204`) marad — a workflow minden futáskor felhasználja, majd frissíti. A state fájlt jelenleg kézileg mentem a NAS-ra.
 
-If `mgmt-core-01-204` is lost, restoring the state file from the NAS allows Terraform to immediately resume managing the existing resources. The state directory must be created if it doesn't exist:
+Ha az `mgmt-core-01-204` elvész, a NAS-ról visszaállított state fájllal a Terraform azonnal újra felügyelheti a meglévő erőforrásokat. A state könyvtárat szükség esetén létre kell hozni:
 
 ```bash
 mkdir -p /home/ansible/terraform-state/proxmox
 ```
 
-The backed-up file must be restored to: `/home/ansible/terraform-state/proxmox/terraform.tfstate`
+A mentett fájlt vissza kell másolni ide: `/home/ansible/terraform-state/proxmox/terraform.tfstate`
 
 ---
 
 <a name="imp"></a>
 
-# 6. Importing VM/LXC
+# 6. VM/LXC importálása
 
-To bring an existing, manually created Proxmox VM or LXC under Terraform management, copy the resource definition into `imported.tf` with the `node_name` and `vm_id` specified — use `container` for LXC and `vm` for VMs:
+Meglévő, kézzel létrehozott Proxmox VM vagy LXC Terraform felügyelet alá vonásához az `imported.tf`-be kell másolni a resource típusát a `node_name` és `vm_id` megadásával, LXC esetén `container`, VM esetén `vm` típussal:
 
 ```hcl
 resource "proxmox_virtual_environment_container" "adguardhome-222" {
@@ -239,11 +239,11 @@ resource "proxmox_virtual_environment_container" "adguardhome-222" {
 }
 ```
 
-Running the workflow with the `import` action automatically assembles and executes the `terraform import` command from the above data.
+A workflow `import` action-jét futtatva automatikusan összeállítja és végrehajtja a `terraform import` parancsot a fenti adatokból.
 
-Afterwards, the `show` action prints the state contents — locate the imported object, copy its data into `main.tf`, and clear the contents of `imported.tf`.
+Ezután a `show` action-nel kiíratom a state tartalmát, megkeresem az importált objektumot, az adatait átmásolom a `main.tf`-be, majd az `imported.tf` tartalmát törlöm.
 
-**Common issue after import:** `plan` may want to recreate the container due to mismatches in the `unprivileged` and `operating_system` attributes. This can be avoided by ignoring them in the `lifecycle` block:
+**Gyakori probléma importálás után:** a `plan` az `unprivileged` és az `operating_system` attribútumok eltérése miatt újra akarja létrehozni a konténert. Ez elkerülhető, ha ezeket a `lifecycle` blokkban figyelmen kívül hagyatjuk:
 
 ```hcl
 lifecycle {
@@ -254,10 +254,10 @@ lifecycle {
 }
 ```
 
-> ⚠️ This means Terraform will no longer track these attributes in the future — changes made in `main.tf` or directly in Proxmox will not be synchronized.
+> ⚠️ Ez azt jelenti, hogy ezeket az attribútumokat a Terraform a jövőben sem fogja nyomon követni — sem `main.tf`-beli módosítás, sem kézi Proxmox-szintű változtatás nem kerül szinkronizálásra.
 
-Listing available LXC template images on Proxmox:
+A Proxmoxon elérhető LXC template image-ek listázása:
 
 ---
 
-← [Back](../README.md)
+← [Vissza](../README_HU.md)
