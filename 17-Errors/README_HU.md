@@ -95,8 +95,8 @@ A Pi-hole-ról AdGuard Home-ra való átállás után a 192.168.1.0/24 hálózat
 - Unprivileged LXC konténerek nem tudnak közvetlenül hálózati megosztást mountolni.
 
 **Megoldás**:
-- A Proxmox hoston **AutoFS**-al csatolt megosztás továbbadása bind mount (`mp0`) segítségével.
-- Ez kiküszöböli a `df` parancs fagyását, ha a tároló nem elérhető.
+- A Proxmox hoston **systemd.automount**-al csatolt megosztás továbbadása bind mount (`mp0`) segítségével.
+- Ez kiküszöböli a df parancs fagyását, ha a tároló nem elérhető, mivel a systemd.automount csak az első tényleges hozzáféréskor próbálja meg felcsatolni a megosztást, addig nem kísérli meg a kapcsolódást egy esetleg nem elérhető NAS-hoz.
 
 ---
 
@@ -104,16 +104,22 @@ A Pi-hole-ról AdGuard Home-ra való átállás után a 192.168.1.0/24 hálózat
 <a name="nemelerheto"></a>
 
 **Probléma**:
-- Mivel nekem a Proxmox1-es node-on fut több VM és LXC ami használja a TrueNAS megosztást, így problémás lehet, hogy mi van akkor, amennyiben nem elérhető a megosztás. Például a qBittorrent a megosztás amennyiben nem volt elérhető, a VM lokális terhelyére folytatta a letöltést, ami probléma. 
+- Mivel nekem a Proxmox1-es node-on fut több VM és LXC ami használja a TrueNAS megosztást, így problémás lehet, hogy mi van akkor, amennyiben nem elérhető a megosztás. Például a qBittorrent a megosztás amennyiben nem volt elérhető, a VM lokális tárhelyére folytatta a letöltést, ami probléma.
 
 **Megoldás**:
 Legjobb megoldásnak azt találtam, ha leállítom ekkor az LXC és VM gépeket, úgyis az ahány szolgáltatás annyi VM/LXC elvet követem, így ez nem befolyásolja más szolgáltatás futását. Amennyiben elérhető a megosztás, akkor elindítom a VM/LXC-t.
-- Proxmoxhoz fstab-al minden megosztás mountolva van, hogy tudja ellenőrizni és továbbosztani LXC-nek.
-- Leellenőrzöm scripttel 30 másodpercenként, hogy elérhető-e a megosztás.
-- Ha elérhető a megosztás, megnézi hogy fut-e a VM/LXC, ha nem fut, elindítja.
-- Ha nem elérhető a megosztás, akkor leállítja a VM/LXC-t ha fut.
 
-❗ Script: [/11-Scripts/Android/proxmox-mount-monitor.sh](/11-Scripts/proxmox/mount-monitor)
+- A megosztás Proxmox hoston **systemd.automount**-tal van kezelve (igény szerinti, on-demand csatolás), az LXC-knek bind mount (`mp0`) segítségével adom tovább.
+- Egy systemd timer 30 másodpercenként lefuttat egy scriptet (`mount-watchdog.sh`), ami **pinggel** a TrueNAS felé (nem a fájlrendszert/mountot vizsgálja, hanem a gép elérhetőségét), ez gyorsabb reakciót ad, mint a mount timeoutra várni.
+- A script egy **state fájlban** tárolja az előző állapotot (UP/DOWN), és csak akkor csinál bármit is, ha **változás történt** az előző ellenőrzéshez képest — így nincs felesleges VM/LXC indítás vagy leállítás minden egyes 30mp-es ciklusban.
+- Ha állapotváltozás van:
+  - **DOWN → UP**: elindítja az érintett VM-eket és LXC-ket, illetve a K3s szerveren app-szinten (kubectl scale) visszaskálázza a média-szolgáltatásokat (bazarr, prowlarr, qbittorrent, radarr, seerr, sonarr) 1 replikára.
+  - **UP → DOWN**: leállítja az érintett VM/LXC-ket, illetve a K3s appokat 0 replikára skálázza.
+- Minden indítás/leállítás **párhuzamosan** (háttérfolyamatként, `&` és `wait` segítségével) történik, nem egymás után, így a kritikus reakcióidő minimális.
+- Reboot után a state fájl automatikusan törlődik (egyszeri alkalommal), hogy a script a rendszer tényleges, aktuális állapota alapján döntsön, ne egy elavult bejegyzés alapján.
+- Gotify értesítést kapok minden állapotváltozáskor (NAS elérhetővé vált / NAS elérhetetlenné vált).
+
+❗ Script: [/11-Scripts/proxmox/mount-watchdog.sh](/11-Scripts/proxmox/mount-watchdog.sh)
 
 Lenti képen látható, TrueNAS-t leállítottam akkor leáll a másik Proxmoxon node-on lévő érintett VM/LXC gépek. Ha elindíntanám újra a TrueNAS-t akkor elindulnak ezek a gépek is.
 <p align="center">
