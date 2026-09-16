@@ -1,6 +1,6 @@
 # Mount Watchdog: NAS-függőség kezelés
 
-Ez az automatizáció a Proxmox host szintjén figyeli a központi adattároló (TrueNAS) elérhetőségét. Megakadályozza az I/O várakozás miatti rendszerszintű lefagyásokat azáltal, hogy leállítja a hálózati megosztástól függő VM-eket, LXC-ket és K3s szolgáltatásokat, ha a NAS offline állapotba kerül — majd automatikusan visszaindítja őket, amint a NAS ismét elérhető.
+Ez az automatizáció a Proxmox host szintjén figyeli a központi adattároló (TrueNAS) elérhetőségét. Leállítja a hálózati megosztástól függő VM-eket, LXC-ket és K3s szolgáltatásokat, ha a NAS offline állapotba kerül, erről értesítést küld, majd automatikusan újraindítja őket, amint a NAS ismét elérhető.
 
 ## 📚 Tartalomjegyzék
 
@@ -16,17 +16,17 @@ Ez az automatizáció a Proxmox host szintjén figyeli a központi adattároló 
 ## Miért van erre szükség
 <a name="miert"></a>
 
-Nálam a Proxmox1-es node-on fut több VM és LXC, ami a TrueNAS megosztást használja. Gond van akkor, ha a megosztás nem elérhető: például a qBittorrent a megosztás hiányában a VM lokális tárhelyére folytatta a letöltést, ami nem kívánt viselkedés.
+Nálam a Proxmox1-es node-on fut több VM és LXC, ami a TrueNAS megosztást használja. Gond van akkor, ha a megosztás nem elérhető: például a qBittorrent a megosztás hiányában a VM lokális tárhelyére folytatta a letöltést, ami nem kívánt viselkedés. De akkor is kellemetlen volt, ha Jellyfinbe ugyan be tudtam lépni, láttam a filmeket, de nem indultak el, hiszen nem volt csatolva a hálózati meghajtó.
 
-A legjobb megoldásnak azt találtam, ha ilyenkor **leállítom** az érintett LXC-t és VM-et — úgyis az "ahány szolgáltatás, annyi VM/LXC" elvet követem, így ez nem befolyásolja más szolgáltatás futását. Amint a megosztás újra elérhető, automatikusan visszaindítom őket.
+A legjobb megoldásnak azt találtam, ha ilyenkor **leállítom** az érintett LXC-t és VM-et, úgyis az "ahány szolgáltatás, annyi VM/LXC" elvet követem, így ez nem befolyásolja más szolgáltatás futását. Amint a megosztás újra elérhető, automatikusan visszaindítom őket.
 
 ---
 
 ## Előfeltételek
 <a name="elofeltetelek"></a>
 
-- **Auto-boot kikapcsolva** azokon a VM/LXC-ken, amiket a script kezel (1010, 1101) — Proxmox ne indítsa el őket bootkor, mert erre a scriptet bízzuk. A K3s szerver (1105) kivétel, mert azt app-szinten (podok skálázásával) kapcsolgatom, nem VM-szinten, így az automatikusan indulhat a Proxmox-szal.
-- **Jelszó nélküli SSH hozzáférés** (`ssh-copy-id`) a Proxmox hostról a K3s (és opcionálisan egy jövőbeli Docker) VM felé, hogy a script felügyelet nélkül tudjon `kubectl`/`docker compose` parancsokat küldeni.
+- **Auto-boot kikapcsolva** azokon a VM/LXC-ken, amiket a script kezel (1010, 1101), Proxmox ne indítsa el őket bootkor, mert erre a scriptet bízzuk. A K3s szerver (1105) kivétel, mert azt app-szinten (podok skálázásával) kapcsolgatom, nem VM-szinten, így az automatikusan indulhat a Proxmox-szal.
+- **Jelszó nélküli SSH hozzáférés** a Proxmox hostról a K3s (és opcionálisan egy jövőbeli Docker) VM felé, hogy a script felügyelet nélkül tudjon `kubectl`/`docker compose` parancsokat küldeni.
 
 ---
 
