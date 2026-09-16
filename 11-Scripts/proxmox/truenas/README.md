@@ -8,6 +8,7 @@ Ez az automatizáció a Proxmox host szintjén figyeli a központi adattároló 
 - [Előfeltételek](#elofeltetelek)
 - [Főbb jellemzők és a mögöttük lévő logika](#logika)
 - [Kezelt technológiák és függőségek](#fuggosegek)
+- [Értesítés (Gotify integráció)](#ertesites)
 - [Megvalósítás](#megvalositas)
 - [Tesztelés és tapasztalatok](#tesztelese)
 
@@ -85,6 +86,17 @@ Ez azért jobb, mint egy sima `mount.service`: az utóbbi induláskor próbál c
 | **VM** | 1101 (PXE/ISO) | Virtuális gép leállítása (`qm stop`) | Virtuális gép indítása (`qm start`) |
 | **K3s Podok** | `media` namespace — bazarr, prowlarr, qbittorrent, radarr, seerr, sonarr | Deploymentek skálázása 0 példányra (`kubectl scale`) | Deploymentek skálázása 1 példányra |
 | **Docker VM** | *(előkészítve, jelenleg nincs aktívan használva)* | Kikommentezett `handle_vm_docker` funkció, SSH-n keresztüli `docker compose stop/start`-hoz, egy leendő Docker-alapú VM-hez | — |
+
+---
+
+## Értesítés (Gotify integráció)
+<a name="ertesites"></a>
+
+Minden állapotváltásról (TrueNAS DOWN→UP vagy UP→DOWN) azonnali push értesítés érkezik a mobilomra a `send-gotify.sh` scripten keresztül — így akkor is tudok róla, ha éppen nem nézem a Proxmox GUI-t.
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/a8a0e206-cca0-4a7e-90a7-a69804076534" alt="Gotify értesítés" width="500">
+</p>
 
 ---
 
@@ -233,15 +245,15 @@ systemctl daemon-reload
 systemctl enable --now mount-watchdog.timer
 ```
 
-* **Gotify integráció** — minden állapotváltásról (TrueNAS DOWN→UP vagy UP→DOWN) azonnali push értesítés érkezik a mobilomra.
-
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/a8a0e206-cca0-4a7e-90a7-a69804076534" alt="Description" width="500">
-</p>
-
 ---
 
 ## Tesztelés és tapasztalatok
 <a name="tesztelese"></a>
 
 **Fontos tapasztalat:** az egyik LXC lassú leállását sokáig hibának hittem, mígnem kiderült, hogy ez csak a Proxmox GUI-ban látszik úgy, mintha nem állt volna le teljesen — valójában már elérhetetlen. A Gotify-értesítés megérkezése egyértelmű jelzés arra, hogy a leállás/indítás ténylegesen megtörtént, függetlenül attól, hogy a Proxmox GUI mit mutat.
+
+* **Gotify integráció** — minden állapotváltásról (TrueNAS DOWN→UP vagy UP→DOWN) azonnali push értesítés érkezik a mobilomra.
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/a8a0e206-cca0-4a7e-90a7-a69804076534" alt="Description" width="500">
+</p>
