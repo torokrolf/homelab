@@ -84,7 +84,7 @@ Ez azért jobb, mint egy sima `mount.service`: az utóbbi induláskor próbál c
 | **LXC** | 1010 (Jellyfin) | Konténer leállítása (`pct stop`) | Konténer indítása (`pct start`) |
 | **VM** | 1101 (PXE/ISO) | Virtuális gép leállítása (`qm stop`) | Virtuális gép indítása (`qm start`) |
 | **K3s Podok** | `media` namespace — bazarr, prowlarr, qbittorrent, radarr, seerr, sonarr | Deploymentek skálázása 0 példányra (`kubectl scale`) | Deploymentek skálázása 1 példányra |
-| **Docker VM** | *(előkészítve, jelenleg nincs aktívan használva)* | Kikommentezett `handle_vm_docker` funkció, SSH-n keresztüli `docker compose stop/start`-hoz, egy leendő Docker-alapú VM-hez | — |
+| **Docker VM** | *(előkészítve, jelenleg nincs aktívan használva)* | `handle_vm_docker` funkció, SSH-n keresztüli `docker compose stop/start`-hoz, egy leendő Docker-alapú VM-hez | — |
 
 ---
 
