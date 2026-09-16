@@ -9,20 +9,20 @@
 ## 📚 Table of Contents
 
 - [DNS – Public domain resolution without internet](#dns-offline)
-- [DNS – Pi-hole blocking Google image search](#dns-pihole)
-- [DNS – ARP starving caused by AdGuard DNS rate limit](#ratelimit)
-- [SSH – SSH login on LXC / Ubuntu](#ssh-lxc)
-- [Sharing – SMB/NFS access from LXC](#mount-lxc)
-- [Sharing – when the TrueNAS share is unavailable](#nemelerheto)
+- [DNS – Pi-hole blocks Google image search](#dns-pihole)
+- [DNS – ARP starving caused by AdGuard rate limit](#ratelimit)
+- [SSH – SSH login for LXC / Ubuntu](#ssh-lxc)
+- [Share – SMB/NFS access from LXC](#mount-lxc)
+- [Share – when the TrueNAS share is unavailable](#nemelerheto)
 - [Hardware – External SSD stability over USB](#hw-ssd)
 - [Hardware – M70q network adapter instability](#hw-m70q)
 - [Hardware – Local and public DNS issues (Wi-Fi)](#hw-wifi)
 - [DDNS – Cloudflare update behind pfSense](#ddns-pfsense)
-- [Apt-cacher-ng packages getting stuck](#aptcacherng)
+- [Apt-cacher-ng package stalling](#aptcacherng)
 - [AWS – DNS override conflict (BIND9 wildcard vs EC2 subdomain)](#dns-override-aws)
 - [AWS – Cloudflare wildcard certificate limit](#cf-wildcard-limit)
-- [Terraform – LXC template locking error on parallel cloning (Important: This issue did not occur with VM templates on Proxmox!)](#lxc-parhuzamos-vegrehajtas)
-- [Terraform – LXC cloned container disk.size not applied in a single `apply`](#lxcklonozashiba)
+- [Terraform – LXC template lock error on parallel cloning (Important: this error never occurred with Proxmox VM templates!)](#lxc-parhuzamos-vegrehajtas)
+- [Terraform – LXC cloned container disk.size doesn't apply in one `apply`](#lxcklonozashiba)
 
 ---
 
@@ -30,18 +30,18 @@
 <a name="dns-offline"></a>
 
 **Problem**:
-- Accessing the public domain `*.trkrolf.com` failed without an internet connection.
+- Accessing the `*.trkrolf.com` public domain failed without an internet connection.
 
 **Solution**:
-- **DNS override**: Wildcard trkrolf.com (*.trkrolf.com) records resolve directly to the local Traefik IP on the internal network, bypassing external lookups.
+- **DNS override**: The wildcarded trkrolf.com (`*.trkrolf.com`) records resolve directly to the local Traefik IP on the internal network, bypassing the external lookup.
 
 ---
 
-## DNS – Pi-hole blocking Google image search on mobile
+## DNS – Pi-hole blocks Google image search on mobile
 <a name="dns-pihole"></a>
 
 **Problem**:
-- On mobile, Google image search results wouldn't open due to Pi-hole's blocklists.
+- Google image search results wouldn't open on mobile because of Pi-hole's blocklists.
 
 **Cause**:
 - Google uses tracking domains (e.g. `googleadservices.com`) that are on the blocklists.
@@ -57,64 +57,70 @@
 <a name="ratelimit"></a>
 
 **Problem description**
-After switching from Pi-hole to AdGuard Home, the Proxmox hosts (192.168.2.198, 192.168.2.199) became unreachable from the 192.168.1.0/24 network. Interestingly, the VMs and LXC containers running on those hosts remained pingable, but the physical nodes themselves stopped responding.
+After switching from Pi-hole to AdGuard Home, the Proxmox hosts (192.168.2.198, 192.168.2.199) became unreachable from the 192.168.1.0/24 network. Interestingly, the VMs and LXC containers running on those hosts remained pingable, but the physical nodes themselves did not respond.
 
 **Cause**
 
 - **DNS rate limit:** AdGuard Home's default rate limit (**20 queries/sec**) was too low. Clients exceeded it, and AdGuard Home started dropping requests.
-- **DNS Flood:** Due to failed resolutions, clients started retrying more and more aggressively, overloading the Proxmox network interface — a self-reinforcing process.
-- **Missing records:** Since the Proxmox nodes had static IPs (not assigned via pfSense DHCP), there was no static ARP entry set up for them in pfSense. Because of the network noise, they couldn't get into the ARP table, resulting in **ARP starving**.
-- **ARP starving:** Due to the large number of dropped packets and queuing, the Proxmox interface couldn't respond in time to pfSense's ARP requests, which are needed for PING. I could still ping the VMs and LXCs running on the Proxmox nodes because they received their IP from the pfSense DHCP server, where static ARP was also applied — since I had configured it. So their IP + MAC address pair was known.
+- **DNS flood:** Clients began aggressively retrying due to the failed lookups, increasingly often, which overloaded the Proxmox network interface — a self-reinforcing loop.
+  **Missing records:** Since the Proxmox nodes had fixed IPs (not assigned via pfSense DHCP), they had no static ARP entry enabled in pfSense. Due to the network noise, they couldn't get into the ARP table, resulting in **ARP starving**.
+- **ARP starving:** The large number of dropped packets and the resulting queueing meant the Proxmox interface couldn't respond in time to pfSense's ARP requests, which are needed for PING. The VMs and LXCs on the Proxmox node remained pingable from 1.0 because they got their IP from the pfSense DHCP server, where static ARP was also configured for them — so their IP + MAC pairing was known.
 
 **Solution**
 
-1.  **Registering static ARP:**
-    * In pfSense, I added the Proxmox hosts to the **DHCP Static Mappings** list.
-    * After registering the MAC addresses, I enabled the **Static ARP** option, so the router no longer needs to search for the hosts via ARP requests.
-2.  **Removing the AdGuard Home limit:**
-    * In the AdGuard interface: Settings/DNS settings/Rate limit.
+1.  **Fixing static ARP:**
+    * Added the Proxmox hosts to the **DHCP Static Mappings** list in pfSense.
+    * After registering the MAC addresses, enabled the **Static ARP** option, so the router no longer needs ARP requests to find the hosts.
+2.  **Raising the AdGuard Home limit:**
+    * In the AdGuard UI: Settings / DNS settings / Rate limit.
 
 ---
 
-## SSH – SSH login on LXC / Ubuntu
+## SSH – SSH login for LXC / Ubuntu
 <a name="ssh-lxc"></a>
 
 **Problem**:
-- Root SSH login is disabled by default in LXC containers.
+- Root SSH login is disabled by default inside LXC containers.
 
 **Solution**:
-- Creating a regular user and setting up SSH key-based authentication.
+- Created a regular user and set up SSH key-based authentication.
 
 ---
 
-## Sharing – SMB/NFS access from LXC
+## Share – SMB/NFS access from LXC
 <a name="mount-lxc"></a>
 
 **Problem**:
-- Unprivileged LXC containers can't directly mount network shares.
+- Unprivileged LXC containers can't mount a network share directly.
 
 **Solution**:
-- The share is mounted on the Proxmox host via **AutoFS** and passed through using a bind mount (`mp0`).
-- This avoids the `df` command hanging if the storage becomes unavailable.
+- The share is mounted on the Proxmox host with **systemd.automount**, then passed through to the LXC via a bind mount (`mp0`).
+- This avoids the `df` command hanging when the storage is unavailable, since systemd.automount only attempts to mount the share on the first actual access — until then, it doesn't try to connect to a NAS that might not be available.
 
 ---
 
-## Sharing – when the TrueNAS share is unavailable
+## Share – when the TrueNAS share is unavailable
 <a name="nemelerheto"></a>
 
 **Problem**:
-- Since several VMs and LXCs on my Proxmox1 node use the TrueNAS share, it can become a problem if the share becomes unavailable. For example, if the share was unavailable, qBittorrent continued the download using the VM's local storage instead, which is a problem.
+- Since several VMs and LXCs on my Proxmox1 node use the TrueNAS share, it's a real problem what happens when that share becomes unavailable. For example, when the share was unavailable, qBittorrent kept downloading onto the VM's local storage instead, which is a problem.
 
 **Solution**:
-The best solution I found is to stop the LXC and VM machines in that case — since I follow a one-service-per-VM/LXC principle anyway, this doesn't affect any other service running. Once the share becomes available again, I start the VM/LXC back up.
-- Every share is mounted on Proxmox via fstab, so it can check and pass it through to the LXCs.
-- A script checks every 30 seconds whether the share is available.
-- If the share is available, it checks whether the VM/LXC is running, and starts it if not.
-- If the share is not available, it stops the VM/LXC if it's running.
+The best solution I found is to stop the LXC and VM at that point — since I follow a one-service-per-VM/LXC principle anyway, this doesn't affect any other service. Once the share becomes available again, I start the VM/LXC back up.
 
-❗ Script: [/11-Scripts/Android/proxmox-mount-monitor.sh](/11-Scripts/proxmox/mount-monitor)
+- The share is managed on the Proxmox host with **systemd.automount** (on-demand mounting), and passed to the LXCs via a bind mount (`mp0`).
+- A systemd timer runs a script (`mount-watchdog.sh`) every 30 seconds, which **pings** the TrueNAS host (checking host reachability, not the filesystem/mount itself) — this reacts faster than waiting for a mount timeout.
+- The script stores the previous state (UP/DOWN) in a **state file**, and only takes action if there's been a **change** since the last check — so there's no unnecessary starting/stopping of VMs/LXCs on every 30-second cycle.
+- On a state change:
+  - **DOWN → UP**: starts the affected VMs and LXCs, and scales the media services (bazarr, prowlarr, qbittorrent, radarr, seerr, sonarr) back up to 1 replica at the app level on the K3s server (`kubectl scale`).
+  - **UP → DOWN**: stops the affected VMs/LXCs, and scales the K3s apps down to 0 replicas.
+- All start/stop actions run **in parallel** (as background jobs, using `&` and `wait`), not sequentially, minimizing the critical reaction time.
+- After a reboot, the state file is automatically deleted once, so the script decides based on the system's actual current state rather than a stale entry.
+- I get a Gotify notification on every state change (NAS became available / NAS became unavailable).
 
-The image below shows that when I stopped TrueNAS, the affected VM/LXC machines on the other Proxmox node also stopped. If I restarted TrueNAS, these machines would start back up too.
+❗ Script: [/11-Scripts/proxmox/mount-watchdog.sh](/11-Scripts/proxmox/mount-watchdog.sh)
+
+The image below shows that when I stopped TrueNAS, the affected VM/LXC machines on the other Proxmox node stopped as well. If I start TrueNAS back up, those machines start again too.
 <p align="center">
   <img src="https://github.com/user-attachments/assets/042abb72-ea53-4769-b017-237a0f493dbe" alt="TrueNAS stopped" width="400">
 </p>
@@ -136,22 +142,22 @@ The image below shows that when I stopped TrueNAS, the affected VM/LXC machines 
 <a name="hw-m70q"></a>
 
 **Problem**:
-- The M70q's built-in network card (`eno2`, Intel e1000e) would randomly disconnect from the LAN, and often only came back after a reboot.
+- The M70q's built-in network card (`eno2`, Intel e1000e) randomly dropped off the LAN, and often only came back after a reboot.
 
 **Diagnostics**:
-- Whenever the connection dropped, I sat down at the Proxmox host and ran the following command to check what happened at the driver level:
+- When the connection dropped, I sat down at the Proxmox host and checked what happened at the driver level with:
 ```bash
 dmesg | grep eno2
 ```
-- Based on the log, it pointed to e1000e driver errors/resets, suggesting the instability was not software-related (e.g. DHCP, cabling) but rather driver/hardware-level.
+- The log pointed to e1000e driver errors/resets, suggesting this was a driver/hardware-level instability rather than a software issue (e.g. DHCP, cabling).
 
-<img width="738" height="247" alt="kép" src="https://github.com/user-attachments/assets/6206a66c-c54c-4302-b9cb-e42b7141fc4b" />
+<img width="738" height="247" alt="image" src="https://github.com/user-attachments/assets/0cb35fe9-ac9c-418c-b03c-cc9f931c3365" />
 
-**Solution attempts**
+**Attempted solutions**
 
-**Attempt 1 – Tuning e1000e driver parameters (didn't work)**
+**Attempt 1 – tuning e1000e driver parameters (did not work)**
 
-   I created the file, since it didn't exist yet:
+   Created the file, since it didn't exist yet:
 ```bash
    sudo nano /etc/modprobe.d/e1000e.conf
 ```
@@ -163,11 +169,11 @@ options e1000e RxIntDelay=16
 options e1000e InterruptModeration=1
 options e1000e FlowControl=1
 
-Then rebooted. This setting alone did not fix the random disconnects.
+Followed by a reboot. This setting alone did not fix the random disconnects.
 
-**Attempt 2 – Watchdog script to automatically restart the interface (probably a good direction, but wasn't run long enough to confirm it was actually stable)**
+**Attempt 2 – watchdog script to automatically restart the interface (a good direction in principle, but didn't run long enough to confirm real stability)**
 
-   The idea here is essentially creating a custom WDT (watchdog timer): the script regularly pings a reachable device (e.g. the router), and if it fails, it brings the `eno2` interface down and back up.
+   The idea: a custom "WDT" (watchdog timer) — the script regularly pings a reachable device (e.g. the router), and if it gets no reply, brings the `eno2` interface down and back up.
 
 ```bash
    sudo nano /usr/local/bin/monitor_eno2.sh
@@ -190,7 +196,7 @@ Then rebooted. This setting alone did not fix the random disconnects.
    sudo chmod +x /usr/local/bin/monitor_eno2.sh
 ```
 
-   A systemd service was also created for this, so it runs continuously and restarts itself automatically if it stops:
+   A systemd service was also created so it runs continuously and restarts itself if it stops:
 ```bash
    sudo nano /etc/systemd/system/network-watchdog.service
 ```
@@ -216,7 +222,7 @@ Then rebooted. This setting alone did not fix the random disconnects.
 ```
 
 **Final solution**:
-- Instead of driver-level tuning and the watchdog script, using a **TP-Link UE330 external USB Ethernet adapter** ended up permanently solving the problem — it has been running flawlessly without any drops ever since.
+- Instead of driver-level tuning or the watchdog script, using a **TP-Link UE330 external USB Ethernet adapter** ultimately solved the problem for good — it has run flawlessly, without any dropouts, ever since.
 
 ---
 
@@ -227,69 +233,68 @@ Then rebooted. This setting alone did not fix the random disconnects.
 - The MediaTek 7921 Wi-Fi card produced unstable DNS resolution on Linux.
 
 **Solution**:
-- Replacing the adapter with an Intel AX210.
+- Replaced the adapter with an Intel AX210.
 
 ---
 
-## DDNS – pfSense DDNS not updating Cloudflare behind Double NAT
+## DDNS – pfSense DDNS doesn't update Cloudflare behind Double NAT
 <a name="ddns-pfsense"></a>
 
 **Problem**
 
-The pfSense WAN interface does not have a **public IP address**, but rather a **static private IP (e.g. 192.168.1.196)**, because the router sits behind double NAT.
+The pfSense WAN interface doesn't have a **public IP**, but a **static private IP (e.g. 192.168.1.196)**, because the router sits behind double NAT.
 
-pfSense's built-in Dynamic DNS mechanism (/etc/rc.dyndns.update) is triggered in 3 cases:
+pfSense's built-in Dynamic DNS mechanism (`/etc/rc.dyndns.update`) is triggered in 3 cases:
 
 - on system boot
-- when the WAN interface receives a new IP
+- when the WAN interface gets a new IP
 - when the WAN interface goes down/up
 
-Since the IP on the WAN interface doesn't change, pfSense **doesn't detect** that the actual public IP on the upstream router has changed, so it doesn't update the Cloudflare DNS record.
+Since the IP on the WAN interface doesn't change, pfSense **doesn't detect** that the actual public IP on the upstream router has changed, so it never updates the Cloudflare DNS record.
 
-The result: the trkrolf.com domain becomes unreachable from outside.
+Result: the trkrolf.com domain becomes unreachable from outside.
 
 **Solution**
 
-A script forces pfSense to react not to a **WAN IP change**, but to an **actual public IP change**.
+A script forces pfSense to react to a change in the **actual public IP**, instead of the WAN IP.
 
 The mechanism:
 
 - Queries the current public IP via checkip.amazonaws.com
-- Compares it to the previously stored IP, which is written to a file
-- If there's a change:
+- Compares it to the previously stored IP, kept in a file
+- If it changed:
    - updates the stored IP in the file
-   - manually calls the `/etc/rc.dyndns.update` script
+   - manually invokes the `/etc/rc.dyndns.update` script
 
-This way, the Cloudflare record always points to the correct public IP.
+This way the Cloudflare record always points to the correct public IP.
 
 ❗ Script: [/11-Scripts/pfsense/ddns-force-update.sh](/11-Scripts/pfsense/ddns-force-update.sh)
 
 ---
 
-## Apt-cacher-ng stuck package issue
+## Apt-cacher-ng stalled package problem
 
 <a name="aptcacherng"></a>
 
 **Problem**
-During client updates via Ansible, I noticed in the Semaphore GUI that it sometimes wouldn't finish — it would just hang and wait indefinitely. This can be seen in the image below.
+During Ansible-driven client updates, I noticed in the Semaphore GUI that a run would sometimes just hang and wait indefinitely, as shown in the image below.
 <p align="center">
   <img src="https://github.com/user-attachments/assets/db0a18b6-dd7c-45b4-83cc-b9f97840c7f8" alt="Description" width="600">
 </p>
 
 **Cause**
 
-- On the proxy server: tail -f /var/log/apt-cacher-ng/apt-cacher.err –> shows the cache errors, as seen in the image below.
+- On the proxy server: `tail -f /var/log/apt-cacher-ng/apt-cacher.err` — shows the cache errors, as seen in the image below.
 - The client requests the package from the proxy server (apt-cacher-ng).
-- The apt-cacher-ng database sees that the downloaded package's file size doesn't match what its database says the file should officially be (checked size beyond EOF).
-- The proxy tries to re-download the faulty file, but can't, since a file with that name already exists (even if corrupted) (file exists), so the client **waits indefinitely for the package**.
+- apt-cacher-ng's database sees that the downloaded package's file size doesn't match what its database says the file should officially be ("checked size beyond EOF").
+- The proxy tries to re-download the broken file, but can't, since a file with that name already exists (even if corrupted) — so the client **waits for the package indefinitely**.
 <p align="center">
   <img src="https://github.com/user-attachments/assets/3563cca6-e744-4dbe-b23f-4ae2823db9ac" alt="Description" width="600">
 </p>
 
-
 **Solution**
 
-The acngtool maintenance command was added to cron, running every day at 22:30. This automatically cleans and rebuilds the cache, avoiding the stuck state, right before the 23:00 Ansible-driven update playbook, thereby avoiding the hang.
+Put the `acngtool` maintenance command into cron, running every day at 22:30. This automatically cleans and rebuilds the cache, preventing the stall, right before the 23:00 Ansible-driven update playbook — avoiding the hang.
 
 30 22 * * * /usr/lib/apt-cacher-ng/acngtool maint -c /etc/apt-cacher-ng >/dev/null 2>&1
 
@@ -299,7 +304,7 @@ The acngtool maintenance command was added to cron, running every day at 22:30. 
 <a name="dns-override-aws"></a>
 
 **Problem**:
-- EC2 services didn't load on the home network, but did on mobile data.
+- EC2 services didn't load on the home network, but did work on mobile data.
 
 **Cause**:
 - The homelab BIND9 has a `*.trkrolf.com` wildcard override, which routes everything to the local Traefik, so the EC2 subdomains never even reached Cloudflare.
@@ -307,7 +312,7 @@ The acngtool maintenance command was added to cron, running every day at 22:30. 
 <img width="691" height="255" alt="image" src="https://github.com/user-attachments/assets/b55f6d2a-6a33-40c0-b048-38c288e24153" />
 
 **Solution**:
-- Creating an exception in AdGuard Home for the EC2 subdomains, so they don't go to the overridden BIND9, but instead resolve to the Cloudflare proxy IP.
+- Created an exception in AdGuard Home for the EC2 subdomains, so they don't go to the overridden BIND9, but resolve to the Cloudflare proxy IP instead.
 
 Finding the Cloudflare proxy IP:
 
@@ -318,13 +323,13 @@ ipconfig /flushdns
 
 <img width="726" height="379" alt="image" src="https://github.com/user-attachments/assets/df18226d-62c7-428f-9510-0b144f2ac834" />
 
-Here you can see the AdGuard override.
+The AdGuard override shown here.
 
 <img width="945" height="430" alt="image" src="https://github.com/user-attachments/assets/f5d775b8-ba9e-4cc4-b31e-45ea16fe90d3" />
 
-Success. 
+Success.
 
-<img width="439" height="163" alt="kép" src="https://github.com/user-attachments/assets/40fc277e-3023-4b1d-af75-2dde84993643" />
+<img width="439" height="163" alt="image" src="https://github.com/user-attachments/assets/675a1b2f-4b0d-4cb7-a51c-e7dd17db137f" />
 
 ---
 
@@ -332,74 +337,62 @@ Success.
 <a name="cf-wildcard-limit"></a>
 
 **Problem**:
-- `uptime.aws.trkrolf.com` — SSL Handshake Failure, reachable over http but not https.
+- `uptime.aws.trkrolf.com` — SSL handshake failure; reachable over HTTP but not HTTPS.
 
 **Cause**:
-- Cloudflare Universal SSL (free plan) only covers a single-level wildcard (`*.trkrolf.com`). `uptime.aws.trkrolf.com` is a third-level subdomain, so it falls outside that scope.
+- Cloudflare's Universal SSL (free tier) only covers a single-level wildcard (`*.trkrolf.com`). `uptime.aws.trkrolf.com` is a third-level subdomain, so it falls outside that scope.
 
 **Solution**:
-- Renaming the subdomains to single-level in the Cloudflare tunnel: `uptimeaws.trkrolf.com`, `gotifyaws.trkrolf.com`, which are already covered by the `*.trkrolf.com` wildcard.
+- Renamed the subdomains to single-level in the Cloudflare tunnel: `uptimeaws.trkrolf.com`, `gotifyaws.trkrolf.com`, which are already covered by the `*.trkrolf.com` wildcard.
 
 <img width="1603" height="415" alt="image" src="https://github.com/user-attachments/assets/078d4589-e97a-451f-9324-f4e315711493" />
 
-> **Important:** With Cloudflare's free plan, it's always worth planning single-level subdomains if you're using a wildcard cert — otherwise you'd need Total TLS, which is a paid feature.
+> **Important:** With the Cloudflare free tier, always plan single-level subdomains if using a wildcard cert — otherwise you need Total TLS, which is paid.
 
 ---
 <a name="lxc-parhuzamos-vegrehajtas"></a>
 
-## Terraform – LXC template locking error on parallel cloning (Important: This issue did not occur with VM templates on Proxmox!)
+## Terraform – LXC template lock error on parallel cloning (Important: this error never occurred with Proxmox VM templates!)
 
 **Problem:**
-When multiple LXC containers are cloned from the same template at the
-same time (or when Terraform's default parallel execution tries to
-create several resources simultaneously), Proxmox locks the template
-during the clone operation. As a result, a second clone operation
-starting in parallel fails with a "template is locked" error, since
-the source template is still busy from the previous clone.
+If multiple LXC containers are cloned from the same template at the same time (or Terraform's default parallel execution tries to create several resources simultaneously), Proxmox locks the template during cloning. As a result, the other clone operation running in parallel fails with a "template is locked" error, because the source template is still busy from the previous clone.
 
-The screenshot below shows the LXC template getting locked while
-cloning another LXC from it (e.g. dns-201). Because of this, no other
-container can be cloned from the same template while it's locked.
+The image below shows the LXC template getting locked while another LXC (e.g. dns-201) is being cloned from it. Because of this, no one else can clone from the locked LXC template at that moment.
 
-<img width="323" height="269" alt="kép" src="https://github.com/user-attachments/assets/15bcdbce-4bf3-4e41-be07-81543ba33c5d" />
-<img width="769" height="329" alt="image" src="https://github.com/user-attachments/assets/a6075476-39d3-46fa-819b-fed6490d048d" />
+<img width="323" height="269" alt="image" src="https://github.com/user-attachments/assets/15bcdbce-4bf3-4e41-be07-81543ba33c5d" />
+<img width="769" height="329" alt="image" src="https://github.com/user-attachments/assets/7eb3dff6-d8a1-4f4b-8929-e727daf50180" />
 
 **Solution:**
-The `-parallelism=1` flag on the workflow's `apply` command ensures
-Terraform creates resources sequentially, one at a time, instead of
-in parallel:
+The `-parallelism=1` flag in the workflow's `apply` command ensures Terraform creates resources sequentially, one after another, instead of in parallel:
 
 ```bash
 terraform_cmd apply -auto-approve -parallelism=1
 ```
 
-This way, the first LXC clone completes (releasing the lock on the
-template) before the next clone operation starts - avoiding any
-conflict over the template lock.
+This way, the first LXC clone finishes completely (releasing the template lock) before the next clone starts — no conflict on the template lock.
 
 ---
 <a name="lxcklonozashiba"></a>
 
-## Terraform – LXC cloned container disk.size not applied in a single `apply`
+## Terraform – LXC cloned container disk.size doesn't apply in one `apply`
 
 **Problem:**
-When cloning a 5GB LXC template, I can adjust the memory size, MAC address, and everything else in a single pass — except the disk, e.g. resizing the LXC template from 5GB to 10GB.
-
-The bpg/proxmox Terraform provider (up to and including v0.112.0) ignores the disk.size field when cloning an LXC container (clone block) — the new container inherits the source template's original size. The actual resize (Proxmox pct resize API call) only runs in the provider's Update step, which is only triggered when the Terraform state and the size specified in the config differ. As a result, after running apply just once, the state shows the requested size, but the actual Proxmox container remains at the (smaller) size it was cloned with — the real resize only happens on the second apply run.
+When cloning a 5GB LXC template, I can modify memory size, MAC address, everything in one pass — except the disk, e.g. resizing the LXC template from 5GB to 10GB.
+The `bpg/proxmox` Terraform provider (up to and including v0.112.0) ignores the `disk.size` field during LXC container cloning (`clone` block) — the new container inherits the source template's original size. The actual resize (the Proxmox `pct resize` API call) only runs in the provider's Update step, which is only triggered if the Terraform state and the size specified in the config differ. Because of this, after running a single `apply`, the state shows the requested size, but the actual Proxmox container remains at the (smaller) size it had at the moment of cloning — the real resize only happens on the **second** `apply` run.
 
 **Solution:**
-The `apply` branch of the `.github/workflows/terraform.yml` workflow runs two consecutive `terraform apply` commands:
+The `apply` stage of the `.github/workflows/terraform.yml` workflow runs two consecutive `terraform apply` commands:
 
 ```bash
 terraform_cmd apply -auto-approve -parallelism=1
 terraform_cmd apply -auto-approve -parallelism=1
 ```
 
-The 1st pass creates/clones the new resources, and the 2nd pass applies the `disk.size` (a live resize, which for LXC does not require a container restart). If no new cloning happened in that run, the 2nd pass is a simple no-op.
+The 1st pass creates/clones the new resources, and the 2nd pass enforces the `disk.size` (a live resize, which for LXC doesn't require a container restart). If there's no new cloning in a given run, the 2nd pass is simply a no-op.
 
-The GUI shows the change in yellow, but df already reports 10GB, the resize works, the yellow indicator is just a GUI artifact and clears after a reboot.
+The GUI marks the change in yellow, but `df` already shows 10GB — the resize works, the yellow indicator is just a GUI quirk and disappears after a reboot.
 
-<img width="980" height="438" alt="kép" src="https://github.com/user-attachments/assets/aecf3e9e-dc34-4113-97f8-1f3b508b3c76" />
+<img width="980" height="438" alt="image" src="https://github.com/user-attachments/assets/adad71b9-5360-41d0-bc40-42c61e83dafc" />
 
 ---
 
