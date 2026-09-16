@@ -1,92 +1,239 @@
-# Mount Watchdog: NAS-függőség kezelés
+# Mount Watchdog: Handling NAS Dependency
 
-Ez az automatizáció a Proxmox host szintjén figyeli a központi adattároló (TrueNAS) elérhetőségét. Megakadályozza az I/O várakozás miatti rendszerszintű lefagyásokat azáltal, hogy leállítja a hálózati megosztástól függő VM-eket, LXC-ket és K3s szolgáltatásokat, ha a NAS offline állapotba kerül — majd automatikusan visszaindítja őket, amint a NAS ismét elérhető.
+This automation runs at the Proxmox host level and monitors the availability of the central storage (TrueNAS). It prevents system-level freezes caused by I/O waits by stopping the VMs, LXCs, and K3s services that depend on the network share when the NAS goes offline — and automatically starts them back up once the NAS becomes available again.
 
-## 📚 Tartalomjegyzék
+## 📚 Table of Contents
 
-- [Miért van erre szükség](#miert)
-- [Előfeltételek](#elofeltetelek)
-- [Főbb jellemzők és a mögöttük lévő logika](#logika)
-- [Kezelt technológiák és függőségek](#fuggosegek)
-- [Megvalósítás](#megvalositas)
-- [Tesztelés és tapasztalatok](#tesztelese)
-
----
-
-## Miért van erre szükség
-<a name="miert"></a>
-
-Nálam a Proxmox1-es node-on fut több VM és LXC, ami a TrueNAS megosztást használja. Gond van akkor, ha a megosztás nem elérhető: például a qBittorrent a megosztás hiányában a VM lokális tárhelyére folytatta a letöltést, ami nem kívánt viselkedés.
-
-A legjobb megoldásnak azt találtam, ha ilyenkor **leállítom** az érintett LXC-t és VM-et — úgyis az "ahány szolgáltatás, annyi VM/LXC" elvet követem, így ez nem befolyásolja más szolgáltatás futását. Amint a megosztás újra elérhető, automatikusan visszaindítom őket.
+- [Why this is needed](#why)
+- [Prerequisites](#prerequisites)
+- [Key features and the logic behind them](#logic)
+- [Managed technologies and dependencies](#dependencies)
+- [Implementation](#implementation)
+- [Testing and lessons learned](#testing)
 
 ---
 
-## Előfeltételek
-<a name="elofeltetelek"></a>
+## Why this is needed
+<a name="why"></a>
 
-- **Auto-boot kikapcsolva** azokon a VM/LXC-ken, amiket a script kezel (1010, 1101) — Proxmox ne indítsa el őket bootkor, mert erre a scriptet bízzuk. A K3s szerver (1105) kivétel, mert azt app-szinten (podok skálázásával) kapcsolgatom, nem VM-szinten, így az automatikusan indulhat a Proxmox-szal.
-- **Jelszó nélküli SSH hozzáférés** (`ssh-copy-id`) a Proxmox hostról a K3s (és opcionálisan egy jövőbeli Docker) VM felé, hogy a script felügyelet nélkül tudjon `kubectl`/`docker compose` parancsokat küldeni.
+On my Proxmox1 node, several VMs and LXCs use the TrueNAS share. It's a real problem when that share becomes unavailable: for example, when the share was down, qBittorrent kept downloading onto the VM's local storage instead — which is unwanted behavior.
+
+The best solution I found is to **stop** the affected LXC and VM in that case — since I follow a one-service-per-VM/LXC principle anyway, this doesn't affect any other service. Once the share becomes available again, I automatically start them back up.
 
 ---
 
-## Főbb jellemzők és a mögöttük lévő logika
-<a name="logika"></a>
+## Prerequisites
+<a name="prerequisites"></a>
 
-### Ping-alapú gyorsreakció
+- **Auto-boot disabled** on the VMs/LXCs the script manages (1010, 1101) — Proxmox should not start them at boot, since that's left to the script. The K3s server (1105) is the exception, since that one is toggled at the app level (by scaling pods), not at the VM level, so it can start automatically with Proxmox.
+- **Passwordless SSH access** (`ssh-copy-id`) from the Proxmox host to the K3s (and optionally a future Docker) VM, so the script can send `kubectl`/`docker compose` commands unattended.
 
-A script nem magát a megosztást (SMB/NFS) teszteli, hanem magát a TrueNAS gépet **pingeli**. Ennek oka, hogy nem várunk arra, hogy a fájlrendszer timeoutoljon vagy a mount "megdögöljön" (ami percekig tarthat) — a ping azonnal jelzi, ha a TrueNAS offline, így a script még azelőtt leállítja a függő gépeket, hogy azok elkezdenének belefagyni az I/O várakozásba. Ez lényegesen gyorsabb reakciót ad, mintha a mount tényleges elérhetőségét vizsgálnánk.
+---
 
-### Állapotvezérelt (event-driven) működés — State machine
+## Key features and the logic behind them
+<a name="logic"></a>
 
-A `$STATE_FILE` (`/var/lib/mount-watchdog/nas_status.state`) használatával a scriptnek van memóriája. A systemd timer 30 másodpercenként mindig lefuttatja a scriptet, de ha a ping eredménye megegyezik az előző, fájlba mentett állapottal, a script azonnal kilép — nem indít vagy állít le semmit feleslegesen. Enélkül minden 30 másodperces ciklusban újraindítaná a már futó gépeket is, hiszen a teljes script lefutna. Így viszont csak akkor nyúl a rendszerekhez, ha **ténylegesen történt állapotváltozás** — nincs felesleges SSH login, nincs "Docker spam", nem szemeteli a logokat.
+### Ping-based fast reaction
 
-### Aszinkron (párhuzamos) vezérlés
+The script doesn't test the share itself (SMB/NFS), but **pings** the TrueNAS host directly. The reason is that we don't want to wait for the filesystem to time out or the mount to "hang" (which can take minutes) — a ping immediately signals if TrueNAS is offline, so the script stops the dependent machines before they start freezing on I/O waits. This gives a significantly faster reaction than checking the actual availability of the mount.
 
-A `&` és `wait` parancsokkal a script nem sorban (egymásra várva) állítja le/indítja el a gépeket, hanem egyszerre löki ki az összes parancsot a Proxmoxnak (VM/LXC) és a távoli rendszereknek (K3s, opcionálisan Docker) egyaránt. Ezzel a kritikus leállási/indítási idő a töredékére csökken.
+### Event-driven operation — State machine
 
-### A reboot-probléma és a javítása
+Using the `$STATE_FILE` (`/var/lib/mount-watchdog/nas_status.state`), the script has memory. The systemd timer always runs the script every 30 seconds, but if the ping result matches the previously saved state, the script exits immediately — it doesn't start or stop anything unnecessarily. Without this, it would restart already-running machines on every single 30-second cycle, since the whole script would run through. This way, it only touches the systems when there's been an **actual state change** — no unnecessary SSH logins, no "Docker spam," no log clutter.
 
-**Mi volt a baj eredetileg:** Ha úgy indítom újra a Proxmoxot, hogy a TrueNAS elérhető volt, a state fájlban "UP" marad. Reboot után lefut a script, látja hogy az előző állapot UP, a jelenlegi állapot is UP — tehát nincs változás, és **soha nem indítja el** a VM-et/LXC-t, hiszen azok auto-boot nélkül eleve állva vannak. Csak akkor oldódott fel a helyzet, ha kézzel leállítottam a TrueNAS-t (ekkor volt állapotváltozás, leállította a már úgyis állva lévő gépeket), majd újra elérhetővé tettem (ekkor DOWN→UP váltás miatt elindította őket).
+### Asynchronous (parallel) control
 
-Ha viszont a TrueNAS leállítva volt, és úgy indult újra a Proxmox, hogy a state fájlba még sikerült beírni "DOWN"-t leállás előtt, akkor reboot után a script azt látja: jelenleg nem elérhető, state is DOWN — nincs változás, nem csinál semmit (ez helyes). Ha viszont áramszünet miatt indult újra a Proxmox, és a state fájlba nem sikerült beírni a DOWN állapotot (UP maradt benne), akkor a script állapotváltozást észlel (state UP, valóság DOWN) és leállítja a gépeket, amik amúgy is állnak — ez ártalmatlan, de felesleges.
+Using `&` and `wait`, the script doesn't stop/start the machines sequentially (waiting on each other), but fires off all the commands to Proxmox (VM/LXC) and the remote systems (K3s, optionally Docker) at once. This cuts the critical stop/start time down to a fraction.
 
-**A javítás:** Reboot után egyszer töröljük a state fájlt. Ehhez a `mount-watchdog.service`-ben egy 45 másodperces uptime-ellenőrzés van beépítve (`ExecStartPre`), ami csak az első futásnál (a timer `OnBootSec=30` miatt kb. 30mp-nél) törli a fájlt, utána (60mp, 90mp, stb.) többé nem. Így a script frissen indul, a jelenlegi valós állapot alapján dönt, látja a DOWN→UP váltást, és elindítja a gépeket.
+### The reboot problem and its fix
 
-**Miért pont 45 másodperc:** Amikor a Proxmox elindul, a VM-ek/LXC-k alapból állnak (auto-boot ki van kapcsolva), a script indítja majd őket, ha van TrueNAS. De a state fájl még a tegnapi (leállás előtti) állapotot mutatja, ami tipikusan "UP". Ha a script 30 másodpercnél lefutna törlés nélkül, azt látná: "a state szerint minden fut, a NAS is elérhető, nincs teendő" — és a gépek soha nem indulnának el. A 45 másodperces küszöb pont úgy van belőve, hogy az első (kb. 30mp-es) futásnál igaz legyen a feltétel (30 < 45 → törlés), a másodiknál (kb. 60mp-nél) pedig már ne (60 > 45 → nincs törlés). Így a state pontosan egyszer törlődik reboot után, utána stabilan, a tényleges változásokra reagálva fut tovább.
+**What was wrong originally:** If I reboot Proxmox while TrueNAS was available, the state file keeps "UP". After reboot, the script runs, sees that the previous state was UP and the current state is also UP — so there's no change, and it **never starts** the VM/LXC, since they're stopped by default due to auto-boot being disabled. The only way this resolved itself was if I manually stopped TrueNAS (triggering a state change, stopping machines that were already stopped anyway), then made it available again (triggering a DOWN→UP transition that started them).
 
-### UNKNOWN állapot kezelése
+On the other hand, if TrueNAS was stopped and Proxmox rebooted while the state file had already been written as "DOWN" before shutdown, then after reboot the script sees: currently unavailable, state is also DOWN — no change, does nothing (this is correct). But if Proxmox rebooted due to a power outage and the state file never got written as DOWN (it stayed UP), the script detects a state change (state says UP, reality is DOWN) and stops machines that are already stopped — harmless, but unnecessary.
 
-A state fájlban valójában három állapot fordulhat elő: UP, DOWN, és egy "ismeretlen" (UNKNOWN) helyzet, ami akkor áll fenn, ha a fájl egyáltalán nem létezik (első indításkor, vagy reboot után, miután töröltük). A script ezt így kezeli:
+**The fix:** Delete the state file once after a reboot. To achieve this, the `mount-watchdog.service` includes a 45-second uptime check (`ExecStartPre`) that only deletes the file on the first run (around the 30-second mark, due to the timer's `OnBootSec=30`), and never after that (60s, 90s, etc.). This way the script starts fresh, decides based on the actual current state, detects the DOWN→UP transition, and starts the machines.
+
+**Why exactly 45 seconds:** When Proxmox starts up, the VMs/LXCs are stopped by default (auto-boot disabled), and the script will start them once TrueNAS is available. But the state file still reflects yesterday's (pre-shutdown) state, which is typically "UP". If the script ran at the 30-second mark without deleting the file, it would see: "according to the state everything's running, the NAS is here too, nothing to do" — and the machines would never start. The 45-second threshold is set precisely so that the condition holds true on the first run (~30s: 30 < 45 → delete), but not on the second (~60s: 60 > 45 → no delete). This way the state gets deleted exactly once after a reboot, and afterward the script runs stably, reacting only to actual changes.
+
+### Handling the UNKNOWN state
+
+In reality, three states can occur in the state file: UP, DOWN, and an "unknown" (UNKNOWN) state, which exists when the file simply doesn't exist — e.g. on first run, or after a reboot once we've deleted it. The script handles this as follows:
 
 ```bash
 PREVIOUS_STATUS="DOWN"
 [ -f "$STATE_FILE" ] && PREVIOUS_STATUS=$(cat "$STATE_FILE")
 ```
 
-Ha a fájl hiányzik, a `PREVIOUS_STATUS` alapértelmezetten "DOWN" lesz — vagyis a script úgy viselkedik, mintha korábban a NAS DOWN lett volna. Ha a TrueNAS éppen elérhető, ez DOWN→UP változást eredményez, ami elindítja a VM-eket és LXC-ket. Ez pontosan a kívánt viselkedés: a state-törlés + ez az alapértelmezés együtt garantálja, hogy a rendszer mindig a valós, jelenlegi állapothoz igazodik, nem egy elavult bejegyzéshez.
+If the file is missing, `PREVIOUS_STATUS` defaults to "DOWN" — meaning the script behaves as if the NAS was previously DOWN. If TrueNAS is currently up, this results in a DOWN→UP transition, which starts the VMs and LXCs. This is exactly the desired behavior after a reboot: deleting the state file plus this default together guarantee that the system always aligns with the actual current state, rather than a stale entry.
 
-### systemd.automount — késői mount automatizálása
+### systemd.automount — automating late mounts
 
-A systemd.automount egységeket azért használom, hogy ha a TrueNAS később válik elérhetővé, mint ahogy a Proxmox elindult, a rendszer akkor is automatikusan felcsatolja a megosztást, amikor valaki (pl. Jellyfin) először hozzá akar férni az adott elérési úthoz.
+I use systemd.automount units so that if TrueNAS becomes available later than Proxmox itself starts up, the system will still automatically mount the share the first time something (e.g. Jellyfin) tries to access that path.
 
-Az automount nem előre csatolja fel a megosztást induláskor, hanem **on-demand** — csak akkor, amikor valami ténylegesen megpróbál hozzáférni a mountponthoz. Ha a TrueNAS induláskor nem elérhető, a mount nem csatolódik fel, de ez nem okoz hibát. Amint a TrueNAS visszajön, és pl. Jellyfin megpróbálja olvasni a médiát, a kernel jelzi az automount egységnek, az felcsatolja a megosztást, és a Jellyfin megkapja az adatokat — mindezt automatikusan, beavatkozás nélkül.
+Automount doesn't mount the share upfront at boot, but **on-demand** — only when something actually tries to access the mountpoint. If TrueNAS isn't available at boot, the mount simply doesn't attach, but this doesn't cause an error. As soon as TrueNAS comes back and, say, Jellyfin tries to read the media, the kernel signals the automount unit, which mounts the share, and Jellyfin gets the data — all automatically, without intervention.
 
-Ez azért jobb, mint egy sima `mount.service`: az utóbbi induláskor próbál csatolni, és ha a NAS nem elérhető, hibával leáll. Az automount ezzel szemben türelmes: bármikor felcsatolja a megosztást, ha az elérhetővé válik, és a folyamat (Jellyfin, qBittorrent stb.) az első hozzáférés pillanatában már a felcsatolt megosztást látja. A megosztás a Proxmox hoston van systemd.automount-tal kezelve, az LXC-knek pedig bind mount (`mp0`) segítségével van továbbadva — mivel unprivileged LXC konténerek nem tudnak közvetlenül hálózati megosztást mountolni.
+This is better than a plain `mount.service`: the latter tries to mount at boot, and if the NAS isn't available, it fails with an error. Automount, by contrast, is patient: it mounts the share whenever it becomes available, and the process (Jellyfin, qBittorrent, etc.) already sees the mounted share the moment it first accesses it. The share is managed on the Proxmox host with systemd.automount, and passed through to the LXCs via a bind mount (`mp0`) — since unprivileged LXC containers can't mount a network share directly.
 
 ---
 
-## Kezelt technológiák és függőségek
-<a name="fuggosegek"></a>
+## Managed technologies and dependencies
+<a name="dependencies"></a>
 
-| Típus | Azonosító / Elérési út | Művelet, ha a NAS elérhetetlenné válik | Művelet, ha a NAS újra elérhető |
+| Type | ID / Path | Action when the NAS becomes unavailable | Action when the NAS becomes available again |
 | :--- | :--- | :--- | :--- |
-| **LXC** | 1010 (Jellyfin) | Konténer leállítása (`pct stop`) | Konténer indítása (`pct start`) |
-| **VM** | 1101 (PXE/ISO) | Virtuális gép leállítása (`qm stop`) | Virtuális gép indítása (`qm start`) |
-| **K3s Podok** | `media` namespace — bazarr, prowlarr, qbittorrent, radarr, seerr, sonarr | Deploymentek skálázása 0 példányra (`kubectl scale`) | Deploymentek skálázása 1 példányra |
-| **Docker VM** | *(előkészítve, jelenleg nincs aktívan használva)* | `handle_vm_docker` funkció, SSH-n keresztüli `docker compose stop` | `docker compose stop` |
+| **LXC** | 1010 (Jellyfin) | Stop the container (`pct stop`) | Start the container (`pct start`) |
+| **VM** | 1101 (PXE/ISO) | Stop the VM (`qm stop`) | Start the VM (`qm start`) |
+| **K3s Pods** | `media` namespace — bazarr, prowlarr, qbittorrent, radarr, seerr, sonarr | Scale deployments down to 0 replicas (`kubectl scale`) | Scale deployments up to 1 replica |
+| **Docker VM** | *(prepared, not currently active)* | `handle_vm_docker` function, `docker compose stop` over SSH | `docker compose stop` |
 
-* **Gotify integráció** — minden állapotváltásról (TrueNAS DOWN→UP vagy UP→DOWN) azonnali push értesítés érkezik a mobilomra.
+---
+
+## Implementation
+<a name="implementation"></a>
+
+**`mount-watchdog.sh`**
+
+```bash
+#!/bin/bash
+
+# --- LXC CONFIGURATION ---
+declare -A LXC_LIST=( [1010]="/mnt/torrent" )
+
+# --- VM CONFIGURATION ---
+declare -A VM_LIST=( [1101]="/mnt/pxeiso" )
+
+# Docker VM CONFIGURATION (currently inactive, prepared)
+#DOCKER_VM_ID=1102
+#DOCKER_VM_IP="192.168.2.230"
+#DOCKER_VM_USER="rolf"
+#DOCKER_STACK_PATH="/opt/apps-stack/media-stack"
+
+# K3S VM Configuration
+K3S_VM_ID=1105
+K3S_VM_IP="192.168.2.225"
+K3S_VM_USER="rolf"
+K3S_NAMESPACE="media"
+K3S_APPS="bazarr prowlarr qbittorrent radarr seerr sonarr"
+
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+GOTIFY_SCRIPT="/usr/local/bin/send-gotify.sh"
+NAS_IP="192.168.2.220"
+STATE_FILE="/var/lib/mount-watchdog/nas_status.state"
+
+mkdir -p /var/lib/mount-watchdog
+
+# --- TrueNAS status check ---
+if ping -c1 -W1 $NAS_IP >/dev/null 2>&1; then
+    NAS_ONLINE=0
+    CURRENT_STATUS="UP"
+else
+    NAS_ONLINE=1
+    CURRENT_STATUS="DOWN"
+fi
+
+PREVIOUS_STATUS="DOWN"
+[ -f "$STATE_FILE" ] && PREVIOUS_STATUS=$(cat "$STATE_FILE")
+
+if [ "$CURRENT_STATUS" == "$PREVIOUS_STATUS" ]; then
+    exit 0
+fi
+
+echo "$(date '+%F %T') - Status change detected: $PREVIOUS_STATUS -> $CURRENT_STATUS"
+
+if [ "$CURRENT_STATUS" == "UP" ]; then
+    $GOTIFY_SCRIPT "✅ TrueNAS is available again! Systems are starting."
+else
+    $GOTIFY_SCRIPT "⚠️ ERROR: TrueNAS unavailable! Dependent systems will be stopped."
+fi
+
+# --- Handler functions ---
+
+handle_lxc() {
+    local ID=$1
+    [ $NAS_ONLINE -eq 0 ] && pct start $ID 2>/dev/null || pct stop $ID 2>/dev/null
+}
+
+handle_vm() {
+    local ID=$1
+    [ $NAS_ONLINE -eq 0 ] && qm start $ID 2>/dev/null || qm stop $ID 2>/dev/null
+}
+
+handle_vm_docker() {
+    if qm status $DOCKER_VM_ID | grep -q "status: running"; then
+        if [ $NAS_ONLINE -eq 0 ]; then
+            ssh -o ConnectTimeout=3 ${DOCKER_VM_USER}@${DOCKER_VM_IP} "cd ${DOCKER_STACK_PATH} && docker compose start" >/dev/null 2>&1
+        else
+            ssh -o ConnectTimeout=3 ${DOCKER_VM_USER}@${DOCKER_VM_IP} "timeout 15s docker compose -f ${DOCKER_STACK_PATH}/docker-compose.yml stop" >/dev/null 2>&1
+        fi
+    fi
+}
+
+handle_k3s_media() {
+    if qm status $K3S_VM_ID | grep -q "status: running"; then
+        local REPLICAS=0
+        [ $NAS_ONLINE -eq 0 ] && REPLICAS=1
+
+        echo "K3S: scaling $K3S_APPS to $REPLICAS replicas..."
+        for APP in $K3S_APPS; do
+            ssh -o ConnectTimeout=3 ${K3S_VM_USER}@${K3S_VM_IP} "kubectl scale deployment $APP --replicas=$REPLICAS -n $K3S_NAMESPACE" >/dev/null 2>&1 &
+        done
+    fi
+}
+
+# --- RUN IN PARALLEL ---
+
+for ID in "${!LXC_LIST[@]}"; do handle_lxc "$ID" & done
+for ID in "${!VM_LIST[@]}"; do handle_vm "$ID" & done
+handle_vm_docker &
+handle_k3s_media &
+
+wait
+
+echo "$CURRENT_STATUS" > "$STATE_FILE"
+echo "$(date '+%F %T') - All operations completed."
+exit 0
+```
+
+**`mount-watchdog.service`**
+
+```ini
+[Unit]
+Description=Mount Watchdog (LXC + VM)
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStartPre=/bin/bash -c 'if [ $(awk -F. "{print \$1}" /proc/uptime) -lt 45 ]; then rm -f /var/lib/mount-watchdog/nas_status.state; fi'
+ExecStart=/usr/local/bin/mount-watchdog.sh
+
+[Install]
+WantedBy=timers.target
+```
+
+**`mount-watchdog.timer`**
+
+```ini
+[Unit]
+Description=Run Mount Watchdog every 30s
+
+[Timer]
+OnBootSec=30
+OnUnitActiveSec=30
+Unit=mount-watchdog.service
+AccuracySec=1s
+
+[Install]
+WantedBy=timers.target
+```
+
+Activation:
+
+```bash
+systemctl daemon-reload
+systemctl enable --now mount-watchdog.timer
+```
+
+* **Gotify integration** — every state change (TrueNAS DOWN→UP or UP→DOWN) triggers an instant push notification to my phone.
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/a8a0e206-cca0-4a7e-90a7-a69804076534" alt="Description" width="500">
@@ -94,7 +241,7 @@ Ez azért jobb, mint egy sima `mount.service`: az utóbbi induláskor próbál c
 
 ---
 
-## Tesztelés és tapasztalatok
-<a name="tesztelese"></a>
+## Testing and lessons learned
+<a name="testing"></a>
 
-**Fontos tapasztalat:** az egyik LXC lassú leállását sokáig hibának hittem, mígnem kiderült, hogy ez csak a Proxmox GUI-ban látszik úgy, mintha nem állt volna le teljesen — valójában már elérhetetlen. A Gotify-értesítés megérkezése egyértelmű jelzés arra, hogy a leállás/indítás ténylegesen megtörtént, függetlenül attól, hogy a Proxmox GUI mit mutat.
+**Important lesson:** I long thought that one LXC's slow shutdown was a bug, until it turned out this is only how it looks in the Proxmox GUI — as if it hasn't fully stopped, when in reality it's already unreachable. The arrival of the Gotify notification is a clear signal that the stop/start actually happened, regardless of what the Proxmox GUI shows.
