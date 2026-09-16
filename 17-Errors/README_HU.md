@@ -119,7 +119,7 @@ Legjobb megoldásnak azt találtam, ha leállítom ekkor az LXC és VM gépeket,
 - Reboot után a state fájl automatikusan törlődik (egyszeri alkalommal), hogy a script a rendszer tényleges, aktuális állapota alapján döntsön, ne egy elavult bejegyzés alapján.
 - Gotify értesítést kapok minden állapotváltozáskor (NAS elérhetővé vált / NAS elérhetetlenné vált).
 
-❗ Script: [/11-Scripts/proxmox/truenas](/11-Scripts/proxmox/truenas/)
+❗ Script: [/11-Scripts/proxmox/truenas/README.md](/11-Scripts/proxmox/truenas/README.md)
 
 Lenti képen látható, TrueNAS-t leállítottam akkor leáll a másik Proxmoxon node-on lévő érintett VM/LXC gépek. Ha elindíntanám újra a TrueNAS-t akkor elindulnak ezek a gépek is.
 <p align="center">
