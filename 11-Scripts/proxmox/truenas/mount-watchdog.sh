@@ -1,7 +1,4 @@
 #!/bin/bash
-# ----------------------------
-# Mount Watchdog (Proxmox VE9) - ENTERPRISE K8S-AWARE VERSION
-# ----------------------------
 
 # --- LXC KONFIGURÁCIÓ ---
 declare -A LXC_LIST=( [1010]="/mnt/torrent" )
