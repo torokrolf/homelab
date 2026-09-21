@@ -11,6 +11,7 @@
 - [DNS – Publikus domain névfeloldás internet nélkül](#dns-offline)
 - [DNS – Pi-hole blokkolja a Google képtalálatokat](#dns-pihole)
 - [DNS – AdGuard DNS rate limitből adótó ARP starving](#ratelimit)
+- [Static ARP – pfSense Static ARP blokkolja az ismeretlen (nem statikus) klienseket](#static-arp-block)
 - [SSH – SSH belépés LXC / Ubuntu esetén](#ssh-lxc)
 - [Megosztás – SMB/NFS elérés LXC-ből](#mount-lxc)
 - [Megosztás – ha nem elérhető a Truenas megosztás](#nemelerheto)
@@ -74,6 +75,35 @@ A Pi-hole-ról AdGuard Home-ra való átállás után a 192.168.1.0/24 hálózat
     * A MAC címek rögzítése után bekapcsoltam a **Static ARP** opciót, így a routernek már nem kell ARP kérésekkel keresnie a hostokat.
 2.  **AdGuard Home korlát feloldása:**
     * Az AdGuard felületén: Settings/DNS settings/Rate limit.
+
+---
+
+## Static ARP – pfSense Static ARP blokkolja az ismeretlen (nem statikus) klienseket
+<a name="static-arp-block"></a>
+
+**Probléma leírása**
+
+A laptopomat Ethernettel a homelab switchre csatlakoztatva a helyi gépeket IP-n csak részben tudtam pingelni: kizárólag a 192.168.2.0/24-en lévő eszközöket értem el, a 192.168.1.0/24-et (gateway) és az internetet sem névvel, sem IP-vel nem tudtam elérni.
+
+Ugyanez a probléma jelentkezett egy éppen frissen telepített VM-nél is: sem ő nem érte el az 1.0-t vagy az internetet, sem az 1.0-ról nem lehetett őt elérni. Innen derült ki, hogy nem egyedi, hanem hálózati szintű hiba van.
+
+A laptop a DHCP-től minden szükséges paramétert (IP, gateway, DNS) helyesen megkapott, mégsem tudta pingelni az internetet vagy a gateway-t.
+
+**Ok**
+
+A **Static ARP** funkció pfSense-en (és más tűzfalaknál) többet jelent, mint egyszerű MAC–IP összerendelés.
+
+- Alapesetben, ha egy eszköz nem ismeri egy másik IP-hez tartozó MAC címet, ARP request-et küld broadcast-ban, és bárki, aki az adott IP-vel rendelkezik, válaszol rá a saját MAC címével.
+- A Static ARP bekapcsolása pfSense-en viszont azt is jelenti, hogy a tűzfal **kizárólag** azoknak az eszközöknek válaszol ARP kérésre, amelyek szerepelnek a **DHCP Static Mappings** listában — vagyis amelyek fix (MAC-hez kötött) IP-t kapnak a DHCP szervertől.
+- A laptop és a frissen telepített VM nem statikus IP-t kapott a DHCP-től, ezért nem szerepeltek a Static Mappings listában, így "nem volt joguk" ARP-ban kérdezni a pfSense-t.
+
+Ez gyakorlatban a következőt jelentette:
+- Amikor a gateway-t (192.168.2.1) próbálták pingelni, tudták annak IP-jét (DHCP megadta), de a hozzá tartozó MAC címet ARP request-tel kellett volna lekérdezni. Erre a pfSense nem válaszolt, mert a kérdező eszköz nem volt a Static Mappings listában.
+- Az internet elérése ugyanígy meghiúsult: ehhez is előbb a pfSense MAC címét kellene megismerni ARP-on keresztül, ami szintén nem történt meg.
+
+**Megoldás**
+
+- A laptop és a VM felvétele a pfSense **DHCP Static Mappings** listájába (MAC cím alapján fix IP hozzárendelése), ezután a pfSense már válaszol az ARP kéréseikre, és mind a helyi hálózat, mind az internet elérhetővé vált.
 
 ---
 
