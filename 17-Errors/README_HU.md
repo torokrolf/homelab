@@ -82,7 +82,7 @@ A Pi-hole-ról AdGuard Home-ra való átállás után a 192.168.1.0/24 hálózat
 <a name="static-arp-block"></a>
 
 **Probléma**:
-- Egy frissen telepített VM csak a 192.168.2.0/24-es gépeket érte el, ami a homelabom hálózata,  gateway-t (1.0) és az internetet sem névvel, sem IP-vel nem tudta pingelni — pedig a DHCP-től minden paramétert (IP, gateway, DNS) helyesen megkaptak.
+- Egy frissen telepített VM, akinek dinamikus IP-je volt, csak a 192.168.2.0/24-es gépeket érte el, ami a homelabom hálózata,  gateway-t (1.0) és az internetet IP-vel is pingelhetetlen, noha a DHCP-től minden paramétert (IP, gateway, DNS) helyesen megkaptak. Ezután rádugtam a switch-re a laptopom, ő is kapott DHCP-től IP-t, de ő sem tudott pingelni gateway-t vagy internetet.
 
 ```mermaid
 graph TD
@@ -108,12 +108,16 @@ graph TD
     style PROXMOX1 fill:#ff3333,stroke:#333,color:#fff
 ```
 
+Látható, a laptopom kapott a DHCP-től IP-t, gateway-t, DNS-t.
+
+<img width="945" height="425" alt="kép" src="https://github.com/user-attachments/assets/e3a97a35-df93-4b3f-9780-5d090f245623" />
+
 **Ok**:
 - A pfSense **Static ARP** funkciója nem csak MAC–IP összerendelést jelent: bekapcsolva a tűzfal **kizárólag** a **DHCP Static Mappings** listában szereplő (fix IP-t kapó) klienseknek válaszol ARP kérésre.
-- A laptop és a VM nem statikus IP-t kapott, ezért nem szerepeltek a listában — a pfSense nem árulta el nekik a saját MAC címét, így sem a gateway-t, sem az internetet nem tudták elérni (az ARP kérésükre nem jött válasz).
+- A laptop és a VM nem statikus IP-t kapott, ezért nem szerepeltek a listában, a pfSense nem árulta el nekik a saját MAC címét, így sem a gateway-t, sem az internetet nem tudták elérni (az ARP kérésükre nem jött válasz).
 
 **Megoldás**:
-- A laptop és a VM felvétele a pfSense **DHCP Static Mappings** listájába (MAC-hez kötött fix IP), ezután a pfSense válaszol az ARP kéréseikre, és a hálózat/internet elérhetővé vált.
+- Vagy felveszem őket is statikus IP-re a DHCP szerveren, ahol a static ARP be van kapcsolva, vagy a dinamikus IP beállításoknál bekapcsolom a static ARP-ot. Ezután a pfSense válaszol az ARP kéréseikre, és a hálózat/internet elérhetővé vált.
 
 ---
 
