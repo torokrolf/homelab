@@ -11,6 +11,7 @@
 - [DNS – Public domain resolution without internet](#dns-offline)
 - [DNS – Pi-hole blocks Google image search](#dns-pihole)
 - [DNS – ARP starving caused by AdGuard rate limit](#ratelimit)
+- [Static ARP – pfSense Static ARP blocks unknown (non-static) clients](#static-arp-block)
 - [SSH – SSH login for LXC / Ubuntu](#ssh-lxc)
 - [Share – SMB/NFS access from LXC](#mount-lxc)
 - [Share – when the TrueNAS share is unavailable](#nemelerheto)
@@ -73,6 +74,60 @@ After switching from Pi-hole to AdGuard Home, the Proxmox hosts (192.168.2.198, 
     * After registering the MAC addresses, enabled the **Static ARP** option, so the router no longer needs ARP requests to find the hosts.
 2.  **Raising the AdGuard Home limit:**
     * In the AdGuard UI: Settings / DNS settings / Rate limit.
+
+---
+
+## Static ARP – pfSense Static ARP blocks unknown (non-static) clients
+
+<a name="static-arp-block"></a>
+
+**Network topology**:
+
+```mermaid
+graph TD
+    INET["INTERNET"]
+    ASUS["ASUS ROUTER<br/>192.168.1.1"]
+    LAPTOP0["Laptop0<br/>192.168.2.0/24<br/>(from DHCP, not static)"]
+    NET1["192.168.1.0/24<br/>various devices"]
+    PFSENSE["PROXMOX2 / PFSENSE ROUTER<br/>WAN: 192.168.1.196<br/>LAN: 192.168.2.1"]
+    SWITCH["Switch"]
+    PROXMOX1["PROXMOX1<br/>192.168.2.199"]
+
+    INET --> ASUS
+    ASUS --> NET1
+    ASUS --> PFSENSE
+    PFSENSE --> SWITCH
+    SWITCH --> PROXMOX1
+    SWITCH --> LAPTOP0
+
+    style NET1 fill:#ffff66,stroke:#333
+    style LAPTOP0 fill:#ff3333,stroke:#333,color:#fff
+    style PFSENSE fill:#ff3333,stroke:#333,color:#fff
+    style SWITCH fill:#ff3333,stroke:#333,color:#fff
+    style PROXMOX1 fill:#ff3333,stroke:#333,color:#fff
+```
+
+**Problem**:
+
+* The laptop connected to the switch and a freshly installed VM could only reach the 192.168.2.0/24 hosts on their local network. They could not ping the gateway (1.0) or access the internet, either by hostname or by IP address, even though they received all parameters (IP address, gateway, DNS) correctly from DHCP.
+
+**Cause**:
+
+* By enabling `Services → DHCP Server → LAN → Enable Static ARP`, I put the interface into a mode where **dynamic ARP resolution is disabled**: pfSense no longer dynamically learns ARP entries by asking the network which MAC address belongs to a given IP address. Instead, it only allows communication based on **statically configured ARP entries**.
+* A static IP (DHCP Static Mapping) by itself only means that a specific MAC address will always receive the same IP address. This does **not** automatically create a static ARP entry; the ARP table could still be built dynamically through the normal request/reply process. The `Services → DHCP Server → LAN → Static Mapping → Edit → Static ARP entry` option is what actually creates the static IP-MAC mapping in the ARP table.
+* When `Enable Static ARP` is enabled on the interface (disabling dynamic ARP behavior), pfSense **only allows hosts that have an entry in the ARP table** to communicate with it. According to the official documentation:
+
+  > *"Enable Static ARP: Restricts communication with the firewall to only hosts listed in static mappings containing both IP addresses and MAC addresses. No other hosts will be able to communicate with the firewall on this interface. This behavior is enforced even when DHCP server is disabled."*
+
+<img width="1086" height="129" alt="image" src="https://github.com/user-attachments/assets/c69b5521-8154-430b-914e-10b132f3f447" />
+
+* In my case, the laptop and the freshly installed VM could not communicate **through pfSense** because of this. As a result, they could not reach the 192.168.1.0/24 network or the internet. When they tried to ping 192.168.2.1 (the gateway), they already knew the pfSense IP address (provided by DHCP) and sent an ARP request asking for the MAC address of 192.168.2.1 — but pfSense did not respond because Static ARP was enabled and the required host was not present in the static ARP configuration. The same issue prevented internet access through pfSense, since the clients could not resolve the MAC address of their gateway.
+* **Important**: even if I had added only the pfSense gateway to the Static Mappings list and enabled `Static ARP entry` for it, that still would not have solved the problem. The laptop and VM themselves would still be missing from the ARP table, so pfSense would still not allow communication with those clients.
+
+**Solution**:
+
+1. **Either** disable `Enable Static ARP` on the interface, allowing the ARP table to be built dynamically again. This allows all hosts (both static and DHCP-assigned) to communicate normally with pfSense.
+2. **Or** assign a static IP to the affected host (laptop, VM) using DHCP Static Mappings and enable `Static ARP entry` for that mapping. However, this requires the host to have a static IP assignment, since the `Static ARP entry` option is only available for Static Mappings.
 
 ---
 
