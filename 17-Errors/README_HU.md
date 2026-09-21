@@ -84,6 +84,7 @@ A Pi-hole-ról AdGuard Home-ra való átállás után a 192.168.1.0/24 hálózat
 **Probléma**:
 - Egy frissen telepített VM csak a 192.168.2.0/24-es gépeket érte el, ami a homelabom hálózata,  gateway-t (1.0) és az internetet sem névvel, sem IP-vel nem tudta pingelni — pedig a DHCP-től minden paramétert (IP, gateway, DNS) helyesen megkaptak.
 
+```mermaid
 graph TD
     INET["INTERNET"]
     ASUS["ASUS ROUTER<br/>192.168.1.1"]
@@ -105,6 +106,7 @@ graph TD
     style PFSENSE fill:#ff3333,stroke:#333,color:#fff
     style SWITCH fill:#ff3333,stroke:#333,color:#fff
     style PROXMOX1 fill:#ff3333,stroke:#333,color:#fff
+```
 
 **Ok**:
 - A pfSense **Static ARP** funkciója nem csak MAC–IP összerendelést jelent: bekapcsolva a tűzfal **kizárólag** a **DHCP Static Mappings** listában szereplő (fix IP-t kapó) klienseknek válaszol ARP kérésre.
