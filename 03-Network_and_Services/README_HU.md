@@ -113,7 +113,7 @@ A homelabomban egy **pfSense alapú tűzfalat és routert** használok a hálóz
 - **IP tartományok kezelése**: Granuláris kontroll a kiosztások felett.
 - **Statikus DHCP foglalások**: Fix IP címek az infrastruktúra elemeinek.
 - **Gateway és DNS kiosztás**: Automatikus kliens konfiguráció.
-- **Statikus ARP bejegyzések**: A szerverek és kliensek a 2.0-s hálózaton statikus IP–MAC kötést kapnak, ami védelmet nyújt az **ARP spoofing** ellen.
+- **Statikus ARP bejegyzések**: A szerverek és kliensek a 2.0-s hálózaton statikus IP–MAC kötést kapnak, ami védelmet nyújt az **ARP spoofing** ellen (de csak a pfSense-en).
 - **Menedzsment hozzáférés**: A switch manuálisan beállított statikus IP-t kapott, hogy a menedzsment felület a DHCP szervertől függetlenül is mindig elérhető legyen.
 
 ### 1.2.3 NTP szerver futtatása <a name="ntp"></a>

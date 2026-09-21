@@ -114,7 +114,7 @@ In my homelab, I use a **pfSense-based firewall and router** to manage all traff
 - **IP Range Management**: Granular control over address allocation.
 - **Static DHCP Leases**: Fixed IP addresses for infrastructure elements.
 - **Gateway and DNS Assignment**: Automatic client configuration.
-- **Static ARP Entries**: Servers and clients on the 2.0 network receive static IP–MAC binding, which provides protection against **ARP spoofing**.
+- **Static ARP Entries**: Servers and clients on the 2.0 network receive static IP–MAC binding, which provides protection against **ARP spoofing** though only on pfSense.
 - **Management Access**: The switch is configured with a manual static IP to ensure the management interface is always accessible, independent of the DHCP server.
 
 ### 1.2.3 NTP Server Operation <a name="ntp"></a>
