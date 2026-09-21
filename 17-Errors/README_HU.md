@@ -108,42 +108,23 @@ graph TD
 ```
 
 **Probléma**:
-- A switchre kötött laptop és egy frissen telepített VM csak a 192.168.2.0/24-es gépeket érte el, a gateway-t (1.0) és az internetet sem névvel, sem IP-vel nem tudta pingelni — pedig a DHCP-től minden paramétert (IP, gateway, DNS) helyesen megkaptak.
+- A switchre kötött laptop és egy frissen telepített VM csak a velük egy hálózaton lévő 192.168.2.0/24-es gépeket érte el, a gateway-t (1.0) és az internetet sem névvel, sem IP-vel nem tudta pingelni, pedig a DHCP-től minden paramétert (IP, gateway, DNS) helyesen megkaptak.
 
 **Ok**:
-- A pfSense **Static ARP** opciója a **Services → DHCP Server** oldalon található, interfészenként beállítható kapcsoló. Hivatalos leírása szerint:
+- A `Services → DHCP Server → LAN → Enable Static ARP` bekapcsolásával az interfészre azt a módot kapcsolom be, hogy az ARP tábla **dinamikus felépítését letiltja**: a pfSense ilyenkor nem kérdezgeti a hálózatot, hogy egy adott IP-hez milyen MAC cím tartozik, hanem kizárólag azt nézi, hogy mi van **statikusan bejegyezve** az ARP táblájában.
+- Egy statikus IP (DHCP Static Mapping) önmagában csak azt jelenti, hogy egy adott MAC cím mindig ugyanazt az IP-t kapja — az ARP tábla ettől függetlenül továbbra is dinamikusan épülhetne fel, kérdés-válasz alapon. A `Services → DHCP Server → LAN → Static Mapping → Edit → Static ARP entry` opció viszi be **ténylegesen** a statikus ARP bejegyzést az adott IP-MAC párhoz.
+- Ha az interfészen az Enable Static ARP be van kapcsolva (dinamikus ARP-tanulás tiltva), a pfSense **kizárólag** azoknak válaszol, akiknek van bejegyzésük az ARP táblában. Hivatalos leírása szerint:
 
   > *"Enable Static ARP: Restricts communication with the firewall to only hosts listed in static mappings containing both IP addresses and MAC addresses. No other hosts will be able to communicate with the firewall on this interface. This behavior is enforced even when DHCP server is disabled."*
 
-- Vagyis bár a DHCP Server oldalon van, a hatása **az egész interfészre** vonatkozik, függetlenül attól, hogy egy adott kliens statikus mapping-ből (fix IP) vagy a dinamikus DHCP tartományból kapta az IP-t — és a leírás szerint akkor is érvényben marad, ha a DHCP szerver ki van kapcsolva az adott interfészen.
-- Bekapcsolva a pfSense **kizárólag** azoknak a MAC címeknek válaszol ARP kérésre, amik szerepelnek a **DHCP Static Mappings** listában.
-- A laptop és a VM a dinamikus tartományból kapott IP-t, ezért nem szerepeltek a listában — a pfSense nem árulta el nekik a saját MAC címét, így sem a gateway-t, sem az internetet nem tudták elérni (az ARP kérésükre nem jött válasz).
+<img width="1086" height="129" alt="kép" src="https://github.com/user-attachments/assets/c69b5521-8154-430b-914e-10b132f3f447" />
+
+- Nálam a laptop és a frissen telepített VM emiatt nem tudtak beszélni a pfSense-n keresztül, így az 1.0-s hálózatot és az internetet sem érték el. Amikor az 1.0-t (gateway) pingelték, tudták a pfSense IP címét (DHCP megadta), és megkérdezték ARP-ban, mi a 192.168.2.1 MAC címe — de nem jött válasz, mert a pfSense ARP táblája statikus, nem dinamikus, tehát nem válaszolhat egy ilyen kérdésre. Ugyanezért nem tudták az internetet sem elérni a pfSense-n keresztül, hiszen nem ismerték a pfSense MAC címét.
+- **Fontos**: ha csak a pfSense-t (a gateway-t) vettem volna fel a Static Mappings listába és adtam volna hozzá Static ARP entry-t, az sem oldotta volna meg a problémát — hiszen ekkor maga a laptop és a VM MAC címe hiányzik az ARP táblából, tehát a pfSense nekik továbbra sem válaszolna.
 
 **Megoldás**:
-- A laptop és a VM felvétele a pfSense **DHCP Static Mappings** listájába (MAC-hez kötött fix IP), ezután a pfSense válaszol az ARP kéréseikre, és a hálózat/internet elérhetővé vált.
-
----
-
-## SSH – SSH belépés LXC / Ubuntu esetén
-<a name="ssh-lxc"></a>
-
-**Probléma**:
-- Az LXC konténerekben alapértelmezetten tiltott a root SSH login.
-
-**Megoldás**:
-- Regular user létrehozása és SSH kulcs alapú hitelesítés beállítása.
-
----
-
-## Megosztás – SMB/NFS elérés LXC-ből
-<a name="mount-lxc"></a>
-
-**Probléma**:
-- Unprivileged LXC konténerek nem tudnak közvetlenül hálózati megosztást mountolni.
-
-**Megoldás**:
-- A Proxmox hoston **systemd.automount**-al csatolt megosztás továbbadása bind mount (`mp0`) segítségével.
-- Ez kiküszöböli a df parancs fagyását, ha a tároló nem elérhető, mivel a systemd.automount csak az első tényleges hozzáféréskor próbálja meg felcsatolni a megosztást, addig nem kísérli meg a kapcsolódást egy esetleg nem elérhető NAS-hoz.
+1. **Vagy** kikapcsolom az interfészen az Enable Static ARP módot, így az ARP tábla ismét dinamikusan épül fel, és minden gép (statikus és dinamikus IP-s is) normálisan tud kommunikálni a pfSense-szel.
+2. **Vagy** a kérdéses gépnek (laptop, VM) is statikus IP-t adok a DHCP Static Mappings-ben, és hozzá felveszem a Static ARP entry-t — ehhez viszont a gépnek statikus IP-vel kell rendelkeznie, hiszen a Static ARP entry csak Static Mapping-hez adható meg.
 
 ---
 
