@@ -81,29 +81,39 @@ A Pi-hole-ról AdGuard Home-ra való átállás után a 192.168.1.0/24 hálózat
 ## Static ARP – pfSense Static ARP blokkolja az ismeretlen (nem statikus) klienseket
 <a name="static-arp-block"></a>
 
-**Probléma leírása**
+**Probléma**:
+- Egy frissen telepített VM csak a 192.168.2.0/24-es gépeket érte el, ami a homelabom hálózata,  gateway-t (1.0) és az internetet sem névvel, sem IP-vel nem tudta pingelni — pedig a DHCP-től minden paramétert (IP, gateway, DNS) helyesen megkaptak.
 
-A laptopomat Ethernettel a homelab switchre csatlakoztatva a helyi gépeket IP-n csak részben tudtam pingelni: kizárólag a 192.168.2.0/24-en lévő eszközöket értem el, a 192.168.1.0/24-et (gateway) és az internetet sem névvel, sem IP-vel nem tudtam elérni.
+graph TD
+    INET["INTERNET"]
+    ASUS["ASUS ROUTER<br/>192.168.1.1"]
+    LAPTOP0["Laptop0<br/>192.168.2.0/24<br/>(DHCP-ből, nem statikus)"]
+    NET1["192.168.1.0/24<br/>mindenféle eszközzel"]
+    PFSENSE["PROXMOX2 / PFSENSE ROUTER<br/>WAN: 192.168.1.196<br/>LAN: 192.168.2.1"]
+    SWITCH["Switch"]
+    PROXMOX1["PROXMOX1<br/>192.168.2.199"]
 
-Ugyanez a probléma jelentkezett egy éppen frissen telepített VM-nél is: sem ő nem érte el az 1.0-t vagy az internetet, sem az 1.0-ról nem lehetett őt elérni. Innen derült ki, hogy nem egyedi, hanem hálózati szintű hiba van.
+    INET --> ASUS
+    ASUS --> NET1
+    ASUS --> PFSENSE
+    PFSENSE --> SWITCH
+    SWITCH --> PROXMOX1
+    SWITCH --> LAPTOP0
 
-A laptop a DHCP-től minden szükséges paramétert (IP, gateway, DNS) helyesen megkapott, mégsem tudta pingelni az internetet vagy a gateway-t.
+    style NET1 fill:#ffff66,stroke:#333
+    style LAPTOP0 fill:#ff3333,stroke:#333,color:#fff
+    style PFSENSE fill:#ff3333,stroke:#333,color:#fff
+    style SWITCH fill:#ff3333,stroke:#333,color:#fff
+    style PROXMOX1 fill:#ff3333,stroke:#333,color:#fff
 
-**Ok**
+**Ok**:
+- A pfSense **Static ARP** funkciója nem csak MAC–IP összerendelést jelent: bekapcsolva a tűzfal **kizárólag** a **DHCP Static Mappings** listában szereplő (fix IP-t kapó) klienseknek válaszol ARP kérésre.
+- A laptop és a VM nem statikus IP-t kapott, ezért nem szerepeltek a listában — a pfSense nem árulta el nekik a saját MAC címét, így sem a gateway-t, sem az internetet nem tudták elérni (az ARP kérésükre nem jött válasz).
 
-A **Static ARP** funkció pfSense-en (és más tűzfalaknál) többet jelent, mint egyszerű MAC–IP összerendelés.
+**Megoldás**:
+- A laptop és a VM felvétele a pfSense **DHCP Static Mappings** listájába (MAC-hez kötött fix IP), ezután a pfSense válaszol az ARP kéréseikre, és a hálózat/internet elérhetővé vált.
 
-- Alapesetben, ha egy eszköz nem ismeri egy másik IP-hez tartozó MAC címet, ARP request-et küld broadcast-ban, és bárki, aki az adott IP-vel rendelkezik, válaszol rá a saját MAC címével.
-- A Static ARP bekapcsolása pfSense-en viszont azt is jelenti, hogy a tűzfal **kizárólag** azoknak az eszközöknek válaszol ARP kérésre, amelyek szerepelnek a **DHCP Static Mappings** listában — vagyis amelyek fix (MAC-hez kötött) IP-t kapnak a DHCP szervertől.
-- A laptop és a frissen telepített VM nem statikus IP-t kapott a DHCP-től, ezért nem szerepeltek a Static Mappings listában, így "nem volt joguk" ARP-ban kérdezni a pfSense-t.
-
-Ez gyakorlatban a következőt jelentette:
-- Amikor a gateway-t (192.168.2.1) próbálták pingelni, tudták annak IP-jét (DHCP megadta), de a hozzá tartozó MAC címet ARP request-tel kellett volna lekérdezni. Erre a pfSense nem válaszolt, mert a kérdező eszköz nem volt a Static Mappings listában.
-- Az internet elérése ugyanígy meghiúsult: ehhez is előbb a pfSense MAC címét kellene megismerni ARP-on keresztül, ami szintén nem történt meg.
-
-**Megoldás**
-
-- A laptop és a VM felvétele a pfSense **DHCP Static Mappings** listájába (MAC cím alapján fix IP hozzárendelése), ezután a pfSense már válaszol az ARP kéréseikre, és mind a helyi hálózat, mind az internet elérhetővé vált.
+---
 
 ---
 
