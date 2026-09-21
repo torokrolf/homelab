@@ -81,8 +81,7 @@ A Pi-hole-ról AdGuard Home-ra való átállás után a 192.168.1.0/24 hálózat
 ## Static ARP – pfSense Static ARP blokkolja az ismeretlen (nem statikus) klienseket
 <a name="static-arp-block"></a>
 
-**Probléma**:
-- Egy frissen telepített VM, akinek dinamikus IP-je volt, csak a 192.168.2.0/24-es gépeket érte el, ami a homelabom hálózata,  gateway-t (1.0) és az internetet IP-vel is pingelhetetlen, noha a DHCP-től minden paramétert (IP, gateway, DNS) helyesen megkaptak. Ezután rádugtam a switch-re a laptopom, ő is kapott DHCP-től IP-t, de ő sem tudott pingelni gateway-t vagy internetet.
+**Hálózati topológia**:
 
 ```mermaid
 graph TD
@@ -108,18 +107,20 @@ graph TD
     style PROXMOX1 fill:#ff3333,stroke:#333,color:#fff
 ```
 
-Látható, a laptopom kapott a DHCP-től IP-t, gateway-t, DNS-t.
-
-<img width="945" height="425" alt="kép" src="https://github.com/user-attachments/assets/e3a97a35-df93-4b3f-9780-5d090f245623" />
+**Probléma**:
+- A switchre kötött laptop és egy frissen telepített VM csak a 192.168.2.0/24-es gépeket érte el, a gateway-t (1.0) és az internetet sem névvel, sem IP-vel nem tudta pingelni — pedig a DHCP-től minden paramétert (IP, gateway, DNS) helyesen megkaptak.
 
 **Ok**:
-- A pfSense **Static ARP** funkciója nem csak MAC–IP összerendelést jelent: bekapcsolva a tűzfal **kizárólag** a **DHCP Static Mappings** listában szereplő (fix IP-t kapó) klienseknek válaszol ARP kérésre.
-- A laptop és a VM nem statikus IP-t kapott, ezért nem szerepeltek a listában, a pfSense nem árulta el nekik a saját MAC címét, így sem a gateway-t, sem az internetet nem tudták elérni (az ARP kérésükre nem jött válasz).
+- A pfSense **Static ARP** opciója a **Services → DHCP Server** oldalon található, interfészenként beállítható kapcsoló. Hivatalos leírása szerint:
+
+  > *"Enable Static ARP: Restricts communication with the firewall to only hosts listed in static mappings containing both IP addresses and MAC addresses. No other hosts will be able to communicate with the firewall on this interface. This behavior is enforced even when DHCP server is disabled."*
+
+- Vagyis bár a DHCP Server oldalon van, a hatása **az egész interfészre** vonatkozik, függetlenül attól, hogy egy adott kliens statikus mapping-ből (fix IP) vagy a dinamikus DHCP tartományból kapta az IP-t — és a leírás szerint akkor is érvényben marad, ha a DHCP szerver ki van kapcsolva az adott interfészen.
+- Bekapcsolva a pfSense **kizárólag** azoknak a MAC címeknek válaszol ARP kérésre, amik szerepelnek a **DHCP Static Mappings** listában.
+- A laptop és a VM a dinamikus tartományból kapott IP-t, ezért nem szerepeltek a listában — a pfSense nem árulta el nekik a saját MAC címét, így sem a gateway-t, sem az internetet nem tudták elérni (az ARP kérésükre nem jött válasz).
 
 **Megoldás**:
-- Vagy felveszem őket is statikus IP-re a DHCP szerveren, ahol a static ARP be van kapcsolva, vagy a dinamikus IP beállításoknál bekapcsolom a static ARP-ot. Ezután a pfSense válaszol az ARP kéréseikre, és a hálózat/internet elérhetővé vált.
-
----
+- A laptop és a VM felvétele a pfSense **DHCP Static Mappings** listájába (MAC-hez kötött fix IP), ezután a pfSense válaszol az ARP kéréseikre, és a hálózat/internet elérhetővé vált.
 
 ---
 
