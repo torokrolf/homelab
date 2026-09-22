@@ -158,7 +158,6 @@ Unbound (public DNS)        | msg-cache 64 MB, rrset-cache 128 MB       | 0     
 - **08:00 Garbage Collection every Saturday:** Removes backups from PBS that are no longer needed according to the Prune rules, thereby actually freeing up storage space.
 - **10:00 Deep Verification on the last Saturday of every month:** Having backups alone is not enough — their integrity must also be verified.
 - **22:00 Prune:** Marks outdated backups for deletion based on the configured retention policy, preparing the environment for the next backup cycle.
-- **22:30 Apt-Cacher-NG Maintenance:** Cleans and maintains the proxy cache right before system updates, ensuring that Ansible can later operate from a clean and error-free package source.
 - **23:00 Ansible Update (GitHub Actions):** Ansible playbooks triggered via GitHub Actions automatically update the virtual machines and LXC containers when daily activity has subsided, ensuring that any potential service restarts do not cause disruption.
 
 **The timing diagram is shown in the figure below.** I measured how long each task takes. The job durations were last verified on **2026-02-11**. For Proxmox VM/LXC backups, it is important to note that the first backup takes the longest, while subsequent backups are incremental and therefore significantly faster.
@@ -174,7 +173,6 @@ gantt
     SMART & HDSentinel Health    : 02:00, 6m
     Renovate & ArgoCD Sync       : 08:00, 15m
     Prune (Retention)            : 22:00, 1m
-    Apt-Cacher-NG Maintenance    : 22:30, 1m
     Ansible Update               : 23:00, 30m
 
     section Backup Window (Sun)
@@ -195,7 +193,6 @@ gantt
 | **08:00** | Garbage Collection | PBS Server | Weekly | 1 min |
 | **10:00** | Backup Verification (Verify) | PBS Server (Root) | Monthly (30 Days re-verify) | 50 min |
 | **22:00** | Prune (Retention) | PBS Server | Daily | 1 min |
-| **22:30** | Apt-Cacher-NG Maintenance | Apt-Proxy Server | Daily | 1 min |
 | **23:00** | Ansible Update | VM/LXC | Daily | 30 min |
 
 ---
@@ -232,7 +229,7 @@ I am renumbering my current system according to this table, and when creating ne
 - `500:pfsense`, `501:pbs`, `502:truenas`
 
 **LXC Services (1000-1099)**
-- `1000:zabbix`, `1001:ansible`, `1002:nextcloud`, `1003:homarr`, `1004:guacamole`, `1005:apt-cacher`, `1006:freeipa`, `1007:freeradius`, `1008:restic`, `1009:vaultwarden`, `1010:jellyfin`, `1011:servarr`, `1012:gotify`, `1013:portainer`,  `1015:changedetection`
+- `1000:zabbix`, `1001:ansible`, `1002:nextcloud`, `1003:homarr`, `1004:guacamole`, `1005:nexus`, `1006:freeipa`, `1007:freeradius`, `1008:restic`, `1009:vaultwarden`, `1010:jellyfin`, `1011:servarr`, `1012:gotify`, `1013:portainer`,  `1015:changedetection`
 
 **VM Linux servers (1100-1199)**
 - `1100:crowdsec`, `1101:pxeboot`

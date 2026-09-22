@@ -34,7 +34,7 @@
 **LXC Services (ID 1000-1099)**
 | ID | Name | Type | IP Address | Description |
 | :--- | :--- | :--- | :--- | :--- |
-| 1005 | apt-cacher-ng | LXC | 192.168.2.207 | Centralized Package Proxy Cache |
+| 1005 | Nexus | LXC | 192.168.2.207 | Centralized Package Proxy Cache |
 | 1006 | freeipa-domain | LXC | 192.168.2.210 | Linux Identity & Access Management (IAM) |
 | 1010 | jellyfin-media | LXC | 192.168.2.221 | Centralized Media Streaming Server |
 | 1015 | changedetection | LXC | 192.168.2.229 | Website Change Detection & Monitoring |

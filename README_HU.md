@@ -59,7 +59,7 @@ Ez a projekt egy saját tervezésű, vállalati környezet szerű homelabot muta
 | Tárolás | NAS (NFS + SMB) |
 | Dashboard | Homarr |
 | Media | Sonarr, Radarr, Prowlarr, Bazarr, Jellyfin, qBittorrent, Seerr |
-| APT cache proxy | APT-Cacher-NG |
+| Csomag proxy repository | Nexus |
 | PXE boot | iVentoy |
 | Hibakeresés | Wireshark |
 

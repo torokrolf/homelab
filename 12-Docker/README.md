@@ -35,7 +35,7 @@ Critical identity and networking layers are intentionally separated from **K3S**
 | **UNBOUND-223** | LXC | Unbound (Recursive DNS) | 
 | **ADGUARDHOME-222** | LXC | AdGuard Home (Filtering) | 
 | **JELLYFIN-221** | LXC | Jellyfin (GPU Passthrough) | 
-| **APT-CACHER-NG-207** | LXC | APT Cacher NG | 
+| **Nexus-207** | LXC | APT Cacher NG | 
 
 ---
 

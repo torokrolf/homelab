@@ -184,7 +184,7 @@ Minden gépen lefut a GitHub Actions által indított pipeline első lépéseké
 
 | Feladat | Részlet |
 |---|---|
-| APT proxy | `apt-cacher-ng` (192.168.2.207) — gyorsítja a csomagletöltést |
+| Csomag proxy repository | `nexus` (192.168.2.207) — gyorsítja a csomagletöltést |
 | Alapcsomagok | `python3`, `curl`, `git`, `mc`, `prometheus-node-exporter` |
 | `dist-upgrade` | Teljes rendszerfrissítés |
 | User & SSH | User létrehozása, SSH kulcsok feltöltése, `PermitRootLogin no`, `PasswordAuthentication no` |

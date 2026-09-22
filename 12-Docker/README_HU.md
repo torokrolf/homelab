@@ -33,7 +33,7 @@ A kritikus azonosítási és hálózati rétegek tudatosan a **K3S-en kívül**,
 | **UNBOUND-223** | LXC | Unbound (Recursive DNS) 
 | **ADGUARDHOME-222** | LXC | AdGuard Home (Filtering) 
 | **JELLYFIN-221** | LXC | Jellyfin (GPU Passthrough) 
-| **APT-CACHER-NG-207** | LXC | APT Cacher NG 
+| **Nexus-207** | LXC | APT Cacher NG 
 
 ### Failure Domain Separation (Hiba-szeparáció)
 A hálózati alapréteg (DNS, Gateway) és az Identity réteg (Authentik, Teleport) különálló virtuális gépeken fut. Ez garantálja, hogy egy esetleges Kubernetes frissítési hiba vagy egy rosszul konfigurált YAML fájl nem okoz teljes hálózati sötétséget (blackout).

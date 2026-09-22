@@ -156,7 +156,6 @@ Unbound (public DNS)           | msg-cache 64 MB, rrset-cache 128 MB | 0        
 - **Szombatonként 08:00 Garbage Collection**: Törli a PBS-ről azokat a mentéseket, amikre a Prune szabályok miatt már nincs szükség, így ténylegesen felszabadul a tárhely.
 - **A hónap utolsó szombatján 10:00 (Last Saturday of the month) mély ellenőrzés (Verify):** Nem elég hogy van mentésem, de meg kell győződni róla, hogy épek.
 - **22:00 prune**: A megadott megőrzési policy (retention) alapján jelöli meg a már szükségtelen régi backupokat törlésre, előkészítve a terepet a következő mentési ciklusnak.
-- **22:30 Apt-Cacher-NG Maint**: Közvetlenül a rendszerek frissítése előtt karbantartja és tisztítja a proxy gyorsítótárát, így az Ansible később tiszta forrásból, hibák nélkül tud dolgozni.
 - **23:00 Ansible Update (GitHub Actions):** GitHub Actions-szel futtatott Ansible playbook frissíti automatikusan a virtuális gépeket és LXC konténereket, amikor a napi használat már lecsökkent, így egy esetleges szolgáltatás-újraindulás nem zavar senkit.
 
 **Lenti ábrán látható az időzítési diagram.** Lemértem, hogy melyik mennyi időt vesz igénybe. Utoljára **2026.02.11-én** ellenőriztem a jobok időtartamát. A Proxmox VM/LXC backupnál figyelembe kell venni, hogy az első backup tart a legtovább, utána már inkrementális backupok vannak, amik lényegesen gyorsabbak.
@@ -172,7 +171,6 @@ gantt
     SMART & HDSentinel Health    : 02:00, 6m
     Renovate & ArgoCD Sync       : 08:00, 15m
     Prune (Retention)            : 22:00, 1m
-    Apt-Cacher-NG Maintenance    : 22:30, 1m
     Ansible Update               : 23:00, 30m
 
     section Backup Window (Sun)
@@ -193,7 +191,6 @@ gantt
 | **08:00** | Garbage Collection | PBS Server | Weekly | 1 min |
 | **10:00** | Backup Verification (Verify) | PBS Server (Root) | Monthly (30 Days re-verify) | 50 min |
 | **22:00** | Prune (Retention) | PBS Server | Daily | 1 min |
-| **22:30** | Apt-Cacher-NG Maintenance | Apt-Proxy Server | Daily | 1 min |
 | **23:00** | Ansible Update | VM/LXC | Daily | 30 min |
 
 ---
@@ -230,7 +227,7 @@ A jelenlegi rendszerem átszámozom a táblázat alapján és az új VM/LXC lét
 - `500:pfsense`, `501:pbs`, `502:truenas`
 
 **LXC Services (1000-1099)**
-- `1000:zabbix`, `1001:ansible`, `1002:nextcloud`, `1003:homarr`, `1004:guacamole`, `1005:apt-cacher`, `1006:freeipa`, `1007:freeradius`, `1008:restic`, `1009:vaultwarden`, `1010:jellyfin`, `1011:servarr`, `1012:gotify`, `1013:portainer`, `1015:changedetection`
+- `1000:zabbix`, `1001:ansible`, `1002:nextcloud`, `1003:homarr`, `1004:guacamole`, `1005:nexus`, `1006:freeipa`, `1007:freeradius`, `1008:restic`, `1009:vaultwarden`, `1010:jellyfin`, `1011:servarr`, `1012:gotify`, `1013:portainer`, `1015:changedetection`
 
 **VM linux szerverek (1100-1199)**
 - `1100:crowdsec`, `1101:pxeboot`

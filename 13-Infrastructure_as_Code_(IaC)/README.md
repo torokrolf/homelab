@@ -180,7 +180,7 @@ Runs on every machine as the first step of the GitHub Actions-triggered pipeline
 
 | Task | Detail |
 |---|---|
-| APT proxy | `apt-cacher-ng` (192.168.2.207) — speeds up package downloads |
+| Package proxy repository | `Nexus` (192.168.2.207) — speeds up package downloads |
 | Base packages | `python3`, `curl`, `git`, `mc`, `prometheus-node-exporter` |
 | `dist-upgrade` | Full system upgrade |
 | User & SSH | User creation, SSH key upload, `PermitRootLogin no`, `PasswordAuthentication no` |

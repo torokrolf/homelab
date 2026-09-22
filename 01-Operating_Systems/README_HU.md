@@ -20,7 +20,7 @@
 - Ansible + Semaphore
 - FreeIPA
 - FreeRADIUS
-- APT-Cacher NG
+- Nexus
 - Vaultwarden
 - Restic
 - Truenas

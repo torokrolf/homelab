@@ -59,7 +59,7 @@ This project presents a self-designed, enterprise-grade homelab where I practice
 | Storage | NAS (NFS + SMB) |
 | Dashboard | Homarr |
 | Media | Sonarr, Radarr, Prowlarr, Bazarr, Jellyfin, qBittorrent, Seerr |
-| APT Cache Proxy | APT-Cacher-NG |
+| Package Proxy Repository | Nexus |
 | PXE Boot | iVentoy |
 | Troubleshooting | Wireshark |
 
