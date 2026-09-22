@@ -13,7 +13,7 @@
 | Szolgáltatás / Terület                 | Eszközök / Szoftverek                                     
 |----------------------------------------|----------------------------------------------------------
 | [1.2 Tűzfal / Router](#pfsense)        | pfSense                                                              
-| [1.3 APT cacher proxy](#apt)            | APT-Cacher-NG                                             
+| [1.3 Csomag proxy repository](#apt)    | Nexus
 | [1.4 VLAN](#vlan)                      | TP-LINK SG108E switch                                    
 | [1.5 Reverse Proxy](#reverseproxy)     | Nginx Proxy Manager (lecserélve), Traefik (jelenlegi)                                       
 | [1.6 Reklámszűrés](#reklamszures)      | Pi-hole (lecserélve), AdGuard Home (jelenlegi)                                                  
@@ -137,19 +137,23 @@ A homelabomban egy **pfSense alapú tűzfalat és routert** használok a hálóz
 ---
 
 <a name="apt"></a>
-## 1.3 APT Cacher NG
+## 1.3 Nexus – Csomag Proxy Repository
+
+*(Korábban APT-Cacher-NG — már nem használom.)*
 
 ### 1.3.1 Miért használom?
 
 - Az **Ansible-al ütemezett VM és LXC frissítésekhez** (hajnali 3 órára beállítva) optimalizálva.
 - Megakadályozza, hogy minden gép egyenként töltse le ugyanazokat a csomagokat, így jelentős sávszélességet takarít meg.
 - **Hatékonyság**: Ha egy gép letölt egy frissítést, a többi már helyi hálózati sebességgel éri el a gyorsítótárból.
+- **Túlmutat az APT-n**: egy egyszerű cache-elő proxyval szemben a Nexus egy teljes repository manager, ugyanez a példány később Docker, npm vagy más repó típusokat is kiszolgálhat, ha a homelabnak szüksége lenne rá, anélkül hogy új szolgáltatást kellene bevezetni.
+- **Átláthatóság**: a böngészhető webes felület pontosan megmutatja, mi van cache-elve és melyik repository mennyi tárhelyet foglal, nem csak logfájlokból derül ki.
 
-Volt olyan nap, amikor a "cache hit" arány elérte a **88,26%-ot**: a 34,05 MB-os forgalomból 30,05 MB a helyi cache-ből szolgált ki a rendszer. Összességében több gigabájtnyi adatot takarít meg a rendszer az internetes sávszélességen.
+### 1.3.2 Megvalósítás
 
-<div align="center">
-  <img src="https://github.com/user-attachments/assets/d2e4134c-879c-4b88-b3f6-ccb0553a6d9f" width="800" alt="APT Cache statisztika">
-</div>
+- **Docker konténerként** fut (`sonatype/nexus3`) azon az LXC-n, és a telepítés/konfiguráció teljesen **Ansible-ből** történik (Docker konténer indítása, EULA elfogadása, anonymous access engedélyezése, APT proxy repository létrehozása, mindez idempotensen, a Nexus REST API-n keresztül).
+- Létrejön egy **`apt (proxy)`** repository (`apt-ubuntu-jammy-proxy`), ami az upstream Ubuntu tükörre mutat.
+- Kliens oldalon a korábbi transzparens HTTP proxy beállítás helyett a `/etc/apt/sources.list` kerül átírásra (ugyanabból a `common` Ansible role-ból, ami minden gépen lefut), hogy közvetlenül a Nexus repository URL-jére mutasson, ez az ára annak, hogy egy transzparens cache-elő proxyról egy explicit repository managerre váltottam.
 
 ---
 
@@ -291,29 +295,3 @@ Lenti képen látható, 2 órán át nem volt elérhető a NAS és erről kaptam
 ---
 
 ← [Vissza a Homelab főoldalra](../README_HU.md)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
