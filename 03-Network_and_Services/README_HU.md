@@ -143,9 +143,9 @@ A homelabomban egy **pfSense alapú tűzfalat és routert** használok a hálóz
 
 ### 1.3.1 Miért használom?
 
-- Az **Ansible-al ütemezett VM és LXC frissítésekhez** (hajnali 3 órára beállítva) optimalizálva.
 - Megakadályozza, hogy minden gép egyenként töltse le ugyanazokat a csomagokat, így jelentős sávszélességet takarít meg.
 - **Hatékonyság**: Ha egy gép letölt egy frissítést, a többi már helyi hálózati sebességgel éri el a gyorsítótárból.
+- **Ellenálló CI/CD teszteléshez**: amikor GitHubról tesztelgetek — role-okat módosítok, újakat hozok létre, vagy Terraformmal gépeket provisionolok —, előfordult, hogy egy távoli Ubuntu repó éppen nem volt elérhető (down volt), és emiatt akadozott a csomagok letöltése. A Nexus helyi cache-eként esélyt ad rá, hogy a korábban már letöltött csomagok akkor is elérhetők legyenek, ha az upstream tükör pont nem válaszol.
 - **Túlmutat az APT-n**: egy egyszerű cache-elő proxyval szemben a Nexus egy teljes repository manager, ugyanez a példány később Docker, npm vagy más repó típusokat is kiszolgálhat, ha a homelabnak szüksége lenne rá, anélkül hogy új szolgáltatást kellene bevezetni.
 - **Átláthatóság**: a böngészhető webes felület pontosan megmutatja, mi van cache-elve és melyik repository mennyi tárhelyet foglal, nem csak logfájlokból derül ki.
 
