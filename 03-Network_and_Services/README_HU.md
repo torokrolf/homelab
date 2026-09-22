@@ -143,17 +143,17 @@ A homelabomban egy **pfSense alapú tűzfalat és routert** használok a hálóz
 
 ### 1.3.1 Miért használom?
 
-- Megakadályozza, hogy minden gép egyenként töltse le ugyanazokat a csomagokat, így jelentős sávszélességet takarít meg.
+- Megakadályozza, hogy minden gép egyenként töltse le ugyanazokat a csomagokat, így jelentős sávszélességet takarít meg. Ez különösen jól jön például, mikor a szokásos napi csomagfrissítést futtatom automatizálva. 
 - **Hatékonyság**: Ha egy gép letölt egy frissítést, a többi már helyi hálózati sebességgel éri el a gyorsítótárból.
-- **Ellenálló CI/CD teszteléshez**: amikor GitHubról tesztelgetek — role-okat módosítok, újakat hozok létre, vagy Terraformmal gépeket provisionolok —, előfordult, hogy egy távoli Ubuntu repó éppen nem volt elérhető (down volt), és emiatt akadozott a csomagok letöltése. A Nexus helyi cache-eként esélyt ad rá, hogy a korábban már letöltött csomagok akkor is elérhetők legyenek, ha az upstream tükör pont nem válaszol.
+- **Ellenálló CI/CD teszteléshez**: amikor GitHubról tesztelek, role-okat módosítok, újakat hozok létre, vagy Terraformmal gépeket húzok fel, előfordult, hogy egy távoli Ubuntu repó éppen nem volt elérhető, és emiatt akadozott a csomagok letöltése. A Nexus helyi cache-eként esélyt ad rá, hogy a korábban már letöltött csomagok akkor is elérhetők legyenek, ha az upstream tükör pont nem válaszol.
 - **Túlmutat az APT-n**: egy egyszerű cache-elő proxyval szemben a Nexus egy teljes repository manager, ugyanez a példány később Docker, npm vagy más repó típusokat is kiszolgálhat, ha a homelabnak szüksége lenne rá, anélkül hogy új szolgáltatást kellene bevezetni.
 - **Átláthatóság**: a böngészhető webes felület pontosan megmutatja, mi van cache-elve és melyik repository mennyi tárhelyet foglal, nem csak logfájlokból derül ki.
 
 ### 1.3.2 Megvalósítás
 
-- **Docker konténerként** fut (`sonatype/nexus3`) azon az LXC-n, és a telepítés/konfiguráció teljesen **Ansible-ből** történik (Docker konténer indítása, EULA elfogadása, anonymous access engedélyezése, APT proxy repository létrehozása, mindez idempotensen, a Nexus REST API-n keresztül).
-- Létrejön egy **`apt (proxy)`** repository (`apt-ubuntu-jammy-proxy`), ami az upstream Ubuntu tükörre mutat.
-- Kliens oldalon a korábbi transzparens HTTP proxy beállítás helyett a `/etc/apt/sources.list` kerül átírásra (ugyanabból a `common` Ansible role-ból, ami minden gépen lefut), hogy közvetlenül a Nexus repository URL-jére mutasson, ez az ára annak, hogy egy transzparens cache-elő proxyról egy explicit repository managerre váltottam.
+- **Docker konténerként** fut (`sonatype/nexus3`) azon az LXC-n, és a telepítés/konfiguráció teljesen **Ansible-ből** történik (Docker konténer indítása, EULA elfogadása, anonymous access engedélyezése, APT proxy repository létrehozása, a Nexus REST API-n keresztül).
+- Létrejön egy **`apt (proxy)`** repository (`apt-ubuntu-jammy-proxy`), ami az upstream Ubuntu szerverre mutat.
+- Kliens oldalon a korábbi transzparens HTTP proxy beállítás helyett a `/etc/apt/sources.list` kerül átírásra (ugyanabból a `common` Ansible role-ból, ami minden gépen lefut), hogy közvetlenül a Nexus repository URL-jére mutasson.
 
 ---
 
