@@ -13,7 +13,7 @@
 | Service / Area                         | Tools / Software                                         |
 |----------------------------------------|----------------------------------------------------------|
 | [1.2 Firewall / Router](#pfsense)      | pfSense                                                  |
-| [1.3 APT cacher proxy](#apt)            | APT-Cacher-NG                                             |
+| [1.3 Package proxy repository](#apt)   | Nexus                                                     |
 | [1.4 VLAN](#vlan)                      | TP-LINK SG108E switch                                    |
 | [1.5 Reverse Proxy](#reverseproxy)     | Nginx Proxy Manager (replaced), Traefik (current)        |                                    |
 | [1.6 Ad-blocking](#reklamszures)       | Pi-hole (replaced), AdGuard Home (current)               |
@@ -138,19 +138,23 @@ In my homelab, I use a **pfSense-based firewall and router** to manage all traff
 ---
 
 <a name="apt"></a>
-## 1.3 APT Cacher NG
+## 1.3 Nexus – Package Proxy Repository
+
+*(Previously APT-Cacher-NG — no longer in use.)*
 
 ### 1.3.1 Why use it?
 
-- Optimized for **Ansible-scheduled VM and LXC updates** (set to 3:00 AM).
-- Prevents every machine from downloading the same packages individually, saving significant bandwidth.
+- Prevents every machine from downloading the same packages individually, saving significant bandwidth. This is especially useful, for example, when running the regular daily package update automation.
 - **Efficiency**: Once one machine downloads an update, others retrieve it from the local cache at LAN speeds.
+- **Resilience for CI/CD testing**: when testing from GitHub — modifying roles, creating new ones, or spinning up machines with Terraform — it happened that a remote Ubuntu repository was unavailable, which made downloading packages sluggish. As a local cache, Nexus gives previously downloaded packages a chance to still be available even when the upstream mirror isn't responding.
+- **Beyond APT**: unlike a plain caching proxy, Nexus is a full repository manager — the same instance can later host Docker, npm, or other repository formats if the homelab needs them, without adding another service.
+- **Visibility**: a browsable web UI shows exactly what's cached and how much storage each repository is using, instead of only log files.
 
-On certain days, the "cache hit" rate reached **88.26%**: out of 34.05 MB of traffic, 30.05 MB was served from the local cache. Overall, the system saves gigabytes of internet bandwidth.
+### 1.3.2 Implementation
 
-<div align="center">
-  <img src="https://github.com/user-attachments/assets/d2e4134c-879c-4b88-b3f6-ccb0553a6d9f" width="800" alt="APT Cache Statistics">
-</div>
+- Runs as a **Docker container** (`sonatype/nexus3`) on the LXC, with installation and configuration handled entirely via **Ansible** (starting the Docker container, accepting the EULA, enabling anonymous access, creating the APT proxy repository — via the Nexus REST API).
+- An **`apt (proxy)`** repository (`apt-ubuntu-jammy-proxy`) is created, pointing at the upstream Ubuntu server.
+- On the client side, instead of the previous transparent HTTP proxy setting, `/etc/apt/sources.list` is rewritten (via the same `common` Ansible role that runs on every machine) to point directly at the Nexus repository URL.
 
 ---
 
@@ -293,10 +297,3 @@ The image below shows a notification received when the NAS was unavailable for 2
 ---
 
 ← [Back to Homelab Main Page](../README.md)
-
-
-
-
-
-
-
