@@ -4,12 +4,6 @@
 
 ---
 
-# IaC
-
-The goal is for my homelab to serve as a continuously evolving learning environment through which I learn and document how to implement Infrastructure as Code (IaC).
-
----
-
 ## 📚 Table of Contents
 
 - [Project Philosophy & Approach](#philosophy)
@@ -44,7 +38,7 @@ I use a **hybrid approach** — on purpose.
 
 This lets me quickly rebuild any machine while the data and settings required by the running applications are immediately available.
 
-**Context:** Currently **1 physical Proxmox server** is running, K3s is **single-node** (not an HA cluster), and persistent storage is **local-path** (not Longhorn / PVCs mounted from the NAS). I **do not generate the application configuration from scratch via GitOps**; instead the pipeline restores manually configured config files saved to the NAS. This is a conscious decision.
+**Context:** Currently **1 physical Proxmox server** is running, K3s is **single-node** (not an HA cluster), and persistent storage is **local-path** (not Longhorn / PVCs mounted from the NAS). I **do not generate the application configuration from scratch via GitOps**; instead the pipeline restores manually configured config files saved to the NAS. This is a conscious decision, but I am continuously moving towards declarative, IaC-based configuration, using API calls and descriptor files.
 
 ---
 
@@ -99,9 +93,9 @@ This lets me quickly rebuild any machine while the data and settings required by
 │                           │                                      │  │
 │                           └──────────────────────────────────────┘  │
 │                                                                     │
-│  LXC containers / service VMs (Terraform + dedicated playbook)      │
-│  dns-201 (BIND9) · nexus-207 (Nexus) · pxeboot-209 (iVentoy)        │
-│  jellyfin-221 · adguardhome-222 · unbound-223                       │
+│  Other LXCs/VMs (Terraform + dedicated playbook):                   │
+│  dns-201 (BIND9), nexus-207 (Nexus), pxeboot-209 (iVentoy),         │
+│  jellyfin-221, adguardhome-222, unbound-223                         │
 │                                                                     │
 │  ┌──────────────────────────────────────────────────────────────┐   │
 │  │  NAS (192.168.2.220)  — NFS + SMB                            │   │
@@ -291,7 +285,7 @@ flowchart TD
 
 ### Terraform → Ansible chain (matrix)
 
-The key new feature: `terraform.yml` does not stop after creating the machines. If an `apply` finds a **newly created** (or recreated) machine, the pipeline **automatically starts the Ansible playbook belonging to it** — in the right order.
+`terraform.yml` does not stop after creating the machines. If an `apply` finds a **newly created** (or recreated) machine, the pipeline **automatically starts the Ansible playbook belonging to it** — in the right order.
 
 The flow has three main steps:
 
