@@ -196,7 +196,9 @@ The core difference between the two types:
 
 #### Ansible Dispatcher (`ansible-dispatcher.yml`)
 
-This is where the general, **machine-independent** playbooks live: tasks that make sense on any machine (`docker`, `common`, `mounts`, `system_update`, `portainer_agent`, `backup`, `argocd`, `argocd_apps`, `app_restore`, `loki`).
+This is where the general, **machine-independent** playbooks live: tasks that make sense on any machine (`system_update`, `common`, `mounts`, `docker`, `portainer_agent`, `loki`).
+
+> **Not part of the Dispatcher** are playbooks that only make sense for a specific machine type, so they run as standalone playbooks: the K3s-related `argocd`, `argocd_apps`, `app_restore`, and `backup`, whose logic differs per machine type. The Dispatcher rule: **if a playbook makes sense on any machine, it goes here; if it only fits one specific machine or layer, it becomes a standalone playbook / dedicated flow.**
 
 It has two triggers:
 
@@ -233,7 +235,8 @@ These belong to **one specific service / machine** and start that machine's full
 |---|---|
 | "Update all machines" | Dispatcher → `system_update` / `all_nodes` |
 | "Install Docker on this host" | Dispatcher → `docker` / specific host |
-| "Back up K3s" | Dispatcher → `backup` / `host_k3s` |
+| "Back up K3s / edge / access-core" | Standalone `backup` playbook (different logic per machine type) |
+| "Reinstall ArgoCD / restore configs" | Standalone `argocd`, `argocd_apps`, `app_restore` playbooks (part of the dedicated K3s flow) |
 | "Rebuild the edge gateway" | `ansible-edge-core.yml` (or the Terraform chain) |
 | "Create a new VM and configure it" | `terraform.yml` → the Ansible chain starts automatically |
 | "A new Authentik image was released" | Automatic: Renovate → merge → `update-authentik.yml` |
@@ -261,7 +264,7 @@ flowchart TD
     end
 
     subgraph ANS["Ansible"]
-        GEN["General playbooks<br/>system_update, common, mounts,<br/>docker, backup, argocd, ..."]
+        GEN["General playbooks<br/>system_update, common, mounts,<br/>docker, portainer_agent, loki"]
         SPEC["Dedicated playbooks<br/>nexus, bind9, k3s, access_core, ..."]
         DCU["docker_compose_update role"]
     end
@@ -546,7 +549,7 @@ On the self-hosted runner the workflow reaches the internal network directly —
 
 ### Phase 7 — Backup (`backup` role)
 
-The `backup` role can also be run on its own from the Dispatcher (`playbook: backup`, choosing the target machine), and runs different logic per machine type — `main.yml` decides which task file to load based on `inventory_hostname`.
+The `backup` role runs as a **standalone playbook** (it is not part of the Dispatcher, because it is not general: it runs different logic per machine type). `main.yml` decides which task file to load based on `inventory_hostname`.
 
 #### `access-core-01-206`
 1. Stop Docker containers
