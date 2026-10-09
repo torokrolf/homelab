@@ -94,8 +94,8 @@ Ez a megoldás lehetővé teszi, hogy gyorsan újraépítsem bármelyik gépet, 
 │                           └──────────────────────────────────────┘  │
 │                                                                     │
 │  LXC konténerek / szolgáltatás VM-ek (Terraform + dedikált playbook)│
-│  dns-201 (BIND9) · nexus-207 (Nexus) · pxeboot-209 (iVentoy)        │
-│  jellyfin-221 · adguardhome-222 · unbound-223                       │
+│  dns-201 (BIND9), nexus-207 (Nexus), pxeboot-209 (iVentoy),        │
+│  jellyfin-221, adguardhome-222m unbound-223                       │
 │                                                                     │
 │  ┌──────────────────────────────────────────────────────────────┐   │
 │  │  NAS (192.168.2.220)  — NFS + SMB                            │   │
