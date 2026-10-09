@@ -93,7 +93,7 @@ Ez a megoldás lehetővé teszi, hogy gyorsan újraépítsem bármelyik gépet, 
 │                           │                                      │  │
 │                           └──────────────────────────────────────┘  │
 │                                                                     │
-│  Egyéb LXC-k/VM-ek (Terraform + dedikált playbook):                  │
+│  Egyéb LXC-k/VM-ek (Terraform + dedikált playbook):                 │
 │  dns-201 (BIND9) nexus-207 (Nexus), pxeboot-209 (iVentoy),          │
 │  jellyfin-221, adguardhome-222m unbound-223                         │
 │                                                                     │
