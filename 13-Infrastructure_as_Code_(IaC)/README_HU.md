@@ -196,7 +196,9 @@ A két típus közötti különbség lényege:
 
 #### Ansible Dispatcher (`ansible-dispatcher.yml`)
 
-Az általános, **géptől független** playbookok kapják itt a helyet: olyan feladatok, amelyek bármelyik gépen értelmesek (`docker`, `common`, `mounts`, `system_update`, `portainer_agent`, `backup`, `argocd`, `argocd_apps`, `app_restore`, `loki`).
+Az általános, **géptől független** playbookok kapják itt a helyet: olyan feladatok, amelyek bármelyik gépen értelmesek (`system_update`, `common`, `mounts`, `docker`, `portainer_agent`, `loki`).
+
+> **Nem ide tartoznak** azok a playbookok, amelyek csak egy adott géptípusra szólnak, ezért önálló playbookként futnak: a K3s-hez kötődő `argocd`, `argocd_apps`, `app_restore`, valamint a géptípusonként eltérő logikájú `backup`. A Dispatcher szabálya: **ha egy playbook bármelyik gépen értelmes, ide kerül; ha csak egy konkrét gépre vagy rétegre, akkor önálló playbook / dedikált folyamat lesz belőle.**
 
 Két triggerrel rendelkezik:
 
@@ -233,7 +235,8 @@ Ezek **egy konkrét szolgáltatáshoz / géphez** tartoznak, és az adott gép t
 |---|---|
 | „Frissítsd az összes gépet” | Dispatcher → `system_update` / `all_nodes` |
 | „Telepíts Dockert erre a hostra” | Dispatcher → `docker` / adott host |
-| „Mentsd le a K3s-t” | Dispatcher → `backup` / `host_k3s` |
+| „Mentsd le a K3s-t / az edge-et / az access-core-t” | Önálló `backup` playbook (géptípusonként más logika) |
+| „Telepítsd újra az ArgoCD-t / állítsd vissza a konfigokat” | Önálló `argocd`, `argocd_apps`, `app_restore` playbookok (a K3s dedikált folyamat része) |
 | „Építsd újra az edge gatewayt” | `ansible-edge-core.yml` (vagy Terraform lánc) |
 | „Hozz létre új VM-et és konfiguráld” | `terraform.yml` → automatikusan az Ansible lánc |
 | „Új Authentik image jött” | Automatikus: Renovate → merge → `update-authentik.yml` |
@@ -261,7 +264,7 @@ flowchart TD
     end
 
     subgraph ANS["Ansible"]
-        GEN["Általános playbookok<br/>system_update, common, mounts,<br/>docker, backup, argocd, ..."]
+        GEN["Általános playbookok<br/>system_update, common, mounts,<br/>docker, portainer_agent, loki"]
         SPEC["Dedikált playbookok<br/>nexus, bind9, k3s, access_core, ..."]
         DCU["docker_compose_update role"]
     end
@@ -546,7 +549,7 @@ A workflow a self-hosted runneren közvetlenül éri el a belső hálózatot —
 
 ### 7. fázis — Backup (`backup` role)
 
-A `backup` role önállóan is futtatható a Dispatcher-ből (`playbook: backup`, célgép kiválasztásával), és géptípusonként más logikát futtat — a `main.yml` az `inventory_hostname` alapján dönti el melyik task fájl töltődik be.
+A `backup` role **önálló playbookként** fut (nem a Dispatcher része, mert nem általános: géptípusonként más logikát futtat). A `main.yml` az `inventory_hostname` alapján dönti el melyik task fájl töltődik be.
 
 #### `access-core-01-206`
 1. Docker konténerek leállítása
