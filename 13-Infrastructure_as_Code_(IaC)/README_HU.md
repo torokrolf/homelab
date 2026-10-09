@@ -285,7 +285,7 @@ flowchart TD
 
 ### Terraform → Ansible lánc (matrix)
 
-A legfontosabb újdonság: a `terraform.yml` nem áll meg a gépek létrehozásánál. Ha egy `apply` **újonnan létrehozott** (vagy újra létrehozott) gépet talál, a pipeline **automatikusan elindítja a hozzá tartozó Ansible playbookot** — a megfelelő sorrendben.
+A `terraform.yml` nem áll meg a gépek létrehozásánál. Ha egy `apply` **újonnan létrehozott** (vagy újra létrehozott) gépet talál, a pipeline **automatikusan elindítja a hozzá tartozó Ansible playbookot** — a megfelelő sorrendben.
 
 A folyamat három fő lépésből áll:
 
