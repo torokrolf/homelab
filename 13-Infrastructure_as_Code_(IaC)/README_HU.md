@@ -20,6 +20,9 @@ A cél, hogy a homelabom egy folyamatosan fejlődő tanulókörnyezetként szolg
   - [Dispatcher vs. dedikált workflow](#dispvsded)
   - [Workflow térkép](#wftermap)
   - [Terraform → Ansible lánc (matrix)](#tfchain)
+- [Függőségek és végrehajtási sorrend](#deps)
+  - [Gép-szintű sorrend (Terraform prioritás)](#deps)
+  - [Role-szintű függőség (`meta/main.yml`)](#deps)
 - [Teljes deployment workflow](#depwork)
   - [Terraform részletek](./terraform/README_HU.md)
 - [Docker Compose automatikus frissítés](#dockerupd)
@@ -153,7 +156,9 @@ Ez a megoldás lehetővé teszi, hogy gyorsan újraépítsem bármelyik gépet, 
 │   │   ├── argocd_apps/    # ArgoCD Application-ök regisztrálása
 │   │   ├── app_restore/    # Konfig visszaállítás NAS-ról (rsync)
 │   │   ├── access_core_01/ # Teleport + Authentik + FreeRADIUS
-│   │   └── edge_gw_01/     # Traefik reverse proxy (Docker Compose)
+│   │   ├── edge_gw_01/     # Traefik reverse proxy (Docker Compose)
+│   │   ├── nexus/          # Nexus Dockerben — meta függőség: docker
+│   │   └── iventoy/        # iVentoy PXE — meta függőség: mounts
 ├── secrets/
 │   └── secrets.enc.yaml    # SOPS+AGE titkosított változók (Ansible + Terraform közös)
 ├── kubernetes/
@@ -343,7 +348,7 @@ flowchart TD
 | 7 | `vm.k3s-server-01-225` | `k3s` | `k3s_server_01_225_host` |
 | 8 | `vm.pxeboot-209` | `iventoy` | `pxeboot_209_host` |
 
-A prioritási sorrend **szándékos**: előbb a DNS-réteg (BIND9 → Unbound → AdGuard), aztán a Nexus (csomag proxy, amit a `common` role használ), majd az access/edge réteg, végül a K3s és a PXE. Így az újabb gépek már működő névfeloldásra és csomag proxyra épülnek.
+A prioritási sorrend **szándékos**: előbb a DNS-réteg (BIND9 → Unbound → AdGuard), aztán a Nexus (csomag proxy, amit a `common` role használ), majd az access/edge réteg, végül a K3s és a PXE. Így az újabb gépek már működő névfeloldásra és csomag proxyra épülnek. A gépen belüli sorrendet a role-ok `meta/main.yml` függőségei adják (lásd: [Függőségek és végrehajtási sorrend](#deps)).
 
 > `mgmt-core-01-204` és `jellyfin-221` Terraform-mal kezelt, de **nincs hozzájuk automatikus Ansible mapping** — ezeket szükség esetén a Dispatcherből futtatom (`host_mgmt`, `host_jelly`).
 
@@ -378,6 +383,97 @@ strategy:
 | `ansible_dry_run` | Az utólag meghívott Ansible lánc `--check --diff` módban fusson-e |
 
 Egyéb biztosítékok: a `concurrency` csoport (`proxmox-terraform`, `cancel-in-progress: false`) megakadályozza, hogy két Terraform futás egyszerre módosítsa a state-et, az `import` pedig csak Proxmox VM-et vagy LXC-t enged importálni az `imported.tf` alapján.
+
+---
+
+<a name="deps"></a>
+
+## Függőségek és végrehajtási sorrend
+
+A sorrend **két külön szinten** van megoldva, és a kettő együtt adja ki a teljes felépítési sorrendet:
+
+| Szint | Eszköz | Mit rendez | Hol van definiálva |
+|---|---|---|---|
+| **Gép-szint** | Terraform workflow `priority` mező | Melyik **gép** playbookja fusson előbb | `terraform.yml` → `mapping` szótár |
+| **Role-szint** | Ansible `meta/main.yml` (`dependencies`) | Melyik **role** fusson előbb **ugyanazon a gépen** | `ansible/roles/<role>/meta/main.yml` |
+
+### Gép-szintű sorrend (Terraform prioritás)
+
+Ha egyszerre több gép épül fel, vannak köztük függőségek: a DNS-nek előbb kell működnie, mint azoknak, amik névfeloldást használnak, a Nexusnak (csomag proxy) pedig előbb kell elérhetőnek lennie, mint az olyan gépeknek, amelyek a `common` role-lal csomagot telepítenek. Ezt a `terraform.yml` `mapping` szótárában lévő `priority` érték oldja meg, a matrix pedig `max-parallel: 1` mellett ebben a sorrendben fut.
+
+```mermaid
+flowchart LR
+    subgraph L1["1. DNS réteg"]
+        A1["#1 dns-201<br/>BIND9"] --> A2["#2 unbound-223<br/>Unbound"] --> A3["#3 adguardhome-222<br/>AdGuard Home"]
+    end
+    subgraph L2["2. Csomag proxy"]
+        B1["#4 nexus-207<br/>Nexus"]
+    end
+    subgraph L3["3. Access / Edge"]
+        C1["#5 access-core-01-206"] --> C2["#6 edge-gw-01-230"]
+    end
+    subgraph L4["4. Platform"]
+        D1["#7 k3s-server-01-225"] --> D2["#8 pxeboot-209<br/>iVentoy"]
+    end
+    L1 --> L2 --> L3 --> L4
+```
+
+### Role-szintű függőség (`meta/main.yml`)
+
+**Mire jó a `meta`?** A role `meta/main.yml` fájljában a `dependencies` lista azt mondja meg: *ennek a role-nak ezekre a role-okra van szüksége, mielőtt ő maga lefut.* Vagyis **role hív meg role-t**: az Ansible a függőséget automatikusan, **előbb** lefuttatja, és csak utána a role saját taskjait.
+
+```yaml
+# ansible/roles/nexus/meta/main.yml
+---
+dependencies:
+  - role: docker
+```
+
+**Miért használom?** A függőséget így a role "magával hozza", nem a hívó playbooknak kell tudnia és helyes sorrendben felsorolnia. A `nexus.yml` playbookban elég a `nexus` role-t megadni, a Docker telepítése automatikusan előtte lefut.
+
+**A host öröklődik:** a függőség arra a gépre fut le, amire a fő role-t meghívom. Ha a `nexus` role a `nexus-207` hostra fut, akkor a `docker` role is a `nexus-207` hostra fut.
+
+Jelenleg két role használ `meta` függőséget:
+
+| Role | Függőség | Miért kell |
+|---|---|---|
+| `nexus` | `docker` | A Nexus Dockerben fut, ezért a gépen előbb legyen Docker |
+| `iventoy` | `mounts` | Az ISO-k a NAS-on vannak, ezért az iVentoy előtt a NAS csatolásoknak (`/mnt/pxeiso`) rendelkezésre kell állniuk |
+
+```mermaid
+flowchart TD
+    subgraph N["nexus-207 hoston"]
+        direction LR
+        N1["1. docker role<br/>(meta függőség)"] --> N2["2. nexus role<br/>(a fő role)"]
+    end
+    subgraph I["pxeboot-209 hoston"]
+        direction LR
+        I1["1. mounts role<br/>(meta függőség)"] --> I2["2. iventoy role<br/>(a fő role)"]
+    end
+```
+
+> **Jó tudni:** egy role azonos paraméterekkel alapból egyszer fut le egy playbookon belül. Ha tehát egy playbook a `docker` role-t külön is felsorolja, az nem fut le kétszer. Ha ezt kifejezetten szeretném (újrafuttatás), a role-nál `allow_duplicates: true` kell.
+
+### A két szint együtt
+
+A Terraform lánc a **gépeket** rendezi, a `meta` pedig a **role-okat** a gépen belül:
+
+```mermaid
+flowchart TD
+    TF(["terraform apply<br/>új gépek létrejöttek"]) --> P4
+    subgraph P4["#4 nexus-207  (playbook: nexus)"]
+        direction LR
+        a1["docker<br/>meta"] --> a2["nexus"]
+    end
+    P4 --> P5["#5 access-core-01-206"]
+    P5 --> P6["#6 edge-gw-01-230"]
+    P6 --> P7["#7 k3s-server-01-225"]
+    P7 --> P8
+    subgraph P8["#8 pxeboot-209  (playbook: iventoy)"]
+        direction LR
+        b1["mounts<br/>meta"] --> b2["iventoy"]
+    end
+```
 
 ---
 
@@ -493,7 +589,7 @@ Az Ansible előkészíti a gépet (swap ki, szükséges kernel modulok be), majd
 
 #### 4d. Szolgáltató LXC-k és a PXE VM
 
-A DNS-réteg (`dns-201` BIND9, `unbound-223`, `adguardhome-222`), a csomag proxy (`nexus-207`) és a PXE szerver (`pxeboot-209`, iVentoy) mind saját, dedikált playbookkal rendelkeznek. Ezeket a Terraform lánc a [prioritási sorrendben](#tfchain) indítja, így a DNS és a Nexus már akkor működik, amikor a többi gép konfigurációja elindul.
+A DNS-réteg (`dns-201` BIND9, `unbound-223`, `adguardhome-222`), a csomag proxy (`nexus-207`) és a PXE szerver (`pxeboot-209`, iVentoy) mind saját, dedikált playbookkal rendelkeznek. Ezeket a Terraform lánc a [prioritási sorrendben](#tfchain) indítja, így a DNS és a Nexus már akkor működik, amikor a többi gép konfigurációja elindul. A `nexus` role a `meta` függőségén keresztül magától hozza a `docker` role-t, az `iventoy` role pedig a `mounts` role-t (NAS csatolás az ISO-khoz).
 
 ---
 
