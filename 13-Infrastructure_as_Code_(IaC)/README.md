@@ -20,6 +20,9 @@ The goal is for my homelab to serve as a continuously evolving learning environm
   - [Dispatcher vs. dedicated workflow](#dispatcher-vs-dedicated)
   - [Workflow map](#workflow-map)
   - [Terraform → Ansible chain (matrix)](#tf-chain)
+- [Dependencies & Execution Order](#deps)
+  - [Machine-level order (Terraform priority)](#deps)
+  - [Role-level dependency (`meta/main.yml`)](#deps)
 - [Full Deployment Workflow](#deployment)
   - [Terraform details](./terraform/README.md)
 - [Docker Compose Automatic Updates](#docker-updates)
@@ -153,7 +156,9 @@ This lets me quickly rebuild any machine while the data and settings required by
 │   │   ├── argocd_apps/    # Registering ArgoCD Applications
 │   │   ├── app_restore/    # Config restore from the NAS (rsync)
 │   │   ├── access_core_01/ # Teleport + Authentik + FreeRADIUS
-│   │   └── edge_gw_01/     # Traefik reverse proxy (Docker Compose)
+│   │   ├── edge_gw_01/     # Traefik reverse proxy (Docker Compose)
+│   │   ├── nexus/          # Nexus in Docker — meta dependency: docker
+│   │   └── iventoy/        # iVentoy PXE — meta dependency: mounts
 ├── secrets/
 │   └── secrets.enc.yaml    # SOPS+AGE encrypted variables (shared by Ansible + Terraform)
 ├── kubernetes/
@@ -343,7 +348,7 @@ flowchart TD
 | 7 | `vm.k3s-server-01-225` | `k3s` | `k3s_server_01_225_host` |
 | 8 | `vm.pxeboot-209` | `iventoy` | `pxeboot_209_host` |
 
-The priority order is **intentional**: the DNS layer first (BIND9 → Unbound → AdGuard), then Nexus (the package proxy used by the `common` role), then the access/edge layer, and finally K3s and PXE. This way newer machines are built on top of working name resolution and a working package proxy.
+The priority order is **intentional**: the DNS layer first (BIND9 → Unbound → AdGuard), then Nexus (the package proxy used by the `common` role), then the access/edge layer, and finally K3s and PXE. This way newer machines are built on top of working name resolution and a working package proxy. The order within a machine is given by the roles' `meta/main.yml` dependencies (see: [Dependencies & Execution Order](#deps)).
 
 > `mgmt-core-01-204` and `jellyfin-221` are managed by Terraform but have **no automatic Ansible mapping** — when needed I run them from the Dispatcher (`host_mgmt`, `host_jelly`).
 
@@ -378,6 +383,97 @@ strategy:
 | `ansible_dry_run` | Whether the Ansible chain started afterwards runs in `--check --diff` mode |
 
 Other safeguards: the `concurrency` group (`proxmox-terraform`, `cancel-in-progress: false`) prevents two Terraform runs from modifying the state at the same time, and `import` only allows importing a Proxmox VM or LXC based on `imported.tf`.
+
+---
+
+<a name="deps"></a>
+
+## Dependencies & Execution Order
+
+Ordering is solved on **two separate levels**, and together they produce the full build order:
+
+| Level | Tool | What it orders | Where it is defined |
+|---|---|---|---|
+| **Machine level** | Terraform workflow `priority` field | Which **machine's** playbook runs first | `terraform.yml` → `mapping` dictionary |
+| **Role level** | Ansible `meta/main.yml` (`dependencies`) | Which **role** runs first **on the same machine** | `ansible/roles/<role>/meta/main.yml` |
+
+### Machine-level order (Terraform priority)
+
+When several machines are built at once, there are dependencies between them: DNS has to work before things that rely on name resolution, and Nexus (the package proxy) has to be available before machines that install packages through the `common` role. This is solved by the `priority` value in the `mapping` dictionary of `terraform.yml`, and the matrix runs in this order with `max-parallel: 1`.
+
+```mermaid
+flowchart LR
+    subgraph L1["1. DNS layer"]
+        A1["#1 dns-201<br/>BIND9"] --> A2["#2 unbound-223<br/>Unbound"] --> A3["#3 adguardhome-222<br/>AdGuard Home"]
+    end
+    subgraph L2["2. Package proxy"]
+        B1["#4 nexus-207<br/>Nexus"]
+    end
+    subgraph L3["3. Access / Edge"]
+        C1["#5 access-core-01-206"] --> C2["#6 edge-gw-01-230"]
+    end
+    subgraph L4["4. Platform"]
+        D1["#7 k3s-server-01-225"] --> D2["#8 pxeboot-209<br/>iVentoy"]
+    end
+    L1 --> L2 --> L3 --> L4
+```
+
+### Role-level dependency (`meta/main.yml`)
+
+**What is `meta` for?** The `dependencies` list in a role's `meta/main.yml` says: *this role needs these roles to run before it runs itself.* In other words, **a role calls another role**: Ansible automatically runs the dependency **first**, and only then the role's own tasks.
+
+```yaml
+# ansible/roles/nexus/meta/main.yml
+---
+dependencies:
+  - role: docker
+```
+
+**Why do I use it?** This way the role "brings its requirement with it" — the calling playbook doesn't have to know about it or list the roles in the right order. In the `nexus.yml` playbook it is enough to specify the `nexus` role; installing Docker runs automatically before it.
+
+**The host is inherited:** the dependency runs on whichever machine the main role is called on. If the `nexus` role runs on the `nexus-207` host, the `docker` role also runs on `nexus-207`.
+
+Currently two roles use `meta` dependencies:
+
+| Role | Dependency | Why it is needed |
+|---|---|---|
+| `nexus` | `docker` | Nexus runs in Docker, so Docker must exist on the machine first |
+| `iventoy` | `mounts` | The ISOs are on the NAS, so the NAS mounts (`/mnt/pxeiso`) must be available before iVentoy |
+
+```mermaid
+flowchart TD
+    subgraph N["on host nexus-207"]
+        direction LR
+        N1["1. docker role<br/>(meta dependency)"] --> N2["2. nexus role<br/>(main role)"]
+    end
+    subgraph I["on host pxeboot-209"]
+        direction LR
+        I1["1. mounts role<br/>(meta dependency)"] --> I2["2. iventoy role<br/>(main role)"]
+    end
+```
+
+> **Good to know:** by default a role with identical parameters runs only once within a playbook. So if a playbook also lists the `docker` role separately, it won't run twice. If I explicitly want that (re-running), the role needs `allow_duplicates: true`.
+
+### Both levels together
+
+The Terraform chain orders the **machines**, while `meta` orders the **roles** within a machine:
+
+```mermaid
+flowchart TD
+    TF(["terraform apply<br/>new machines created"]) --> P4
+    subgraph P4["#4 nexus-207  (playbook: nexus)"]
+        direction LR
+        a1["docker<br/>meta"] --> a2["nexus"]
+    end
+    P4 --> P5["#5 access-core-01-206"]
+    P5 --> P6["#6 edge-gw-01-230"]
+    P6 --> P7["#7 k3s-server-01-225"]
+    P7 --> P8
+    subgraph P8["#8 pxeboot-209  (playbook: iventoy)"]
+        direction LR
+        b1["mounts<br/>meta"] --> b2["iventoy"]
+    end
+```
 
 ---
 
@@ -493,7 +589,7 @@ Ansible prepares the machine (swap off, required kernel modules on), then instal
 
 #### 4d. Service LXCs and the PXE VM
 
-The DNS layer (`dns-201` BIND9, `unbound-223`, `adguardhome-222`), the package proxy (`nexus-207`) and the PXE server (`pxeboot-209`, iVentoy) each have their own dedicated playbook. The Terraform chain starts them in the [priority order](#tf-chain), so DNS and Nexus are already working by the time the configuration of the other machines starts.
+The DNS layer (`dns-201` BIND9, `unbound-223`, `adguardhome-222`), the package proxy (`nexus-207`) and the PXE server (`pxeboot-209`, iVentoy) each have their own dedicated playbook. The Terraform chain starts them in the [priority order](#tf-chain), so DNS and Nexus are already working by the time the configuration of the other machines starts. The `nexus` role pulls in the `docker` role through its `meta` dependency, and the `iventoy` role pulls in the `mounts` role (NAS mounts for the ISOs).
 
 ---
 
