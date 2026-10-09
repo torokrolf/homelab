@@ -16,6 +16,10 @@ A cél, hogy a homelabom egy folyamatosan fejlődő tanulókörnyezetként szolg
 - [Technológiai Stack](#stack)
 - [Architektúra áttekintés](#archit)
 - [Repó struktúra](#repstr)
+- [CI/CD workflow-k áttekintése](#cicd)
+  - [Dispatcher vs. dedikált workflow](#dispvsded)
+  - [Workflow térkép](#wftermap)
+  - [Terraform → Ansible lánc (matrix)](#tfchain)
 - [Teljes deployment workflow](#depwork)
   - [Terraform részletek](./terraform/README_HU.md)
 - [Docker Compose automatikus frissítés](#dockerupd)
@@ -32,10 +36,10 @@ A cél, hogy a homelabom egy folyamatosan fejlődő tanulókörnyezetként szolg
 
 **Hibrid megközelítést** alkalmazok — szándékosan.
 
-- **Automatizált platform:** A VM-ek létrehozása, az OS konfigurációja, a szoftverek telepítése és a K3s cluster felállítása teljesen automatizált (Terraform + Ansible).
+- **Automatizált platform:** A VM-ek és LXC konténerek létrehozása, az OS konfigurációja, a szoftverek telepítése és a K3s cluster felállítása teljesen automatizált (Terraform + Ansible). A kettő között **nincs kézi lépés**: a Terraform után a pipeline magától elindítja a hozzájuk tartozó Ansible playbookokat.
 - **Hibrid konfigurációs modell:** A Kubernetes applikációk beállításait, konfigfájlokat NAS-ról szinkronizálom, hogy a környezet konzisztenciáját megőrizzem, miközben folyamatosan fejlesztem a rendszert tisztán GitOps-alapú kezelés irányába.
 
-Ez a megoldás lehetővé teszi, hogy gyorsan újraépítsem bármelyik VM-et, miközben a működő alkalmazásokhoz szükséges adatok és beállítások azonnal rendelkezésre állnak.
+Ez a megoldás lehetővé teszi, hogy gyorsan újraépítsem bármelyik gépet, miközben a működő alkalmazásokhoz szükséges adatok és beállítások azonnal rendelkezésre állnak.
 
 **Kontextus:** Jelenleg **1 Proxmox fizikai szerver** fut, a K3s **single-node** (nem HA-klaszter), a persistent storage **local-path** (nem Longhorn/NAS-ra mountolt PVC). Az appok konfigurációját **nem GitOps-ból állítom elő nulláról**, hanem a kézzel beállított, NAS-ra mentett konfigfájlokat állítja vissza a pipeline. Ez tudatos döntés.
 
@@ -47,9 +51,9 @@ Ez a megoldás lehetővé teszi, hogy gyorsan újraépítsem bármelyik VM-et, m
 
 | Réteg | Eszköz |
 |---|---|
-| **IaC & Provisioning** | Terraform (VM provisioning), Ansible (OS konfiguráció, userek, mountok, alkalmazások stb.) |
+| **IaC & Provisioning** | Terraform (VM + LXC provisioning), Ansible (OS konfiguráció, userek, mountok, alkalmazások stb.) |
 | **Container Orchestration** | K3s (Lightweight Kubernetes) |
-| **CI/CD** | GitHub Actions (self-hosted runner, privát hálózaton) |
+| **CI/CD** | GitHub Actions (self-hosted runner, privát hálózaton): általános **Dispatcher** + **dedikált workflow-k** + **Terraform workflow** |
 | **GitOps** | ArgoCD |
 | **Kubernetes Management** | K9s, Lens |
 | **Storage** | Local-path (tervben: Longhorn / NAS-alapú PVC) |
@@ -92,6 +96,10 @@ Ez a megoldás lehetővé teszi, hogy gyorsan újraépítsem bármelyik VM-et, m
 │                           │                                      │  │
 │                           └──────────────────────────────────────┘  │
 │                                                                     │
+│  LXC konténerek / szolgáltatás VM-ek (Terraform + dedikált playbook)│
+│  dns-201 (BIND9) · nexus-207 (Nexus) · pxeboot-209 (iVentoy)        │
+│  jellyfin-221 · adguardhome-222 · unbound-223                       │
+│                                                                     │
 │  ┌──────────────────────────────────────────────────────────────┐   │
 │  │  NAS (192.168.2.220)  — NFS + SMB                            │   │
 │  │  /mnt/backup/app-configs-backup/  ← mentett konfigok         │   │
@@ -109,25 +117,45 @@ Ez a megoldás lehetővé teszi, hogy gyorsan újraépítsem bármelyik VM-et, m
 ```
 .
 ├── .github/
-│   └── workflows/          # Docker Compose auto-update workflow-k (pl. update-authentik.yml)
+│   └── workflows/
+│       ├── ansible-dispatcher.yml   # Általános, bármely gépre futtatható playbookok
+│       ├── terraform.yml            # Proxmox Terraform (plan/apply/import/show) + Ansible lánc
+│       ├── ansible-deploy.yml       # Újrahasznosítható (reusable) workflow — a Terraform hívja matrix-szal
+│       ├── ansible-access-core.yml  # Dedikált: access-core-01-206
+│       ├── ansible-edge-core.yml    # Dedikált: edge-gw-01-230
+│       ├── ansible-k3s.yml          # Dedikált: k3s-server-01-225
+│       ├── ansible-nexus.yml        # Dedikált: nexus-207
+│       ├── ansible-bind9.yml        # Dedikált: dns-201
+│       ├── ansible-unbound.yml      # Dedikált: unbound-223
+│       ├── ansible-adguardhome.yml  # Dedikált: adguard-222
+│       ├── ansible-iventoy.yml      # Dedikált: pxeboot-209
+│       └── update-authentik.yml     # Automatikus: push-ra triggerelt Docker Compose frissítés
 ├── terraform/
-│   └── proxmox-deploy/     # VM-ek létrehozása/clonozása Proxmox-on
+│   └── proxmox-deploy/     # VM-ek és LXC-k létrehozása/clonozása Proxmox-on
 ├── ansible/
+│   ├── inventory.ini       # Host- és csoportdefiníciók (pl. nexus_207_host, all_nodes)
 │   ├── site.yml            # Fő playbook — fázisokra bontva
+│   ├── system_update.yml   # Általános playbookok (Dispatcher)...
+│   ├── common.yml          # ...
+│   ├── access_core.yml     # Dedikált playbookok (Terraform lánc / dedikált workflow)...
+│   ├── edge_core.yml       # ...
+│   ├── k3s.yml             # ...
 │   ├── roles/
 │   │   ├── common/         # Alapozás: csomagok, user, SSH, időzóna
 │   │   ├── mounts/         # NFS/SMB csatolások
 │   │   ├── docker/         # Docker telepítése
 │   │   ├── docker_compose_update/ # Generikus role: bármely Docker Compose stack frissítése
 │   │   ├── portainer_agent/# Portainer Agent (Docker hostokra)
+│   │   ├── backup/         # Géptípusonként eltérő mentési logika
 │   │   ├── k3s_prep/       # K3s előkészítés: swap off, kernel modulok
 │   │   ├── k3s_install/    # K3s binary + cluster init
 │   │   ├── argocd/         # ArgoCD telepítése Helm-mel
 │   │   ├── argocd_apps/    # ArgoCD Application-ök regisztrálása
 │   │   ├── app_restore/    # Konfig visszaállítás NAS-ról (rsync)
-│   │   ├── access_core_01/ # Teleport + Authentik (Docker Compose)
+│   │   ├── access_core_01/ # Teleport + Authentik + FreeRADIUS
 │   │   └── edge_gw_01/     # Traefik reverse proxy (Docker Compose)
-│   └── secrets.enc.yaml    # SOPS+AGE titkosított változók
+├── secrets/
+│   └── secrets.enc.yaml    # SOPS+AGE titkosított változók (Ansible + Terraform közös)
 ├── kubernetes/
 │   └── apps/               # K8s manifest-ek (ArgoCD olvassa)
 │       ├── media/          # Sonarr, Radarr, Prowlarr, Bazarr, qBittorrent, Seerr
@@ -143,24 +171,241 @@ Ez a megoldás lehetővé teszi, hogy gyorsan újraépítsem bármelyik VM-et, m
 
 ---
 
+<a name="cicd"></a>
+
+## CI/CD workflow-k áttekintése
+
+Az összes automatizálás **GitHub Actions**-ön fut, a `mgmt-core-01-204` gépen lévő **self-hosted runneren**, így közvetlenül eléri a belső hálózatot (nincs szükség VPN-re vagy külső agentre). A workflow-kat három csoportba osztom:
+
+| Csoport | Workflow | Mikor használom |
+|---|---|---|
+| **Általános (Dispatcher)** | `ansible-dispatcher.yml` | Bármely gépre futtatható, nem szolgáltatás-specifikus feladatok |
+| **Dedikált** | `ansible-<szolgáltatás>.yml` | Egy adott infrastruktúra-szolgáltatás teljes deployment/konfigurációs folyamata |
+| **Automatikus** | `update-authentik.yml`, ütemezett `system_update` | Eseményre (push) vagy időzítésre indul, kézi beavatkozás nélkül |
+| **Provisioning** | `terraform.yml` (+ `ansible-deploy.yml`) | Gépek létrehozása, majd az új gépek automatikus konfigurálása |
+
+<a name="dispvsded"></a>
+
+### Dispatcher vs. dedikált workflow
+
+A két típus közötti különbség lényege:
+
+> **Dispatcher:** „Válassz egy **általános Ansible műveletet**, és mondd meg, **melyik hoston** fusson.”
+>
+> **Dedikált workflow:** „Indítsd el **ennek az infrastruktúra-szolgáltatásnak** a deployment/konfigurációs folyamatát.”
+
+#### Ansible Dispatcher (`ansible-dispatcher.yml`)
+
+Az általános, **géptől független** playbookok kapják itt a helyet: olyan feladatok, amelyek bármelyik gépen értelmesek (`docker`, `common`, `mounts`, `system_update`, `portainer_agent`, `backup`, `argocd`, `argocd_apps`, `app_restore`, `loki`).
+
+Két triggerrel rendelkezik:
+
+- **Automatikus (schedule):** minden nap `18:00 UTC`-kor (`cron: '00 18 * * *'`) lefuttatja a `system_update.yml` playbook-ot az `all_nodes` csoportra.
+- **Manuális (`workflow_dispatch`):** GitHub Actions felületéről indítható, három paraméterrel:
+
+| Paraméter | Leírás |
+|---|---|
+| `playbook` | Melyik **általános** playbook fusson — pl. `system_update`, `common`, `mounts`, `docker`, `portainer_agent`, `loki`, stb. |
+| `target_hosts` | Melyik gép(ek)re fusson — csoport (`all_nodes`, `docker_hosts`, `lxc_nodes`) vagy egy konkrét host (`host_dns`, `host_nexus`, `host_adguard`, `host_unbound`, `host_jelly`, `host_mgmt`, `host_pxeboot`, `host_wazuh`) |
+| `dry_run` | Ha be van kapcsolva, `--check --diff` módban fut — nem változtat semmit, csak megmutatja mi változna |
+
+A `host_*` választékok a workflow-ban egy `case` blokkal képződnek le az inventory-ban szereplő tényleges host- / csoportnevekre (pl. `host_nexus` → `nexus_207_host`, `host_dns` → `dns_201_host`).
+
+#### Dedikált workflow-k
+
+Ezek **egy konkrét szolgáltatáshoz / géphez** tartoznak, és az adott gép teljes konfigurációs folyamatát (a hozzá tartozó, dedikált playbookot) indítják el. Itt nincs értelme „bármelyik gépre” futtatni őket, ezért nincs `target_hosts` választó — a célgép a workflow-ba van égetve.
+
+| Workflow | Célgép | Mit konfigurál |
+|---|---|---|
+| `ansible-access-core.yml` | `access-core-01-206` | Teleport, Authentik, FreeRADIUS + daloRADIUS |
+| `ansible-edge-core.yml` | `edge-gw-01-230` | Traefik, Cloudflare Tunnel |
+| `ansible-k3s.yml` | `k3s-server-01-225` | K3s, ArgoCD, konfig visszaállítás |
+| `ansible-nexus.yml` | `nexus-207` | Nexus (csomag proxy) |
+| `ansible-bind9.yml` | `dns-201` | BIND9 DNS |
+| `ansible-unbound.yml` | `unbound-223` | Unbound |
+| `ansible-adguardhome.yml` | `adguard-222` | AdGuard Home |
+| `ansible-iventoy.yml` | `pxeboot-209` | iVentoy (PXE boot) |
+| `update-authentik.yml` | `access-core-01-206` | **Automatikus**, push-ra triggerelt Authentik frissítés |
+
+#### Mikor melyiket?
+
+| Helyzet | Eszköz |
+|---|---|
+| „Frissítsd az összes gépet” | Dispatcher → `system_update` / `all_nodes` |
+| „Telepíts Dockert erre a hostra” | Dispatcher → `docker` / adott host |
+| „Mentsd le a K3s-t” | Dispatcher → `backup` / `host_k3s` |
+| „Építsd újra az edge gatewayt” | `ansible-edge-core.yml` (vagy Terraform lánc) |
+| „Hozz létre új VM-et és konfiguráld” | `terraform.yml` → automatikusan az Ansible lánc |
+| „Új Authentik image jött” | Automatikus: Renovate → merge → `update-authentik.yml` |
+
+<a name="wftermap"></a>
+
+### Workflow térkép
+
+Ez mutatja, hogy melyik trigger melyik workflow-t indítja, és azok mit érnek el:
+
+```mermaid
+flowchart TD
+    subgraph TRIG["Triggerek"]
+        T1["⏰ Schedule<br/>(18:00 UTC)"]
+        T2["🖱️ Kézi indítás<br/>(workflow_dispatch)"]
+        T3["🔀 Push a main-be<br/>(Renovate PR merge)"]
+    end
+
+    subgraph WF["GitHub Actions workflow-k (self-hosted runner)"]
+        D["ansible-dispatcher.yml<br/><i>általános playbookok</i>"]
+        TF["terraform.yml<br/><i>plan / apply / import / show</i>"]
+        DED["ansible-&lt;szolgáltatás&gt;.yml<br/><i>dedikált workflow-k</i>"]
+        UPD["update-authentik.yml<br/><i>automatikus frissítés</i>"]
+        REUSE["ansible-deploy.yml<br/><i>reusable workflow</i>"]
+    end
+
+    subgraph ANS["Ansible"]
+        GEN["Általános playbookok<br/>system_update, common, mounts,<br/>docker, backup, argocd, ..."]
+        SPEC["Dedikált playbookok<br/>nexus, bind9, k3s, access_core, ..."]
+        DCU["docker_compose_update role"]
+    end
+
+    T1 --> D
+    T2 --> D
+    T2 --> TF
+    T2 --> DED
+    T3 --> UPD
+
+    D --> GEN
+    DED --> SPEC
+    UPD --> DCU
+    TF -- "apply után,<br/>matrix-szal" --> REUSE
+    REUSE --> SPEC
+```
+
+<a name="tfchain"></a>
+
+### Terraform → Ansible lánc (matrix)
+
+A legfontosabb újdonság: a `terraform.yml` nem áll meg a gépek létrehozásánál. Ha egy `apply` **újonnan létrehozott** (vagy újra létrehozott) gépet talál, a pipeline **automatikusan elindítja a hozzá tartozó Ansible playbookot** — a megfelelő sorrendben.
+
+A folyamat három fő lépésből áll:
+
+1. **`terraform` job** — `plan`, majd `apply` (a plan-t JSON-ba exportálja: `tfplan.json`).
+2. **`detect_targets` lépés** — egy Python script végigmegy a plan `resource_changes` listáján, és kiválasztja azokat az erőforrásokat, amelyek `create` műveletet tartalmaznak (ez lefedi a `["create"]` és a `["delete","create"]`, azaz újraépítés esetét is). Az eredményt a `mapping` szótár alapján Ansible target-listává (JSON) alakítja, **prioritás szerint rendezve**.
+3. **`ansible` job (matrix)** — a target-listából GitHub Actions **matrix**-ot épít, és minden elemre meghívja a `ansible-deploy.yml` reusable workflow-t.
+
+```mermaid
+flowchart TD
+    START(["🖱️ terraform.yml indítása<br/>action: apply"]) --> PREP
+
+    subgraph TFJOB["Job 1: terraform"]
+        PREP["Prepare<br/>SOPS dekódolás → TF_VAR_* env<br/>terraform init"]
+        PLAN["Terraform Plan<br/>-out=tfplan + tfplan.json"]
+        DETECT["Detect Ansible targets<br/>(Python: tfplan.json elemzése)<br/>csak 'create' műveletek"]
+        APPLY["Terraform Apply<br/>-parallelism=1"]
+        CLEAN["Cleanup<br/>(titkok törlése, if: always)"]
+        PREP --> PLAN --> DETECT --> APPLY --> CLEAN
+    end
+
+    CLEAN --> OUT[/"output: ansible_targets<br/>[{playbook, target_hosts, priority}, ...]"/]
+    OUT --> COND{"Van új gép?<br/>ansible_targets != '[]'"}
+    COND -- "nincs" --> END1(["Kész — csak Terraform futott"])
+    COND -- "van" --> MATRIX
+
+    subgraph ANSJOB["Job 2: ansible (matrix, max-parallel: 1)"]
+        MATRIX["fromJSON(ansible_targets)<br/>→ 1 job / új gép"]
+        MATRIX --> J1["#1 dns → bind9"]
+        J1 --> J2["#2 unbound → unbound"]
+        J2 --> J3["#3 adguardhome → adguardhome"]
+        J3 --> J4["#4 nexus → nexus"]
+        J4 --> J5["#5 access → access_core"]
+        J5 --> J6["#6 edge → edge_core"]
+        J6 --> J7["#7 k3s → k3s"]
+        J7 --> J8["#8 pxeboot → iventoy"]
+    end
+
+    J1 -.-> RW["ansible-deploy.yml<br/>(reusable workflow)"]
+    J8 -.-> RW
+```
+
+> A fenti diagramon az összes lehetséges matrix-elem látszik. **Valójában csak azok futnak le, amelyek a Terraform-plan alapján újonnan jöttek létre** — a többi kimarad, a sorrend viszont mindig a prioritást követi.
+
+#### Mapping: Terraform erőforrás → Ansible playbook
+
+| Prio | Terraform erőforrás | Playbook | Target (inventory) |
+|:---:|---|---|---|
+| 1 | `container.dns-201` | `bind9` | `dns_201_host` |
+| 2 | `container.unbound-223` | `unbound` | `unbound_223_host` |
+| 3 | `container.adguardhome-222` | `adguardhome` | `adguard_222_host` |
+| 4 | `container.nexus-207` | `nexus` | `nexus_207_host` |
+| 5 | `vm.access-core-01-206` | `access_core` | `access_core_01_206_host` |
+| 6 | `vm.edge-gw-01-230` | `edge_core` | `edge_gw_01_230_host` |
+| 7 | `vm.k3s-server-01-225` | `k3s` | `k3s_server_01_225_host` |
+| 8 | `vm.pxeboot-209` | `iventoy` | `pxeboot_209_host` |
+
+A prioritási sorrend **szándékos**: előbb a DNS-réteg (BIND9 → Unbound → AdGuard), aztán a Nexus (csomag proxy, amit a `common` role használ), majd az access/edge réteg, végül a K3s és a PXE. Így az újabb gépek már működő névfeloldásra és csomag proxyra épülnek.
+
+> `mgmt-core-01-204` és `jellyfin-221` Terraform-mal kezelt, de **nincs hozzájuk automatikus Ansible mapping** — ezeket szükség esetén a Dispatcherből futtatom (`host_mgmt`, `host_jelly`).
+
+#### Mi az a matrix?
+
+A **matrix** egy GitHub Actions funkció, amely **egy jobot többször futtat le különböző paraméterekkel**. Megadsz egy listát, és minden elemére automatikusan létrejön egy külön job példány — ugyanaz a workflow, más bemeneti értékekkel.
+
+Az én esetemben a lista a Terraform plan alapján **dinamikusan** áll elő (`fromJSON(...)`), például:
+
+```yaml
+matrix:
+  include:
+    - {playbook: nexus, target_hosts: nexus_207_host}
+    - {playbook: k3s,   target_hosts: k3s_server_01_225_host}
+```
+
+Ebből GitHub Actions két külön jobot csinál, mindkettő az `ansible-deploy.yml`-t futtatja, de más playbook-kal és más target-tel. Ha a Terraform csak egy gépet hozott létre, csak egy job jön létre; ha hármat, három.
+
+```yaml
+strategy:
+  fail-fast: false     # egy hibás gép nem állítja le a többit
+  max-parallel: 1      # egyszerre csak egy gép — a prioritási sorrend így érvényesül
+```
+
+#### A Terraform workflow paraméterei
+
+| Paraméter | Leírás |
+|---|---|
+| `action` | `plan`, `apply`, `import`, `show` |
+| `mode` | `auto` — minden eltérést alkalmaz; `select` — csak a bepipált gépeket (`-target`) |
+| `nexus`, `adguardhome`, `unbound`, `dns`, `pxeboot`, `k3s`, `edge`, `access`, `mgmt`, `jellyfin` | `select` módban a célgépek kiválasztása (legalább egyet ki kell jelölni, különben a workflow hibával leáll) |
+| `ansible_dry_run` | Az utólag meghívott Ansible lánc `--check --diff` módban fusson-e |
+
+Egyéb biztosítékok: a `concurrency` csoport (`proxmox-terraform`, `cancel-in-progress: false`) megakadályozza, hogy két Terraform futás egyszerre módosítsa a state-et, az `import` pedig csak Proxmox VM-et vagy LXC-t enged importálni az `imported.tf` alapján.
+
+---
+
 <a name="depwork"></a>
 
 ## Teljes deployment workflow
 
-### 1. fázis — VM-ek létrehozása (Terraform)
+### 1. fázis — Gépek létrehozása (Terraform)
 
 A VM-eket egy általam előkészített **Golden Image** (Ubuntu 22.04, Proxmox cloud-init template) alapján hozom létre Full Clone módszerrel — az új VM-ek teljesen függetlenek az alap sablontól. A Terraform deklaratív módon definiálja az eltérő terhelésű csomópontok hardveres paramétereit (CPU, RAM, Disk).
 
-Korábban a Terraform-ot manuálisan, CLI-ból futtattam az `mgmt-core-01-204` menedzsment gépről. Ez mára a GitOps-folyamat része lett: a Terraform kód GitHubon van, és egy dedikált **GitHub Actions workflow** (`.github/workflows/proxmox-terraform.yml`) indítja el a self-hosted runneren a Terraform műveleteket (`plan`, `apply`, `import`, `show`) — a szerveren manuális `terraform` parancsra többé nincs szükség.
+Korábban a Terraform-ot manuálisan, CLI-ból futtattam az `mgmt-core-01-204` menedzsment gépről. Ez mára a GitOps-folyamat része lett: a Terraform kód GitHubon van, és a dedikált **`terraform.yml` workflow** indítja el a self-hosted runneren a Terraform műveleteket (`plan`, `apply`, `import`, `show`). A Terraform egy **Docker konténerben** (`hashicorp/terraform`) fut, a state a runner gépen, egy külön mappában (`/home/ansible/terraform-state/proxmox`) él. A szerveren manuális `terraform` parancsra többé nincs szükség.
 
-A Terraform konfigurációkat nem nulláról írtam meg: először a Proxmoxon kézzel elkészített Ubuntu template-et **importáltam** a Terraform state-be (`terraform import`), így a már létező erőforrás Terraform felügyelete alá került. Ezt az alap konfigurációt adaptáltam és bővítettem a különböző VM-típusokhoz (`k3s-server-01-225`, `access-core-01-206`, `edge-gw-01-230`), az eltérő hardverigények és szerepkörök szerint.
+**Újdonság:** a `terraform apply` után a pipeline **automatikusan elindítja a létrehozott gépekhez tartozó Ansible playbookokat** (lásd: [Terraform → Ansible lánc](#tfchain)). Egy törölt gép újraépítése így egyetlen workflow-indítással megoldható: Terraform létrehozza → Ansible konfigurálja → (K3s esetén) a konfig visszaállítása a NAS-ról.
 
-Kezelt VM-ek:
+A Terraform konfigurációkat nem nulláról írtam meg: először a Proxmoxon kézzel elkészített Ubuntu template-et **importáltam** a Terraform state-be (`terraform import`), így a már létező erőforrás Terraform felügyelete alá került. Ezt az alap konfigurációt adaptáltam és bővítettem a különböző VM-típusokhoz, az eltérő hardverigények és szerepkörök szerint.
 
-- `k3s-server-01-225` — K3s node
-- `access-core-01-206` — Identity & Access layer (Teleport, Authentik, FreeRADIUS)
-- `edge-gw-01-230` — Edge gateway (Traefik reverse proxy, Cloudflare Tunnel)
-- `mgmt-core-01-204` — Management node (Self-hosted GitHub Runner, Ansible, Portainer)
+Kezelt gépek:
+
+| Gép | Típus | Szerep |
+|---|---|---|
+| `k3s-server-01-225` | VM | K3s node |
+| `access-core-01-206` | VM | Identity & Access layer (Teleport, Authentik, FreeRADIUS) |
+| `edge-gw-01-230` | VM | Edge gateway (Traefik reverse proxy, Cloudflare Tunnel) |
+| `mgmt-core-01-204` | VM | Management node (Self-hosted GitHub Runner, Ansible, Portainer) |
+| `pxeboot-209` | VM | iVentoy (PXE boot) |
+| `dns-201` | LXC | BIND9 |
+| `unbound-223` | LXC | Unbound |
+| `adguardhome-222` | LXC | AdGuard Home |
+| `nexus-207` | LXC | Nexus (csomag proxy) |
+| `jellyfin-221` | LXC | Jellyfin |
 
 A Terraform `initialization` blokkján keresztül injektálja az SSH-kulcsokat és az Ansible usert — a VM az első bootja után azonnal "ready-to-use" állapotba kerül, manuális konfiguráció nélkül:
 
@@ -172,7 +417,7 @@ user_account {
 }
 ```
 
-A MAC-cím rögzítéssel biztosítom a statikus IP kiosztást a DHCP szerveren. Az érzékeny értékeket (Proxmox API token, jelszavak, SSH kulcsok) a `secrets.enc.yaml`-ban, SOPS+AGE-vel titkosítva tárolom — ugyanúgy, mint az Ansible pipeline-nál.
+A MAC-cím rögzítéssel biztosítom a statikus IP kiosztást a DHCP szerveren. Az érzékeny értékeket (Proxmox API token, jelszavak, SSH kulcsok) a `secrets/secrets.enc.yaml`-ban, SOPS+AGE-vel titkosítva tárolom — ugyanúgy, mint az Ansible pipeline-nál. A workflow futáskor a dekódolt secrets fájlt `TF_VAR_<név>` környezeti változókká alakítja, és a futás végén (`if: always()`) mindent töröl.
 
 A Terraform-pipeline működésének részletei (workflow, state-kezelés, import folyamat, teszt) a [`terraform/readme.md`](./terraform/README_HU.md)-ben vannak dokumentálva.
 
@@ -180,7 +425,7 @@ A Terraform-pipeline működésének részletei (workflow, state-kezelés, impor
 
 ### 2. fázis — Alap konfiguráció (Ansible `common` role)
 
-Minden gépen lefut a GitHub Actions által indított pipeline első lépéseként:
+Minden gépen lefut (a Dispatcherből, vagy a Terraform lánc dedikált playbookjának részeként):
 
 | Feladat | Részlet |
 |---|---|
@@ -205,6 +450,8 @@ A K3s workload-ok és a backup folyamatok feltételezik a NAS elérhetőségét.
 ---
 
 ### 4. fázis — Réteg-specifikus telepítések
+
+Ezeket a **dedikált playbookok** végzik: a Terraform lánc automatikusan, vagy a hozzájuk tartozó dedikált workflow kézzel indítja őket.
 
 #### 4a. Edge Layer (`edge-gw-01-230`)
 
@@ -241,6 +488,10 @@ A Traefik **Docker Compose**-ban fut (nem K3s-en). Az Ansible:
 
 Az Ansible előkészíti a gépet (swap ki, szükséges kernel modulok be), majd egy egysoros installer scripttel telepíti a K3s-t. A beépített load balancert és Traefik-et kikapcsolom, mert az ingress forgalmat az `edge-gw-01-230`-on futó külön Traefik kezeli.
 
+#### 4d. Szolgáltató LXC-k és a PXE VM
+
+A DNS-réteg (`dns-201` BIND9, `unbound-223`, `adguardhome-222`), a csomag proxy (`nexus-207`) és a PXE szerver (`pxeboot-209`, iVentoy) mind saját, dedikált playbookkal rendelkeznek. Ezeket a Terraform lánc a [prioritási sorrendben](#tfchain) indítja, így a DNS és a Nexus már akkor működik, amikor a többi gép konfigurációja elindul.
+
 ---
 
 ### 5. fázis — ArgoCD + konfig visszaállítás
@@ -276,22 +527,20 @@ Az ArgoCD regisztrálja a privát GitHub repót, majd létrehozza az Application
 
 ---
 
-### 6. fázis — GitHub Actions + Self-hosted Runner
+### 6. fázis — GitHub Actions pipeline-ok működése
 
-A `mgmt-core-01-204` VM-en fut a **self-hosted GitHub Actions runner**. A pipeline neve **Ansible Dispatcher**, és két triggerrel rendelkezik:
+A workflow-k felépítését és a köztük lévő munkamegosztást a [CI/CD workflow-k áttekintése](#cicd) fejezet írja le. Itt a közös működési elemek szerepelnek, amelyeket minden Ansible-t futtató workflow használ:
 
-- **Automatikus (schedule):** minden nap 23:00-kor (UTC+2) lefuttatja a `system_update.yml` playbook-ot az összes node-ra.
-- **Manuális (`workflow_dispatch`):** GitHub Actions felületéről indítható, három paraméterrel:
+1. **Checkout** a repóból.
+2. **SOPS+AGE kulcs előkészítése:** a `SOPS_AGE_KEY` GitHub Actions Secretből létrejön a `keys.txt` (`chmod 600`).
+3. **Playbook és célgép meghatározása** (Dispatcher: `case` blokk a `target_hosts` alapján; Terraform lánc: a matrix paraméterei).
+4. **Secrets dekódolása:** `sops -d secrets/secrets.enc.yaml` → `/tmp/secrets_dec.yaml`.
+5. **Gotify értesítés — indulás** 🚀 (playbook, target, trigger típusa: ⏰ automatikus / 🖱️ kézi).
+6. **`ansible-playbook` futtatása** `-e target=<host/csoport>` és `-e "@/tmp/secrets_dec.yaml"` paraméterekkel, opcionálisan `--check --diff` módban (`dry_run`).
+7. **Gotify értesítés — eredmény:** siker esetén ✅, hiba esetén ❌ (magas prioritással, exit kóddal).
+8. **Biztonsági takarítás:** a dekódolt secrets fájl és az AGE kulcsfájl törlése, majd a workflow az Ansible exit kódjával tér vissza (így a GitHub is hibásnak jelöli a futást, ha az Ansible elbukott).
 
-| Paraméter | Leírás |
-|---|---|
-| `playbook` | Melyik playbook fusson — pl. `full_site`, `k3s_full`, `common`, `argocd`, `system_update`, stb. |
-| `target_hosts` | Melyik gép(ek)re fusson — pl. `all_nodes`, `host_k3s`, `host_edge`, `host_dns`, `lxc_nodes`, stb. |
-| `dry_run` | Ha be van kapcsolva, `--check --diff` módban fut — nem változtat semmit, csak megmutatja mi változna |
-
-A workflow a self-hosted runneren közvetlenül éri el a belső hálózatot — nincs szükség VPN-re vagy külső agent-re. Futás végén minden esetben **Gotify értesítés** megy: siker esetén ✅, hiba esetén ❌.
-
-**SOPS+AGE titkosítás a pipeline-ban:** A `secrets.enc.yaml` fájl titkosítva van verziókövetésben. A workflow futáskor a `SOPS_AGE_KEY` GitHub Actions Secret-ből hozza létre az AGE kulcsfájlt (`keys.txt`), dekódolja a secrets fájlt, átadja az Ansible-nek, majd a futás végén mindkét fájlt törli.
+A workflow a self-hosted runneren közvetlenül éri el a belső hálózatot — nincs szükség VPN-re vagy külső agent-re.
 
 ---
 
@@ -328,7 +577,7 @@ A K3s esetében nem elég leállítani a Dockert — a podokat graceful módon k
 
 A K3s-en futó alkalmazásoknál az **ArgoCD** automatikusan szinkronizál, ha egy manifest változik GitHubon. A K3s-en kívüli, **Docker Compose**-ban futó szolgáltatásoknál (pl. Authentik) korábban ez kézi munka volt: a Renovate talált egy új image verziót, én mergeltem GitHubra, majd a szerveren SSH-n keresztül kézzel írtam át a compose fájlt és futtattam a `docker compose up -d` parancsot.
 
-Ez most automatizálva van:
+Ez most automatizálva van — ez a harmadik workflow-típus (**automatikus, push-triggered**):
 
 1. **Renovate** észreveszi, hogy egy Docker image-nek új verziója érhető el, és PR-t nyit a repóban.
 2. A PR **main**-be kerül mergelésre.
@@ -340,6 +589,16 @@ Ez most automatizálva van:
    - legenerálja a friss `docker-compose.yml` fájlt a Jinja2 template-ből,
    - `pull: always` + `recreate: auto` móddal lehúzza az új image-et és újrakreálja a konténert, ha szükséges.
 7. A folyamat elejéről és végéről **Gotify** értesítés érkezik (siker ✅ / hiba ❌).
+
+```mermaid
+flowchart LR
+    R["Renovate<br/>új image verzió"] --> PR["Pull Request"]
+    PR --> M["Merge a main-be"]
+    M --> W["update-&lt;service&gt;.yml<br/>(paths: filter)"]
+    W --> P["ansible/update-&lt;service&gt;.yml"]
+    P --> ROLE["docker_compose_update role<br/>template + pull + recreate"]
+    ROLE --> G["Gotify ✅ / ❌"]
+```
 
 **Miért generikus a role?** A `docker_compose_update` role semmilyen service-specifikus adatot nem tartalmaz — a célkönyvtárat és a template elérési útját mindig a hívó playbook adja át változóként. Így minden új Docker Compose-alapú szolgáltatáshoz (Traefik, Vaultwarden stb.) elég egy új, pár soros playbook + egy hozzá tartozó workflow fájl, magát a role-t nem kell módosítani.
 
@@ -397,6 +656,17 @@ Authentik frissült.
 | `edge-gw-01-230` | Traefik (reverse proxy, Let's Encrypt) |
 | `access-core-01-206` | Teleport (SSH/RDP proxy), Authentik (SSO/IdP) |
 
+### LXC / szolgáltatás gépek
+
+| Gép | App |
+|---|---|
+| `dns-201` | BIND9 |
+| `unbound-223` | Unbound |
+| `adguardhome-222` | AdGuard Home |
+| `nexus-207` | Nexus (csomag proxy) |
+| `jellyfin-221` | Jellyfin |
+| `pxeboot-209` | iVentoy (PXE) |
+
 ---
 
 <a name="seckez"></a>
@@ -405,11 +675,12 @@ Authentik frissült.
 
 | Eszköz | Mit tárol |
 |---|---|
-| **SOPS+AGE** (`secrets.enc.yaml`) | SMB jelszó, user jelszó hash, SSH kulcsok, API tokenek — titkosítva verziókövetésben |
-| **Terraform `.tfvars`** (nincs verziókövetésben) | Proxmox API token, MAC-címek, user jelszavak |
+| **SOPS+AGE** (`secrets/secrets.enc.yaml`) | SMB jelszó, user jelszó hash, SSH kulcsok, API tokenek, Proxmox API token, Gotify adatok — titkosítva verziókövetésben, **Ansible és Terraform közösen használja** |
 | **GitHub Actions Secrets** (`SOPS_AGE_KEY`) | Az AGE privát kulcs — ebből dekódolja a pipeline a `secrets.enc.yaml`-t futáskor |
 
-A folyamat: a pipeline létrehozza a kulcsfájlt a Secretből → `sops -d` dekódolja a titkokat → Ansible megkapja `-e "@/tmp/secrets_dec.yaml"` formában → futás végén a kulcsfájl és a dekódolt fájl törlésre kerül.
+A folyamat (Ansible): a pipeline létrehozza a kulcsfájlt a Secretből → `sops -d` dekódolja a titkokat → Ansible megkapja `-e "@/tmp/secrets_dec.yaml"` formában → futás végén a kulcsfájl és a dekódolt fájl törlésre kerül.
+
+A folyamat (Terraform): ugyanaz a dekódolás, de a titkokat a workflow `TF_VAR_<név>` környezeti változókká alakítja (`/tmp/tf_env.sh`), amelyet a Terraform konténer `--env-file`-ként kap meg. A futás végén (`if: always()`) ez is törlődik.
 
 ---
 
@@ -423,14 +694,19 @@ Minden VM-re települ a `prometheus-node-exporter` a `common` role részeként. 
 - Összes VM — automatikusan monitorozva
 - Grafana dashboardok a NAS-ról rsync-kel visszaállítva — az adatsource reconnect után azonnal működik
 
+A pipeline-ok állapotáról a **Gotify** értesítések tájékoztatnak (indulás 🚀, siker ✅, hiba ❌).
+
 ---
 
 <a name="tervek"></a>
 
 ## Jelenlegi állapot & további tervek
 
-- [x] Terraform-alapú VM provisioning (Proxmox)
+- [x] Terraform-alapú VM és LXC provisioning (Proxmox)
+- [x] Terraform pipeline GitHub Actions-ből (`plan` / `apply` / `import` / `show`, select + auto mód)
+- [x] **Terraform → Ansible lánc:** a létrehozott gépekhez automatikusan, prioritás szerint indulnak a playbookok (matrix)
 - [x] Ansible roles minden VM-típushoz
+- [x] Általános **Ansible Dispatcher** + **dedikált workflow-k** szétválasztása
 - [x] Self-hosted GitHub Actions pipeline
 - [x] K3s single-node + ArgoCD GitOps (manifest szintű)
 - [x] Konfig-alapú visszaállítás (rsync a NAS-ról)
@@ -438,10 +714,10 @@ Minden VM-re települ a `prometheus-node-exporter` a `common` role részeként. 
 - [x] Identity/Access layer (Teleport + Authentik)
 - [x] Edge layer (Traefik + Let's Encrypt)
 - [x] Docker Compose alapú szolgáltatások (K3s-en kívüli) automatikus frissítése Renovate + GitHub Actions + Ansible pipeline-nal
-- [ ] Az összes VM bevonása a Terraform + Ansible pipeline-ba
+- [ ] Az összes VM bevonása a Terraform + Ansible pipeline-ba (`mgmt-core-01-204`, `jellyfin-221` automatikus Ansible mappingje)
 - [ ] NAS-ról betöltött konfigok teljes migrációja Kubernetes ConfigMap-ekbe/Secret-ekbe
 - [ ] Longhorn vagy NFS-alapú PVC storage (local-path kiváltása)
-- [ ] Terraform state remote backend (jelenleg local)
+- [ ] Terraform state remote backend (jelenleg a runneren, lokális mappában)
 - [ ] Több node → K3s HA cluster
 
 ---
