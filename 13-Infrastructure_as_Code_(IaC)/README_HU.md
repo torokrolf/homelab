@@ -94,8 +94,8 @@ Ez a megoldás lehetővé teszi, hogy gyorsan újraépítsem bármelyik gépet, 
 │                           └──────────────────────────────────────┘  │
 │                                                                     │
 │  Egyéb LXC-k/VM-ek (Terraform + dedikált playbook):                 │
-│  dns-201 (BIND9) nexus-207 (Nexus), pxeboot-209 (iVentoy),          │
-│  jellyfin-221, adguardhome-222m unbound-223                         │
+│  dns-201 (BIND9), nexus-207 (Nexus), pxeboot-209 (iVentoy),         │
+│  jellyfin-221, adguardhome-222, unbound-223                         │
 │                                                                     │
 │  ┌──────────────────────────────────────────────────────────────┐   │
 │  │  NAS (192.168.2.220)  — NFS + SMB                            │   │
@@ -365,6 +365,180 @@ Ebből GitHub Actions két külön jobot csinál, mindkettő az `ansible-deploy.
 strategy:
   fail-fast: false     # egy hibás gép nem állítja le a többit
   max-parallel: 1      # egyszerre csak egy gép — a prioritási sorrend így érvényesül
+```
+
+A `matrix` alapesetben **kombinatorikus** (`playbook: [a, b]` + `host: [x, y]` esetén 4 job, mindent mindennel). Nálam **lista alapú** (`include`): minden elem pontosan egy job, és az elemen belüli kulcsok adják az összetartozó párokat (pl. `bind9` + `dns_201_host`). Kombinálni itt nem lenne értelme, mert a `bind9` playbook csak a DNS gépre való.
+
+#### Hogyan áll elő a matrix lista? (lépésről lépésre)
+
+A `priority` **nem GitHub Actions fogalom**, csak egy szám a Python `mapping` szótárában, amivel a listát sorba rendezem. A GitHub nem tud róla. A sorrendet a Python `sort`-ja és a `max-parallel: 1` együtt adja.
+
+1. `terraform plan -out=tfplan` elkészíti a **bináris** tervet (ezt csak a Terraform érti, az `apply` ezt hajtja végre).
+2. `terraform show -json tfplan > tfplan.json` ebből olvasható JSON-t csinál, mert a Python csak ezt tudja olvasni.
+3. A Python beolvassa a `tfplan.json`-t a `plan` változóba.
+4. A ciklus végigmegy az erőforrásokon. Ahol van `create` és szerepel a `mapping`-ben, annak a mapping-adatai bekerülnek az `ansible_targets` listába.
+5. A `sort` priority szerint rendezi a listát.
+6. A `json.dumps` egysoros szöveget csinál belőle.
+7. A Python beírja a `GITHUB_OUTPUT`-ba: `ansible_targets=...`. Ettől a `detect_targets` lépés kimenete lesz.
+8. A `terraform` job `outputs:` blokkja ezt job-kimenetté teszi, így az `ansible` job is eléri.
+9. Az `ansible` job (`needs: terraform`) megvárja a terraform jobot.
+10. A `fromJSON` a szövegből újra listát csinál.
+11. A matrix minden listaelemre egy kört indít, egymás után (`max-parallel: 1`).
+12. Minden körben a `with:` átadja az `ansible-deploy.yml`-nek az adatokat.
+13. Az `ansible-deploy.yml` lefuttatja az `ansible-playbook` parancsot.
+
+##### A `tfplan.json` (egyszerűsítve)
+
+A valódi fájl sokkal bonyolultabb (`type`, `before`, `after`, `variables` stb.), a script viszont csak két mezőt használ: az `address`-t (melyik gép) és a `change.actions`-t (mi történik vele).
+
+```json
+{
+  "resource_changes": [
+    {"address": "proxmox_virtual_environment_vm.k3s-server-01-225",
+     "change": {"actions": ["create"]}},
+    {"address": "proxmox_virtual_environment_container.dns-201",
+     "change": {"actions": ["create"]}},
+    {"address": "proxmox_virtual_environment_container.nexus-207",
+     "change": {"actions": ["delete", "create"]}},
+    {"address": "proxmox_virtual_environment_container.adguardhome-222",
+     "change": {"actions": ["no-op"]}},
+    {"address": "proxmox_virtual_environment_vm.mgmt-core-01-204",
+     "change": {"actions": ["create"]}},
+    {"address": "proxmox_virtual_environment_container.jellyfin-221",
+     "change": {"actions": ["update"]}}
+  ]
+}
+```
+
+| `actions` | Jelentés | Kell Ansible? |
+|---|---|---|
+| `["create"]` | új gép jön létre | igen |
+| `["delete","create"]` | törlés és újraépítés, az új gép üres | igen |
+| `["update"]` | a gép marad, csak módosul | nem |
+| `["no-op"]` | nincs változás | nem |
+
+A bináris `tfplan` az `apply`-hoz kell, a `tfplan.json` csak a Python olvasásához. Titkos adatokat is tartalmazhat, ezért a Cleanup lépés a job végén törli.
+
+##### A ciklus
+
+```python
+for resource in plan.get("resource_changes", []):
+    address = resource.get("address", "")
+    actions = resource.get("change", {}).get("actions", [])
+
+    if "create" not in actions:
+        continue
+    if address not in mapping:
+        print("Nincs Ansible mapping:", address)
+        continue
+
+    target = mapping[address]
+    if target not in ansible_targets:
+        ansible_targets.append(target)
+```
+
+Minden erőforrásra három kérdés, és ha bármelyik nem teljesül, a `continue` kihagyja:
+
+1. **Van `create` az `actions`-ben?** Ha nincs (`no-op`, `update`), nem új gép, nem kell Ansible.
+2. **Szerepel a `mapping`-ben?** Ha nincs (pl. `mgmt-core-01-204`), nem tudom, mit futtassak rá.
+3. **Nincs már a listában?** Duplikáció ellen.
+
+A listába a **mapping elemei** kerülnek (playbook, target_hosts, priority), nem a plan sorai. A plan csak azt dönti el, melyik mapping-elem kell. A fenti példában bekerül a k3s, a dns és a nexus. Kimarad az adguardhome (`no-op`), a mgmt (nincs mapping) és a jellyfin (`update`).
+
+A ciklus után, még rendezés előtt (a Terraform felfedezési sorrendjében):
+
+```python
+ansible_targets = [
+  {"name": "k3s",   "playbook": "k3s",   "target_hosts": "k3s_server_01_225_host", "priority": 7},
+  {"name": "dns",   "playbook": "bind9", "target_hosts": "dns_201_host",           "priority": 1},
+  {"name": "nexus", "playbook": "nexus", "target_hosts": "nexus_207_host",         "priority": 4}
+]
+```
+
+A `sort` után:
+
+```python
+ansible_targets.sort(key=lambda x: x.get("priority", 99))
+```
+
+```python
+ansible_targets = [
+  {"name": "dns",   "playbook": "bind9", "target_hosts": "dns_201_host",           "priority": 1},
+  {"name": "nexus", "playbook": "nexus", "target_hosts": "nexus_207_host",         "priority": 4},
+  {"name": "k3s",   "playbook": "k3s",   "target_hosts": "k3s_server_01_225_host", "priority": 7}
+]
+```
+
+##### Átadás a matrixnak
+
+A `json.dumps` egysoros szöveget csinál a listából (a `kulcs=érték` formátum nem szereti a többsoros értéket):
+
+```python
+output = json.dumps(ansible_targets, separators=(",", ":"))
+with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+    f.write(f"ansible_targets={output}\n")
+```
+
+A `GITHUB_OUTPUT` fájlba ez az egy sor kerül:
+
+```
+ansible_targets=[{"name":"dns","playbook":"bind9","target_hosts":"dns_201_host","priority":1},{"name":"nexus","playbook":"nexus","target_hosts":"nexus_207_host","priority":4},{"name":"k3s","playbook":"k3s","target_hosts":"k3s_server_01_225_host","priority":7}]
+```
+
+A fájl a runner ideiglenes fájlja. A lépés végén a runner kiolvassa, elküldi a GitHubnak, és törli. A másik job így a GitHubon keresztül kapja meg az értéket, ezért ne kerüljön bele titok.
+
+A terraform job `outputs:` blokkja a lépés-kimenetet job-kimenetté teszi:
+
+```yaml
+outputs:
+  ansible_targets: ${{ steps.detect_targets.outputs.ansible_targets }}
+```
+
+Az `ansible` job `needs: terraform` miatt `needs.terraform.outputs.ansible_targets` néven éri el. A `fromJSON` a szövegből újra listát csinál, és az `include` minden elemből egy kört indít:
+
+```yaml
+ansible:
+  needs: terraform
+  strategy:
+    fail-fast: false
+    max-parallel: 1
+    matrix:
+      include: ${{ fromJSON(needs.terraform.outputs.ansible_targets) }}
+  uses: ./.github/workflows/ansible-deploy.yml
+  with:
+    playbook: ${{ matrix.playbook }}
+    target_hosts: ${{ matrix.target_hosts }}
+    dry_run: ${{ inputs.ansible_dry_run }}
+  secrets: inherit
+```
+
+| Kör | `matrix.name` | `matrix.playbook` | `matrix.target_hosts` | `matrix.priority` |
+|---|---|---|---|---|
+| 1 | dns | bind9 | dns_201_host | 1 |
+| 2 | nexus | nexus | nexus_207_host | 4 |
+| 3 | k3s | k3s | k3s_server_01_225_host | 7 |
+
+A `name` és a `priority` benne van a matrixban, de a `with:` nem adja tovább. A `priority` a Python `sort`-jához kellett.
+
+##### `with:` és `inputs:`
+
+A `terraform.yml` `with:` blokkja ugyanaz, mint az `ansible-deploy.yml` `inputs:` blokkja, csak a két oldalról nézve. A hívó oldalon a `with:` azt küldi, a fogadó oldalon az `inputs:` azt várja. A két oldalon a nevek egyeznek.
+
+| `terraform.yml` `with:` | `ansible-deploy.yml` `inputs:` | Felhasználás |
+|---|---|---|
+| `playbook` | `inputs.playbook` | `"ansible/${{ inputs.playbook }}.yml"` |
+| `target_hosts` | `inputs.target_hosts` | `-e target="${{ inputs.target_hosts }}"` |
+| `dry_run` | `inputs.dry_run` | `true` esetén `--check --diff` |
+| `secrets: inherit` | `secrets.SOPS_AGE_KEY` | a titkok dekódolása |
+
+> Az `ansible-deploy.yml` **workflow** (nem playbook), `on: workflow_call`, ezért kézzel nem indítható. Egyszerre egy playbookot futtat egy célgépen, és nem tud arról, hogy matrixból hívták.
+
+Az 1. körben `inputs.playbook = "bind9"` és `inputs.target_hosts = "dns_201_host"`. Körönként ez fut le, egymás után (a 2. az 1. befejezése után indul):
+
+```bash
+ansible-playbook "ansible/bind9.yml" -i ansible/inventory.ini -e target="dns_201_host" ...
+ansible-playbook "ansible/nexus.yml" -i ansible/inventory.ini -e target="nexus_207_host" ...
+ansible-playbook "ansible/k3s.yml"   -i ansible/inventory.ini -e target="k3s_server_01_225_host" ...
 ```
 
 #### A Terraform workflow paraméterei
